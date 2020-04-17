@@ -128,6 +128,7 @@
                 //SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
                 //this.log.Info("Initializing Index Page");
                 SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
+
                 SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
                 if (User.Identity.IsAuthenticated)
@@ -429,6 +430,7 @@
                             subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                             Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
                             subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                          
                             this.logger.LogInformation("operation == Activate");
                             if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
                             {
@@ -449,6 +451,7 @@
                             PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
                             subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             isSuccess = true;
+                            subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
                             this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));

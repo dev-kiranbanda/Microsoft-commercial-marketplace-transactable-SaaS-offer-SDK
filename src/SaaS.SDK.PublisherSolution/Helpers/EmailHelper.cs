@@ -33,7 +33,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                 toReceipents = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)
               );
                 Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
-
+                mail.Subject = Subject;
                 if (!string.IsNullOrEmpty(toReceipents))
                 {
                     string[] ToEmails = toReceipents.Split(';');
@@ -68,7 +68,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                 toReceipents = (planEventsMappingRepository.GetFailureStateEmails(Subscription.GuidPlanId)
                 );
                 Subject = emailTemplateRepository.GetSubject(planEvent);
-
+                mail.Subject = Subject;
                 if (!string.IsNullOrEmpty(toReceipents))
                 {
                     string[] ToEmails = toReceipents.Split(';');

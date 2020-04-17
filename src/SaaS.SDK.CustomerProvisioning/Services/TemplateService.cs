@@ -8,12 +8,14 @@ using NVelocity;
 using System.IO;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
+using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
+using System.Linq;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Services
 {
     public class TemplateService
     {
-        public static string ProcessTemplate(SubscriptionResult Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository,string planEvent, SubscriptionStatusEnum oldValue, string newValue)
+        public static string ProcessTemplate(SubscriptionResultExtension Subscription, IEmailTemplateRepository emailTemplateRepository, IApplicationConfigRepository applicationConfigRepository, string planEvent, SubscriptionStatusEnum oldValue, string newValue)
         {
             string body = string.Empty;
             if (planEvent == "failure")
@@ -36,12 +38,22 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             hashTable.Add("newValue", newValue);
 
 
+
             ExtendedProperties p = new ExtendedProperties();
 
             VelocityEngine v = new VelocityEngine();
             v.Init(p);
 
             VelocityContext context = new VelocityContext(hashTable);
+            IList list;
+            if (Subscription.SubscriptionParameters != null && Subscription.SubscriptionParameters.Count > 0)
+            {
+                list = Subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
+                if (list.Count > 0)
+                    context.Put("parms",list);
+            }
+
+
             StringWriter writer = new StringWriter();
             v.Evaluate(context, writer, string.Empty, body);
             return writer.ToString();

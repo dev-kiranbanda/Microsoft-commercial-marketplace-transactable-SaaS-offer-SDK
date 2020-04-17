@@ -12,7 +12,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
     public class EmailHelper
     {
 
-        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, string planEvent = "success", SubscriptionStatusEnum oldValue= SubscriptionStatusEnum.PendingFulfillmentStart, string newValue=null)
+        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, string planEvent = "success", SubscriptionStatusEnum oldValue = SubscriptionStatusEnum.PendingFulfillmentStart, string newValue = null)
         {
             MailMessage mail = new MailMessage();
             string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
@@ -22,7 +22,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
             bool smtpSsl = bool.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPSslEnabled"));
             mail.From = new MailAddress(FromMail);
 
-            string body = TemplateService.ProcessTemplate(Subscription, emailTemplateRepository, applicationConfigRepository, planEvent,oldValue,newValue);
+            string body = TemplateService.ProcessTemplate(Subscription, emailTemplateRepository, applicationConfigRepository, planEvent, oldValue, newValue);
             mail.Body = body;
             mail.IsBodyHtml = true;
 
@@ -30,10 +30,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
 
             if (planEvent.ToLower() == "success")
             {
-                toReceipents = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId) 
+                toReceipents = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)
               );
                 Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
-
+                mail.Subject = Subject;
                 if (!string.IsNullOrEmpty(toReceipents))
                 {
                     string[] ToEmails = toReceipents.Split(';');
@@ -65,10 +65,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
             }
             if (planEvent.ToLower() == "failure")
             {
-                toReceipents = (planEventsMappingRepository.GetFailureStateEmails(Subscription.GuidPlanId) 
+                toReceipents = (planEventsMappingRepository.GetFailureStateEmails(Subscription.GuidPlanId)
                 );
                 Subject = emailTemplateRepository.GetSubject(planEvent);
-
+                mail.Subject = Subject;
                 if (!string.IsNullOrEmpty(toReceipents))
                 {
                     string[] ToEmails = toReceipents.Split(';');
@@ -98,7 +98,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
                 }
             }
 
-           
+
             SmtpClient smtp = new SmtpClient();
             smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
             smtp.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
