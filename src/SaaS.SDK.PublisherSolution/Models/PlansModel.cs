@@ -29,5 +29,6 @@ namespace Microsoft.Marketplace.Saas.Web.Models
 
         public List<PlanAttributesModel> PlanAttributes { get; set; }
         public List<PlanEventsModel> PlanEvents { get; set; }
+
     }
 }

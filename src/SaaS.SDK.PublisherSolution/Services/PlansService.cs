@@ -90,6 +90,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                     FailureStateEmails = events.FailureStateEmails,
                     EventName = events.EventsName,
                     EventId = events.EventId,
+                    CopyToCustomer = events.CopyToCustomer
                 };
                 plan.PlanEvents.Add(planEventsModel);
             }
@@ -128,6 +129,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 events.EventId = planEvents.EventId;
                 events.UserId = planEvents.UserId;
                 events.CreateDate = DateTime.Now;
+                events.CopytoCustomer = planEvents.CopyToCustomer;
                 var planEventsId = this.plansRepository.AddPlanEvents(events);
                 return planEventsId;
             }

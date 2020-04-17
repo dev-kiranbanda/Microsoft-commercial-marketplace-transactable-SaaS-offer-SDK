@@ -115,6 +115,9 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
+                {
+                    
+                }
                 return this.PartialView(plans);
             }
             catch (Exception ex)
@@ -164,8 +167,6 @@
                 this.logger.LogError(ex, ex.Message);
                 return this.PartialView("Error", ex);
             }
-
-
         }
 
     }

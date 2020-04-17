@@ -85,6 +85,7 @@
                                     <tr>
                                         <th>Event Name</th>
                                         <th>Active</th>
+                                        <th>Copy To Customer</th>
                                         <th>
                                             Success Event Emails
                                         </th>
@@ -108,6 +109,10 @@
                                             </td>
                                             <td>
                                                 @Html.CheckBoxFor(model => model.PlanEvents[i].Isactive, new { name = "PlanEvents[@i].Isactive", id = string.Format("PlanEvents_Isactive_{0}", @i) })
+                                                @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
+                                            </td>
+                                            <td>
+                                                @Html.CheckBoxFor(model => model.PlanEvents[i].CopyToCustomer, new { name = "PlanEvents[@i].CopyToCustomer", id = string.Format("PlanEvents_CopyToCustomer_{0}", @i) })
                                                 @*<input type="checkbox" id="PlanEvents_IsEnabled_@i" name="PlanEvents[@i].IsEnabled" value="@Model.PlanEvents[i].IsEnabled" />*@
                                             </td>
                                             <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
@@ -151,7 +156,6 @@
         })
     }
     function savePlanParameters() {
-        alert(0);
         var formobject = $('#frmPlanEvents').serialize();
         $.ajax({
             url: 'Plans/PlanDetails',
