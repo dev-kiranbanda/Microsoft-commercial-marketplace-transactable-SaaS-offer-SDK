@@ -1,4 +1,5 @@
-﻿using Microsoft.Marketplace.SaasKit.Models;
+﻿using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
+using Microsoft.Marketplace.SaasKit.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Models
         public bool IsPerUserPlan { get; set; }
 
         public Guid GuidPlanId { get; set; }
+        public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
+
 
     }
 }

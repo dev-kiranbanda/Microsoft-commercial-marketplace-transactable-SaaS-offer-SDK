@@ -339,7 +339,7 @@
         public IActionResult ActivateSubscription(Guid subscriptionId, string planId)
         {
             this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1}", subscriptionId, planId);
-            SubscriptionResult subscriptionDetail = new SubscriptionResult();
+            SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
 
             if (User.Identity.IsAuthenticated)
             {
@@ -356,13 +356,16 @@
                 var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
 
                 var serializedParent = JsonConvert.SerializeObject(subscriptionData);
-                subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
+                subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+                Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                 this.logger.LogInformation("serializedParent :{0}", serializedParent);
                 //subscriptionDetail = (SubscriptionResultExtension)subscriptionData;
                 subscriptionDetail.ShowWelcomeScreen = false;
                 subscriptionDetail.SaasSubscriptionStatus = oldValue.SaasSubscriptionStatus;
                 subscriptionDetail.CustomerEmailAddress = oldValue.CustomerEmailAddress;
                 subscriptionDetail.CustomerName = oldValue.CustomerName;
+                subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionDetail.Id, subscriptionDetail.GuidPlanId);
             }
             return this.View(subscriptionDetail);
         }
@@ -383,6 +386,7 @@
                 {
                     var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+                  
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
                     this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(operation));
 
@@ -393,11 +397,14 @@
 
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
+                    Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                    subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
                     subscriptionDetail.ShowWelcomeScreen = false;
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
+                    subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionDetail.Id, subscriptionDetail.GuidPlanId);
                 }
                 return this.View("ActivateSubscription", subscriptionDetail);
             }
@@ -408,7 +415,7 @@
             }
         }
 
-        public IActionResult SubscriptionOperation(Guid subscriptionId, string planId, string operation, int NumberofProviders)
+        public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation, int NumberofProviders)
         {
             this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2} :: NumberofProviders : {3}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(planId), JsonConvert.SerializeObject(operation), JsonConvert.SerializeObject(NumberofProviders));
             try
@@ -417,6 +424,7 @@
                 if (subscriptionId != default)
                 {
                     SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
+                    SubscriptionResultExtension oldsubscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
@@ -427,13 +435,17 @@
                     {
                         try
                         {
-                            subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                            oldsubscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
+                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldsubscriptionDetail.PlanId);
+                            oldsubscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             var response = this.fulfillApiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                             newStatus = "Subscribed";
                             this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                             isSuccess = true;
+                            subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
+                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
+                            subscriptionDetail.Beneficiary = subscriptionResultExtension.Beneficiary;
+                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
                             this.logger.LogInformation("GetPartnerSubscription");
                             this.logger.LogInformation("GetAllSubscriptionPlans");
                             subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
@@ -459,9 +471,9 @@
                     {
                         try
                         {
-                            subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                            oldsubscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
+                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldsubscriptionDetail.PlanId);
+                            oldsubscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             this.logger.LogInformation("operation == Deactivate");
                             this.logger.LogInformation("DeleteSubscriptionAsync");
                             var response = this.fulfillApiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
