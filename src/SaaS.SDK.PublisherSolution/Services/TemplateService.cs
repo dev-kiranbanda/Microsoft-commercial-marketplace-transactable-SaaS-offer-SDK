@@ -46,7 +46,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Services
             v.Init(p);
 
             VelocityContext context = new VelocityContext(hashTable);
-            IList list;
+            //IList list;
             //if (Subscription.SubscriptionParameters != null && Subscription.SubscriptionParameters.Count > 0)
             //{
             //    list = Subscription.SubscriptionParameters.Where(s => s.Type.ToLower() == "input").ToList();
