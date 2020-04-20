@@ -18,12 +18,20 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 
         public string GetSuccessStateEmails(Guid PlanID)
         {
-            return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().SuccessStateEmails; 
+            var results = Context.PlanEventsMapping.Where(s => s.PlanId == PlanID);
+            if (results.Count() == 0)
+                return null;
+            else
+                return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().SuccessStateEmails;
         }
 
         public string GetFailureStateEmails(Guid PlanID)
         {
-            return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().FailureStateEmails;
+            var results = Context.PlanEventsMapping.Where(s => s.PlanId == PlanID);
+            if (results.Count() == 0)
+                return null;
+            else
+                return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().FailureStateEmails;
         }
     }
 }
