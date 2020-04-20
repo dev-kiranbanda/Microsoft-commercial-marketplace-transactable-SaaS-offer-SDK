@@ -386,7 +386,7 @@
                 {
                     var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
-                  
+
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
                     this.logger.LogInformation("GetSubscriptionByIdAsync SubscriptionID :{0} :: planID:{1}:: operation:{2}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(operation));
 
@@ -471,9 +471,9 @@
                     {
                         try
                         {
-                            oldsubscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
+                            subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
                             Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldsubscriptionDetail.PlanId);
-                            oldsubscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             this.logger.LogInformation("operation == Deactivate");
                             this.logger.LogInformation("DeleteSubscriptionAsync");
                             var response = this.fulfillApiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
