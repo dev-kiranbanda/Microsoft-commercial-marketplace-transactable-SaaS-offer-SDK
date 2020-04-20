@@ -472,7 +472,9 @@
                         try
                         {
                             subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldsubscriptionDetail.PlanId);
+                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
+                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
                             subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             this.logger.LogInformation("operation == Deactivate");
                             this.logger.LogInformation("DeleteSubscriptionAsync");
