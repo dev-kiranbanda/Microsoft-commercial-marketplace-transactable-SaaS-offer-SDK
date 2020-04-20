@@ -61,12 +61,14 @@
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Id)
+                            @Html.HiddenFor(model => model.Id)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Subscription Name ")
                         </dt>
                         <dd class="col-sm-9 p-2">
                             @Html.DisplayFor(model => model.Name)
+                            @Html.HiddenFor(model => model.Name)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Status ")
@@ -82,8 +84,8 @@
                             {
                                 <dt class="col-sm-3 p-2 p10">
                                     @Html.DisplayName(Model.SubscriptionParameters[i].DisplayName)
-                                    @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                    {<span class="red-star">*</span>}
+                                    @*@if (Model.SubscriptionParameters[i].IsRequired == true)
+                                    {<span class="red-star">*</span>}*@
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)
