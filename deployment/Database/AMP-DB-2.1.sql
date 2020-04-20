@@ -504,11 +504,11 @@ set TemplateBody=
                                        </tr>
 									    <tr>
                                           <td><b>Purchaser Email</b></td>
-                                          <td>${Id}</td>
+                                          <td>${PurchaserEmail}</td>
                                        </tr>
 									    <tr>
                                           <td><b>Purchaser Tenant</b></td>
-                                          <td>${Id}</td>
+                                          <td>${PurchaserTenant}</td>
                                        </tr>
                                        <tr>
                                           <td><b>Subscription ID</b></td>
