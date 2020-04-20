@@ -59,10 +59,10 @@
                 List<OffersModel> getAllOffersData = new List<OffersModel>();
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-                if (currentUserDetail != null)
-                {
+                //if (currentUserDetail != null)
+                //{
                     getAllOffersData = this.offersService.GetOffers();
-                }
+                //}
                 return this.View(getAllOffersData);
             }
             catch (Exception ex)

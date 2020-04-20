@@ -87,10 +87,10 @@
                 List<PlansModel> getAllPlansData = new List<PlansModel>();
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
-                if (currentUserDetail != null)
-                {
+                //if (currentUserDetail != null)
+                //{
                     getAllPlansData = this.plansService.GetPlans();
-                }
+                //}
                 return this.View(getAllPlansData);
             }
             catch (Exception ex)
