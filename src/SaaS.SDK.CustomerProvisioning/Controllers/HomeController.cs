@@ -177,6 +177,8 @@
                             var currentPlan = this.planRepository.GetPlanDetailByPlanId(newSubscription.PlanId);
                             // GetSubscriptionBy SubscriptionId
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+
+
                             var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
 
                             if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
@@ -451,7 +453,12 @@
                             PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
                             subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             isSuccess = true;
+                            // do not remove or duplicate below assignments.
                             subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
+                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
+                            subscriptionDetail.Beneficiary = subscriptionResultExtension.Beneficiary;
+                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
+
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
                             this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));

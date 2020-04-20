@@ -233,5 +233,6 @@
         /// <value>The name of the customer.</value>
         public string CustomerName { get; set; }
 
+
     }
 }

@@ -66,6 +66,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 Name = subscriptionDetail.Name,
                 SubscriptionStatus = Convert.ToString(subscriptionDetail.SaasSubscriptionStatus),
                 UserId = CurrentUserId,
+                PurchaserEmail = subscriptionDetail.Purchaser.EmailId,
+                PurchaserTenantId = subscriptionDetail.Purchaser.TenantId
             };
             return SubscriptionRepository.Add(newSubscription);
         }
@@ -144,18 +146,21 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <returns></returns>
         private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension
-            {
-                Id = subscription.AmpsubscriptionId,
-                SubscribeId = subscription.Id,
-                PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
-                Quantity = subscription.Ampquantity,
-                Name = subscription.Name,
-                SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus),
-                IsActiveSubscription = subscription.IsActive ?? false,
-                CustomerEmailAddress = subscription.User?.EmailAddress,
-                CustomerName = subscription.User?.FullName,
-            };
+            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension();
+
+            subscritpionDetail.Id = subscription.AmpsubscriptionId;
+            subscritpionDetail.SubscribeId = subscription.Id;
+            subscritpionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
+            subscritpionDetail.Quantity = subscription.Ampquantity;
+            subscritpionDetail.Name = subscription.Name;
+            subscritpionDetail.SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus);
+            subscritpionDetail.IsActiveSubscription = subscription.IsActive ?? false;
+            subscritpionDetail.CustomerEmailAddress = subscription.User?.EmailAddress;
+            subscritpionDetail.CustomerName = subscription.User?.FullName;
+            subscritpionDetail.Purchaser = new PurchaserResult();
+            subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
+            subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
+
             return subscritpionDetail;
         }
 
@@ -193,7 +198,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// <returns></returns>
         public bool UpdateSubscriptionQuantity(Guid subscriptionId, int quantity)
         {
-            if (subscriptionId != default && quantity>0)
+            if (subscriptionId != default && quantity > 0)
                 SubscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);
             return false;
         }

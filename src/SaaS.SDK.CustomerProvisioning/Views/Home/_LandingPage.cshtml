@@ -25,25 +25,47 @@
                 <div class="cm-panel-default mt20">
                     <dl class="row text-left">
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Customer Email")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.CustomerEmailAddress)
-                        </dd>
-                        <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Customer Name ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.CustomerName)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("ID ")
+                            @Html.DisplayName("Customer Email ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.CustomerEmailAddress)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Offer ID ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.OfferId)
+                            @Html.HiddenFor(model => model.OfferId);
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Purchaser Email ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Purchaser.EmailId)
+                            @Html.HiddenFor(model => model.Purchaser.EmailId);
+                        </dd>
+
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Purchaser Tenant ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.Purchaser.TenantId)
+                            @Html.HiddenFor(model => model.Purchaser.TenantId);
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Subscription ID ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Id)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Name ")
+                            @Html.DisplayName("Subscription Name ")
                         </dt>
                         <dd class="col-sm-9 p-2">
                             @Html.DisplayFor(model => model.Name)
@@ -53,12 +75,6 @@
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.SaasSubscriptionStatus)
-                        </dd>
-                        <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Plan ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.PlanId)
                         </dd>
 
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
@@ -92,12 +108,12 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new {@class="w200", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
+                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = "w200", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
 
                                             }
                                             else
                                             {
-                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new {@class="w200", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
+                                                @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = "w200", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
 
                                             }
 
@@ -110,11 +126,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class="w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = "w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new {@class="w200", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = "w200", @type = @Model.SubscriptionParameters[i].HTMLType })
                                             }
 
                                         </dd>
@@ -125,11 +141,11 @@
 
                                             @if (Model.SubscriptionParameters[i].IsRequired == true)
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new {@class="w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = "w200", @required = "required", @type = @Model.SubscriptionParameters[i].HTMLType })
                                             }
                                             else
                                             {
-                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new {@class="w200", @type = @Model.SubscriptionParameters[i].HTMLType })
+                                                @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = "w200", @type = @Model.SubscriptionParameters[i].HTMLType })
                                             }
 
                                         </dd>

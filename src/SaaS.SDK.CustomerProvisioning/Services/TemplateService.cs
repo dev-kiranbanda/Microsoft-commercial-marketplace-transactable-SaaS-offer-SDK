@@ -36,6 +36,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             hashTable.Add("SaasSubscriptionStatus", Subscription.SaasSubscriptionStatus);
             hashTable.Add("oldValue", oldValue);
             hashTable.Add("newValue", newValue);
+            hashTable.Add("OfferID", Subscription.OfferId);
+            hashTable.Add("Plan", Subscription.PlanId);
+            hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId);
+            hashTable.Add("PurchaserTenant", Subscription.Purchaser.TenantId);
 
 
 

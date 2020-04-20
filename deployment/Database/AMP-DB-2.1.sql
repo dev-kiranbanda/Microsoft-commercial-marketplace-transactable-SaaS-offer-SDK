@@ -485,16 +485,33 @@ set TemplateBody=
                                     <h1 style="display: block;  margin-left: auto;  margin-right: auto;  width: 75%;">Welcome to ${ApplicationName}!</h1>
                                     <p>Your request for the purchase has been approved.                                       </p>
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateBody">
-                                       <tr>
-                                          <td><b>Customer Email Address</b></td>
-                                          <td>${CustomerEmailAddress}</td>
-                                       </tr>
+                                      
                                        <tr>
                                           <td><b>Customer Name</b></td>
                                           <td>${CustomerName}</td>
                                        </tr>
+									    <tr>
+                                          <td><b>Customer Email Address</b></td>
+                                          <td>${CustomerEmailAddress}</td>
+                                       </tr>
+									   <tr>
+                                          <td><b>Offer ID</b></td>
+                                          <td>${OfferID}</td>
+                                       </tr>
+									   <tr>
+                                          <td><b>Plan</b></td>
+                                          <td>${Plan}</td>
+                                       </tr>
+									    <tr>
+                                          <td><b>Purchaser Email</b></td>
+                                          <td>${Id}</td>
+                                       </tr>
+									    <tr>
+                                          <td><b>Purchaser Tenant</b></td>
+                                          <td>${Id}</td>
+                                       </tr>
                                        <tr>
-                                          <td><b>ID</b></td>
+                                          <td><b>Subscription ID</b></td>
                                           <td>${Id}</td>
                                        </tr>
                                        <tr>
@@ -579,15 +596,31 @@ update EmailTemplate set TemplateBody=
                                     <p>A request for purchase with the following details is awaiting your action for activation.                                       </p>
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateBody">
                                        <tr>
-                                          <td><b>Customer Email Address</b></td>
-                                          <td>${CustomerEmailAddress}</td>
-                                       </tr>
-                                       <tr>
                                           <td><b>Customer Name</b></td>
                                           <td>${CustomerName}</td>
                                        </tr>
+									    <tr>
+                                          <td><b>Customer Email Address</b></td>
+                                          <td>${CustomerEmailAddress}</td>
+                                       </tr>
+									   <tr>
+                                          <td><b>Offer ID</b></td>
+                                          <td>${OfferID}</td>
+                                       </tr>
+									   <tr>
+                                          <td><b>Plan</b></td>
+                                          <td>${Plan}</td>
+                                       </tr>
+									    <tr>
+                                          <td><b>Purchaser Email</b></td>
+                                          <td>${PurchaserEmail}</td>
+                                       </tr>
+									    <tr>
+                                          <td><b>Purchaser Tenant</b></td>
+                                          <td>${PurchaserTenant}</td>
+                                       </tr>
                                        <tr>
-                                          <td><b>ID</b></td>
+                                          <td><b>Subscription ID</b></td>
                                           <td>${Id}</td>
                                        </tr>
                                        <tr>
@@ -632,4 +665,9 @@ update EmailTemplate set TemplateBody=
 </html>' where 
 
 Status='PendingActivation'
+GO
+
+ALTER TABLE Subscriptions add PurchaserEmail Varchar(225)
+ALTER TABLE Subscriptions add PurchaserTenantId Uniqueidentifier
+
 GO
