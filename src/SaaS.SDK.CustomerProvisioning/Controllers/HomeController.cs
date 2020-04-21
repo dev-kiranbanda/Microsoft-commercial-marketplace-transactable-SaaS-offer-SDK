@@ -419,21 +419,25 @@
                 if (subscriptionId != default)
                 {
                     SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-                    SubscriptionResultExtension oldsubscriptionDetail = new SubscriptionResultExtension();
+                    //SubscriptionResultExtension oldsubscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     string newStatus = string.Empty;
+                    subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
+                    Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                    subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
+                    subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
+                    subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                    subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
+                    subscriptionDetail.Beneficiary = subscriptionResultExtension.Beneficiary;
 
                     if (operation == "Activate")
                     {
                         try
                         {
-                            oldsubscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldsubscriptionDetail.PlanId);
-                            oldsubscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
-                          
+
                             this.logger.LogInformation("operation == Activate");
                             if (!Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
                             {
@@ -449,17 +453,11 @@
                                 var response = this.apiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                                 this.logger.LogInformation("UpdateStateOfSubscription Subscribed: SubscriptionId: {0} ", subscriptionId);
                                 this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
+                                subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                             }
-                            subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
-                            PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                           
                             isSuccess = true;
-                            // do not remove or duplicate below assignments.
-                            subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
-                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
-                            subscriptionDetail.Beneficiary = subscriptionResultExtension.Beneficiary;
-                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
-
+                         
                             this.logger.LogInformation("GetPartnerSubscription and GetAllSubscriptionPlans");
                             subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
                             this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonConvert.SerializeObject(subscriptionResultExtension.SubscriptionParameters));
@@ -487,7 +485,7 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(oldsubscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
                         }
                     }
 
@@ -495,11 +493,7 @@
                     {
                         try
                         {
-                            subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
-                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
-                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+
                             this.logger.LogInformation("operation == Deactivate");
                             this.logger.LogInformation("DeleteSubscriptionAsync");
                             newStatus = "Unsubscribed";
@@ -527,7 +521,7 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(oldsubscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
                         }
                     }
                     this.logger.LogInformation("GetPartnerSubscription");
