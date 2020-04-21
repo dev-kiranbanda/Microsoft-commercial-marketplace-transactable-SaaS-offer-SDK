@@ -50,7 +50,7 @@
         /// The identifier.
         /// </value>
         [JsonProperty("id")]
-        [DisplayName("Subscription Id")]
+        [DisplayName("SaaS Subscription Id")]
         public Guid Id { get; set; }
 
         /// <summary>
@@ -86,7 +86,7 @@
         /// The name.
         /// </value>
         [JsonProperty("name")]
-        [DisplayName("Subscription Name")]
+        [DisplayName("Saas Subscription Name")]
         public string Name { get; set; }
 
         /// <summary>

@@ -495,9 +495,11 @@
                     {
                         try
                         {
-                            oldsubscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldsubscriptionDetail.PlanId);
-                            oldsubscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                            subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
+                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
+                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
+                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             this.logger.LogInformation("operation == Deactivate");
                             this.logger.LogInformation("DeleteSubscriptionAsync");
                             newStatus = "Unsubscribed";
@@ -547,8 +549,16 @@
                         }
                     }
                 }
+                if (operation == "Activate")
+                {
+                    return this.RedirectToAction(nameof(this.ActivatedMessage));
+                }
+                else
+                {
+                    return this.RedirectToAction(nameof(this.DeactivateMessage));
 
-                return this.RedirectToAction(nameof(this.ActivatedMessage));
+                }
+
             }
             catch (Exception ex)
             {
@@ -566,6 +576,19 @@
             catch (Exception ex)
             {
                 this.logger.LogInformation("Home Controller / ActivatedMessage Exception: {0}", ex);
+                return View("Error", ex);
+            }
+        }
+
+        public IActionResult DeactivateMessage()
+        {
+            try
+            {
+                return this.View();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogInformation("Home Controller / DeactivateMessage Exception: {0}", ex);
                 return View("Error", ex);
             }
         }

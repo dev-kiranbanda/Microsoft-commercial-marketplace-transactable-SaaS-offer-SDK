@@ -424,7 +424,7 @@
                 if (subscriptionId != default)
                 {
                     SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-                    SubscriptionResultExtension oldsubscriptionDetail = new SubscriptionResultExtension();
+                    //SubscriptionResultExtension oldsubscriptionDetail = new SubscriptionResultExtension();
                     this.logger.LogInformation("GetPartnerSubscription");
                     var oldValue = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
@@ -435,9 +435,9 @@
                     {
                         try
                         {
-                            oldsubscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(oldsubscriptionDetail.PlanId);
-                            oldsubscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                            subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
+                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             var response = this.fulfillApiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                             newStatus = "Subscribed";
                             this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
@@ -448,9 +448,9 @@
                             subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
                             this.logger.LogInformation("GetPartnerSubscription");
                             this.logger.LogInformation("GetAllSubscriptionPlans");
-                            subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
-                            PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                            //subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
+                            //PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                            //subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
@@ -463,7 +463,7 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            EmailHelper.SendEmail(subscriptionResultExtension, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
                         }
                     }
 
@@ -495,7 +495,7 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            EmailHelper.SendEmail(subscriptionResultExtension, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
                         }
                     }
 
@@ -528,7 +528,15 @@
                         }
                     }
                 }
-                return this.RedirectToAction(nameof(this.ActivatedMessage));
+                if (operation == "Activate")
+                {
+                    return this.RedirectToAction(nameof(this.ActivatedMessage));
+                }
+                else
+                {
+                    return this.RedirectToAction(nameof(this.DeactivateMessage));
+
+                }
             }
             catch (Exception ex)
             {
@@ -548,7 +556,18 @@
                 return View("Error", ex);
             }
         }
-
+        public IActionResult DeactivateMessage()
+        {
+            try
+            {
+                return this.View();
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogInformation("Home Controller / DeactivateMessage Exception: {0}", ex);
+                return View("Error", ex);
+            }
+        }
         /// <summary>
         /// Prepares the subscription response.
         /// </summary>

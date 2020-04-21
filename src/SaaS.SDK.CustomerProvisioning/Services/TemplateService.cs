@@ -27,6 +27,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 body = emailTemplateRepository.GetTemplateBody(Subscription.SaasSubscriptionStatus.ToString());
             }
             string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
+            string emailLogo = applicationConfigRepository.GetValuefromApplicationConfig("EmailLogo");
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName);
             hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress);
@@ -40,6 +41,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             hashTable.Add("Plan", Subscription.PlanId);
             hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId);
             hashTable.Add("PurchaserTenant", Subscription.Purchaser.TenantId);
+            hashTable.Add("EmailLogo", emailLogo);
 
 
 

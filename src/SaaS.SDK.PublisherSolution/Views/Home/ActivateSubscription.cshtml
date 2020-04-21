@@ -27,12 +27,14 @@
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.CustomerName)
+                            @Html.HiddenFor(model => model.CustomerName)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Customer Email ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.CustomerEmailAddress)
+                            @Html.HiddenFor(model => model.CustomerEmailAddress)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Offer ID ")
@@ -50,31 +52,32 @@
                         </dd>
 
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Purchaser Tenant ")
+                            @Html.DisplayName("Azure Tenant ID ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Purchaser.TenantId)
                             @Html.HiddenFor(model => model.Purchaser.TenantId)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Subscription ID ")
+                            @Html.DisplayName("SaaS Subscription ID ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Id)
                             @Html.HiddenFor(model => model.Id)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Subscription Name ")
+                            @Html.DisplayName("SaaS Subscription Name ")
                         </dt>
                         <dd class="col-sm-9 p-2">
                             @Html.DisplayFor(model => model.Name)
                             @Html.HiddenFor(model => model.Name)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Status ")
+                            @Html.DisplayName("Subscription Status ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.SaasSubscriptionStatus)
+                            @Html.HiddenFor(model => model.SaasSubscriptionStatus)
                         </dd>
 
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
