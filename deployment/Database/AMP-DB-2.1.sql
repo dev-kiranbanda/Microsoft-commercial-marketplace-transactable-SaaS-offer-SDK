@@ -1239,9 +1239,8 @@ Select 'EmailLogo','https://media-exp1.licdn.com/dms/image/C510BAQHaTIBZfLFCGg/c
 
 GO
 
-Insert into ApplicationConfiguration 
-SELECT 'ApplicationLogo','<img class="cm-logo pull-left" src="~/contoso-sales.png" />','Application Logo'
-
+Insert into ApplicationConfiguration
+SELECT 'ApplicationLogo','https://media-exp1.licdn.com/dms/image/C510BAQHaTIBZfLFCGg/company-logo_200_200/0?e=1592438400&v=beta&t=AHOqaRJR_Thf72VDOKQId2QKdwepIp-sIiSIDtALzhQ','Application Logo'
 GO
 Insert into ApplicationConfiguration 
 SELECT 'Footer',' <div class="container text-center">
