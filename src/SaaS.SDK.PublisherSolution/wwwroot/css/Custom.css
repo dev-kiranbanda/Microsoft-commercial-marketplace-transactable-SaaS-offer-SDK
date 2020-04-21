@@ -56,12 +56,13 @@
     background-color: #D0CCCC;
 }
 
-.cm-logo { 
+.cm-logo {
     border-style: none;
     width: auto;
     padding: 8px;
     max-width: 100%;
-    width:40%;
+    width: 40%;
+    height: 40px;
 }
 
 .cm-panel-default {

@@ -63,6 +63,7 @@
     padding: 8px;
     max-width: 100%;
     width: 40%;
+    height: 40px;
 }
 
 .cm-panel-default {
@@ -351,6 +352,7 @@ a.cm-dropdown-option {
 .mr420 {
     margin-right: !important;
 }
+
 .red-star {
     color: red;
 }
