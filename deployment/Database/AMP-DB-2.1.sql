@@ -419,12 +419,17 @@ SELECT 'failure','failed',GETDATE(),'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.
                                     <p>Your request for the subscription <b>${SubscriptionName}</b> has been failed when changing ${oldValue} to ${newValue}                               </p>
                                  </td>
                               </tr>
+							  <tr>
+							  <td>
+							   <p style=" margin-left: auto; margin-right: auto; text-align:right;">                                                  <a href="${SaasAppURL}"><button style="background-color:#2168A6;line-height:30px;color:white"><b>View Details</b></button></a>                                              </p>
+							  </td>
+							  </tr>
                               <tr>
                                  <td align="center" valign="top">
                                     <!-- BEGIN PREHEADER // -->                                                                                                                                                                                                                  
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templatePreheader">
                                        <tr>
-                                          <td valign="top" class="preheaderContent" style="padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;">                                                          You are receiving this message because of an interaction with                                                          <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>.                                                          Please contact us at <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>                                                          in case you think you have received this message in error or need help.                                                      </td>
+                                          <td valign="top" class="preheaderContent" style="padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;">                                                          You are receiving this message because of an interaction with                                                          <a href="${ContactURL}">${ApplicationName}!</a>.                                                          Please contact us at <a href="${ContactURL}">${ApplicationName}!</a>                                                          in case you think you have received this message in error or need help.                                                      </td>
                                           <!-- *|IFNOT:ARCHIVE_PAGE|* -->                                                      <!-- *|END:IF|* -->                                                                                                                                                                                                                                     
                                        </tr>
                                     </table>
@@ -527,7 +532,7 @@ set TemplateBody=
 					<tr><td><b>$prod.DisplayName</b></td><td>$prod.Value</td></tr>
 					#end
                                     </table>
-                                    <p style=" margin-left: auto; margin-right: auto; text-align:right;">                                                  <a href="https://saaskitdemoapp.azurewebsites.net/"><button style="background-color:#2168A6;line-height:30px;color:white"><b>View Details</b></button></a>                                              </p>
+                                    <p style=" margin-left: auto; margin-right: auto; text-align:right;">                                                  <a href="${SaasAppURL}"><button style="background-color:#2168A6;line-height:30px;color:white"><b>View Details</b></button></a>                                              </p>
                                     <!--     CTA button -->                                              <!--<table style="background: #0078D7;" cellspacing="0" cellpadding="0" align="left">                                                  <tbody>                                                      <tr>                                                          <td style="padding-left: 15px; font-size: 18px; line-height: 20px; font-family:"Segoe UI Light"; color: #ffffff;">                                                              <a style="text-decoration: none; font-size: 18px; line-height: 20px; font-family:"Segoe UI Light"; color: #ffffff;" href="${LinkToPortal}/#/login">${LoginButtonTextInEmail}</a>                                                          </td>                                                          <td style="line-height: 1px; font-size: 1px; padding: 10px;">                                                              <a>                                                                  <img src="https://info.microsoft.com/rs/157-GQE-382/images/Program-CTAButton-whiteltr.png" border="0" alt="" height="20" />                                                              </a>                                                          </td>                                                      </tr>                                                  </tbody>                                              </table>-->                                              <!--     end CTA button -->                                                                                         
                                  </td>
                               </tr>
@@ -536,7 +541,7 @@ set TemplateBody=
                                     <!-- BEGIN PREHEADER // -->                                                                                                
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templatePreheader">
                                        <tr>
-                                          <td valign="top" class="preheaderContent" style="padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;">                                                          You are receiving this message because of an interaction with                                                          <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>.                                                          Please contact us at <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>                                                          in case you think you have received this message in error or need help.                                                      </td>
+                                          <td valign="top" class="preheaderContent" style="padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;">                                                          You are receiving this message because of an interaction with                                                          <a href="${ContactURL}">${ApplicationName}!</a>.                                                          Please contact us at <a href="${ContactURL}">${ApplicationName}!</a>                                                          in case you think you have received this message in error or need help.                                                      </td>
                                           <!-- *|IFNOT:ARCHIVE_PAGE|* -->                                                      <!-- *|END:IF|* -->                                                                                                          
                                        </tr>
                                     </table>
@@ -636,7 +641,7 @@ update EmailTemplate set TemplateBody=
 					<tr><td><b>$prod.DisplayName</b></td><td>$prod.Value</td></tr>
 					#end
                                     </table>
-                                    <p style=" margin-left: auto; margin-right: auto; text-align:right;">                                                  <a href="https://saaskitdemoapp.azurewebsites.net/"><button style="background-color:#2168A6;line-height:30px;color:white"><b>View Details</b></button></a>                                              </p>
+                                    <p style=" margin-left: auto; margin-right: auto; text-align:right;">                                                  <a href="${SaasAppURL}"><button style="background-color:#2168A6;line-height:30px;color:white"><b>View Details</b></button></a>                                              </p>
                                     <!--     CTA button -->                                              <!--<table style="background: #0078D7;" cellspacing="0" cellpadding="0" align="left">                                                  <tbody>                                                      <tr>                                                          <td style="padding-left: 15px; font-size: 18px; line-height: 20px; font-family:"Segoe UI Light"; color: #ffffff;">                                                              <a style="text-decoration: none; font-size: 18px; line-height: 20px; font-family:"Segoe UI Light"; color: #ffffff;" href="${LinkToPortal}/#/login">${LoginButtonTextInEmail}</a>                                                          </td>                                                          <td style="line-height: 1px; font-size: 1px; padding: 10px;">                                                              <a>                                                                  <img src="https://info.microsoft.com/rs/157-GQE-382/images/Program-CTAButton-whiteltr.png" border="0" alt="" height="20" />                                                              </a>                                                          </td>                                                      </tr>                                                  </tbody>                                              </table>-->                                              <!--     end CTA button -->                                                                                                                            
                                  </td>
                               </tr>
@@ -645,7 +650,7 @@ update EmailTemplate set TemplateBody=
                                     <!-- BEGIN PREHEADER // -->                                                                                                                                      
                                     <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templatePreheader">
                                        <tr>
-                                          <td valign="top" class="preheaderContent" style="padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;">                                                          You are receiving this message because of an interaction with                                                          <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>.                                                          Please contact us at <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>                                                          in case you think you have received this message in error or need help.                                                      </td>
+                                          <td valign="top" class="preheaderContent" style="padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;">                                                          You are receiving this message because of an interaction with                                                          <a href="${ContactURL}">${ApplicationName}!</a>.                                                          Please contact us at <a href="${ContactURL}">${ApplicationName}!</a>                                                          in case you think you have received this message in error or need help.                                                      </td>
                                           <!-- *|IFNOT:ARCHIVE_PAGE|* -->                                                      <!-- *|END:IF|* -->                                                                                                                                                   
                                        </tr>
                                     </table>
@@ -1188,7 +1193,7 @@ TemplateBody ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
 											   </tr>
                                             </table>
                                             <p style=" margin-left: auto; margin-right: auto; text-align:right;">
-                                                <a href="https://saaskitdemoapp.azurewebsites.net/">
+                                                <a href="${SaasAppURL}">
                                                     <button style="background-color:#2168A6;line-height:30px;color:white"><b>View Details</b></button>
                                                 </a>
                                             </p>            <!--     CTA button -->
@@ -1203,8 +1208,8 @@ TemplateBody ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
                                                 <tr>
                                                     <td valign="top" class="preheaderContent" style="padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px;">
                                                         You are receiving this message because of an interaction with
-                                                        <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>.
-                                                        Please contact us at <a href="https://saaskitdemoapp.azurewebsites.net/">Contoso</a>
+                                                        <a href="${ContactURL}">${ApplicationName}!</a>.
+                                                        Please contact us at <a href="${ContactURL}">${ApplicationName}!</a>
                                                         in case you think you have received this message in error or need help.
                                                     </td>
                                                     <!-- *|IFNOT:ARCHIVE_PAGE|* -->
@@ -1246,4 +1251,12 @@ Insert into ApplicationConfiguration
 SELECT 'Footer',' <div class="container text-center">
 &copy; 2020 - SaasKit - Demo
 </div>','Footer'
+Go
+Insert into ApplicationConfiguration 
+Select 'ContactURL','https://saaskitdemoapp.azurewebsites.net','Contact URL used in email'
+GO
+Insert into ApplicationConfiguration 
+Select 'SaasAppURL','https://portal.azure.com/','Saas APP URL used in email'
+
+
 

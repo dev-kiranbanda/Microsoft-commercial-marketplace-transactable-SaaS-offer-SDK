@@ -29,6 +29,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             }
             string applicationName = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationName");
             string emailLogo = applicationConfigRepository.GetValuefromApplicationConfig("EmailLogo");
+            string contactURL = applicationConfigRepository.GetValuefromApplicationConfig("ContactURL");
+            string saasAppURL = applicationConfigRepository.GetValuefromApplicationConfig("SaasAppURL");
+
+
             Hashtable hashTable = new Hashtable();
             hashTable.Add("ApplicationName", applicationName ?? "");
             hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress ?? "");
@@ -43,7 +47,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId ?? "");
             hashTable.Add("PurchaserTenant", Convert.ToString(Subscription.Purchaser.TenantId) ?? "");
             hashTable.Add("EmailLogo", emailLogo ?? "");
-
+            hashTable.Add("ContactURL", contactURL ?? "");
+            hashTable.Add("SaasAppURL", saasAppURL ?? "");
 
 
             ExtendedProperties p = new ExtendedProperties();
