@@ -199,7 +199,7 @@ In this section, we will go over the steps to download the latest sources from t
 > **Tip** __(double underscore) should be used to define the config items that appear as nested keys in appSettings.json
 
 - Deploy SQL database to Azure as follows:
-  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FSpektraSystems%2FAMP-SDK-Sample%2Fmaster%2Fdeploy%2Farm-deploy-v1.json" target="_blank">
+  - Click the button <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdev-kiranbanda%2FMicrosoft-commercial-marketplace-transactable-SaaS-offer-SDK%2Ffeature%2Fsandwich-model-with-activation-workflow%2Fdeployment%2FTemplates%2Fdeploy-database.json" target="_blank">
     <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/> 
 </a> to start the deployment of SQL database
    - Fill out the details on the template deployment form as shown here
