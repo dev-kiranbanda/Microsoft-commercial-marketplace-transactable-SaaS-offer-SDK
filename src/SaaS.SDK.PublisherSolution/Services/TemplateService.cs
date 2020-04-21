@@ -8,6 +8,7 @@ using NVelocity;
 using System.IO;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 using Microsoft.Marketplace.SaasKit.Models;
+using System;
 
 namespace Microsoft.Marketplace.SaasKit.Web.Services
 {
@@ -28,21 +29,19 @@ namespace Microsoft.Marketplace.SaasKit.Web.Services
             string emailLogo = applicationConfigRepository.GetValuefromApplicationConfig("EmailLogo");
 
             Hashtable hashTable = new Hashtable();
-            hashTable.Add("ApplicationName", applicationName);
-            hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress);
-            hashTable.Add("CustomerName", Subscription.CustomerName);
-            hashTable.Add("Id", Subscription.Id);
-            hashTable.Add("SubscriptionName", Subscription.Name);
-            hashTable.Add("SaasSubscriptionStatus", Subscription.SaasSubscriptionStatus);
-            hashTable.Add("oldValue", oldValue);
-            hashTable.Add("newValue", newValue);
-            hashTable.Add("OfferID", Subscription.OfferId);
-            hashTable.Add("Plan", Subscription.PlanId);
-            hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId);
-            hashTable.Add("PurchaserTenant", Subscription.Purchaser.TenantId);
-            hashTable.Add("EmailLogo", emailLogo);
-
-
+            hashTable.Add("ApplicationName", applicationName ?? "");
+            hashTable.Add("CustomerEmailAddress", Subscription.CustomerEmailAddress ?? "");
+            hashTable.Add("CustomerName", Subscription.CustomerName ?? "");
+            hashTable.Add("Id", Convert.ToString(Subscription.Id) ?? "");
+            hashTable.Add("SubscriptionName", Subscription.Name ?? "");
+            hashTable.Add("SaasSubscriptionStatus", Convert.ToString(Subscription.SaasSubscriptionStatus) ?? "");
+            hashTable.Add("oldValue", Convert.ToString(oldValue) ?? "");
+            hashTable.Add("newValue", newValue ?? "");
+            hashTable.Add("OfferID", Subscription.OfferId ?? "");
+            hashTable.Add("Plan", Subscription.PlanId ?? "");
+            hashTable.Add("PurchaserEmail", Subscription.Purchaser.EmailId ?? "");
+            hashTable.Add("PurchaserTenant", Convert.ToString(Subscription.Purchaser.TenantId) ?? "");
+            hashTable.Add("EmailLogo", emailLogo ?? "");
 
             ExtendedProperties p = new ExtendedProperties();
 
