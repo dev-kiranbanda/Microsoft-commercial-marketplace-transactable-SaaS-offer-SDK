@@ -137,6 +137,7 @@
         public IActionResult Index()
         {
             this.logger.LogInformation("Home Controller / Index ");
+            var userId = this.userService.AddPartnerDetail(GetCurrentUserDetail());
             try
             {
                 if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
