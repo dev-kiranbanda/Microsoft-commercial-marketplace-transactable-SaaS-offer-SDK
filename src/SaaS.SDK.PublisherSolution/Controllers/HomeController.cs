@@ -430,27 +430,23 @@
                     this.logger.LogInformation("GetUserIdFromEmailAddress");
                     var currentUserId = userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     string newStatus = string.Empty;
-
+                    subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
+                    Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
+                    subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
+                    subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
+                    subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
+                    subscriptionDetail.Beneficiary = subscriptionResultExtension.Beneficiary;
+                    subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
                     if (operation == "Activate")
                     {
                         try
                         {
-                            subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             var response = this.fulfillApiClient.ActivateSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
                             newStatus = "Subscribed";
                             this.webSubscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                             isSuccess = true;
-                            subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
-                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
-                            subscriptionDetail.Beneficiary = subscriptionResultExtension.Beneficiary;
-                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
                             this.logger.LogInformation("GetPartnerSubscription");
                             this.logger.LogInformation("GetAllSubscriptionPlans");
-                            //subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId);
-                            //PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            //subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
@@ -471,11 +467,6 @@
                     {
                         try
                         {
-                            subscriptionDetail = this.webSubscriptionService.GetSubscriptionsByScheduleId(subscriptionId, true);
-                            Plans PlanDetail = this.planRepository.GetPlanDetailByPlanId(subscriptionDetail.PlanId);
-                            subscriptionDetail.OfferId = subscriptionResultExtension.OfferId;
-                            subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
-                            subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                             this.logger.LogInformation("operation == Deactivate");
                             this.logger.LogInformation("DeleteSubscriptionAsync");
                             var response = this.fulfillApiClient.DeleteSubscriptionAsync(subscriptionId, planId).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -495,7 +486,7 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(subscriptionResultExtension, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
                         }
                     }
 
@@ -514,17 +505,6 @@
                                 CreateDate = DateTime.Now
                             };
                             this.subscriptionLogRepository.Add(auditLog);
-
-                            //auditLog = new SubscriptionAuditLogs()
-                            //{
-                            //    Attribute = Convert.ToString(SubscriptionLogAttributes.ProviderCount),
-                            //    SubscriptionId = newValue.SubscribeId,
-                            //    NewValue = Convert.ToString(newValue.NumberofProviders),
-                            //    OldValue = Convert.ToString(oldValue.NumberofProviders),
-                            //    CreateBy = currentUserId,
-                            //    CreateDate = DateTime.Now
-                            //};
-                            //this.subscriptionLogRepository.Add(auditLog);
                         }
                     }
                 }
