@@ -20,8 +20,7 @@
 <body>
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark cm-top-nav-bar">
         <a class="navbar-brand mr-auto mr-lg-0" href="@Url.Action("Index", "Home")">
-            <img class="cm-logo pull-left" src="~/contoso-sales.png" />
-            @*<img class="cm-logo pull-left" src="https://kblnuser.azurewebsites.net/logo.png" />*@
+            @await Component.InvokeAsync("Logo")
         </a>
         @*<a class="navbar-brand mr-auto mr-lg-0" asp-area="" asp-controller="Home" asp-action="Index">SaasKit Demo</a>*@
 
@@ -109,7 +108,7 @@
 
     <footer class="cm-footer">
         <div class="container text-center">
-            &copy; 2020 - SaasKit - Demo
+            @await Component.InvokeAsync("Footer")
         </div>
     </footer>
 
