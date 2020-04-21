@@ -74,7 +74,7 @@
           "properties": {
             "storageKeyType": "SharedAccessKey",
             "storageKey": "?",
-            "storageUri": "https://msampbuilddbresources.blob.core.windows.net/msampcontainer/AMP-DB.bacpac",
+            "storageUri": "https://msampbuilddbresources.blob.core.windows.net/msampcontainer/AMP-DB-PAN.bacpac",
             "administratorLogin": "[parameters('administratorLogin')]",
             "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
             "operationMode": "Import"
