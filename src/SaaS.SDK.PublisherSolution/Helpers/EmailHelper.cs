@@ -45,8 +45,11 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                 copy.Credentials = new NetworkCredential(
                     username, password);
                 copy.EnableSsl = smtpSsl;
-                //copy.Send(mail);
+                copy.Send(mail);
             }
+
+            mail.To.Clear();
+
 
             if (CustomerToCopy && planEvent.ToLower() == "failure")
             {
