@@ -30,8 +30,8 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
 
             if (planEvent.ToLower() == "success")
             {
-                toReceipents = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)
-              );
+                toReceipents = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId));
+
                 Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
                 mail.Subject = Subject;
                 if (!string.IsNullOrEmpty(toReceipents))
