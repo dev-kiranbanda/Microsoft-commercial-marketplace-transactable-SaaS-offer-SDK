@@ -12,7 +12,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
 
         public string planId { get; set; }
 
-        public bool? IsmeteringSupported { get; set; }
+        public bool IsmeteringSupported { get; set; }
 
         public Guid? offerID { get; set; }
 

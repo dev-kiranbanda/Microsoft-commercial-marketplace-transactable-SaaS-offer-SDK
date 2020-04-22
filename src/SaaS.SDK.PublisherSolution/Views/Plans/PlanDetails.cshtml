@@ -38,6 +38,22 @@
                 </ul>
                 <div id="tabs-Parameters">
                     <div id="PlanAttributes">
+                        <div calss="container">
+                            <dl class="row">
+                                <dt class="col-5 text-right">Is Metering Supported</dt>
+                                <dd class="col-3 text-left">
+
+                                    <label class="switch">
+                                        @Html.CheckBoxFor(model => model.IsmeteringSupported)
+                                        <span class="slider round"></span>
+                                    </label>
+                                </dd>
+
+
+
+
+                            </dl>
+                        </div>
                         @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
                         {
                             <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
