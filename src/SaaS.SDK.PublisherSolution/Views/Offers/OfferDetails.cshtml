@@ -7,8 +7,8 @@
         @*action="Offers/OfferDetails"*@
         <div class="container mrtop maxwidth" style="float:left;">
             <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
-                <input class="cm-button-default mt0" style="line-height:10px; background-color: #2E8B57;" type="button" id="btnAdd" value="Add new row" />
-                <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
+                <input class="cm-button-default cm-button-custom-default mt0" style=";" type="button" id="btnAdd" value="Add new row" />
+                <input class="cm-button-default cm-button-custom-green mt0" style="" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
             @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                     <p>
@@ -91,7 +91,7 @@
                                         @Html.CheckBoxFor(model => model.OfferAttributes[i].IsRequired, new { name = "OfferAttributes[@i].IsRequired", id = string.Format("OfferAttributes_IsRequired_{0}", @i) })
                                     </td>
                                     <td>
-                                        <input id="btnRemove" class="cm-button-default mt0" style="line-height:10px;background-color: #B22222; width:90px; text-align: left;" type="button" value="Remove" onclick="removeRow(@i);" />
+                                        <input id="btnRemove" class="cm-button-default cm-button-custom-red mt0" style="" type="button" value="Remove" onclick="removeRow(@i);" />
                                         <input type="hidden" value="" id="OfferAttributes_IsRemove_@i" name="OfferAttributes[@i].IsRemove" />
                                         <input type="hidden" value="" id="OfferAttributes_IsDelete_@i" name="OfferAttributes[@i].IsDelete" />
                                     </td>
@@ -136,7 +136,7 @@
                                 @Html.CheckBox("OfferAttributes[itemIndex].IsRequired", new { @id = "OfferAttributes_IsRequired_itemIndex" })
                             </td>
                             <td>
-                                <input id='btnRemove' class="cm-button-default mt0" type='button' style="line-height:10px; background-color: #B22222; width:90px; text-align: left;" value='Remove' onclick='removeRow(itemIndex);' />
+                                <input id='btnRemove' class="cm-button-default cm-button-custom-red mt0" type='button' style="" value='Remove' onclick='removeRow(itemIndex);' />
                                 <input type='hidden' value='' id='OfferAttributes_IsRemove_itemIndex' name='OfferAttributes[itemIndex].IsRemove' />
                                 <input type='hidden' value='' id='OfferAttributes_IsDelete_itemIndex' name='OfferAttributes[itemIndex].IsDelete' />
                             </td>
@@ -145,8 +145,8 @@
                 </table>
             </div>
             <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
-                <input class="cm-button-default mt0" style="line-height:10px;background-color: #2E8B57;" type="button" id="btnAdd2" value="Add new row" />
-                <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
+                <input class="cm-button-default cm-button-custom-default mt0" style="" type="button" id="btnAdd2" value="Add new row" />
+                <input class="cm-button-default cm-button-custom-green mt0" style="" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
             @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
                     <p>
