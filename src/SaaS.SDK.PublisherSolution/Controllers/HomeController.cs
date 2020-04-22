@@ -93,6 +93,8 @@
 
         private readonly IPlanEventsMappingRepository planEventsMappingRepository;
 
+        private readonly IEventsRepository eventsRepository;
+
 
 
         /// <summary>
@@ -106,7 +108,7 @@
         /// <param name="SubscriptionUsageLogsRepository">The subscription usage logs repository.</param>
         public HomeController(IUsersRepository UsersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository SubscriptionRepo,
                                 IPlansRepository PlanRepository, ISubscriptionUsageLogsRepository SubscriptionUsageLogsRepository,
-                                    IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository)
+                                    IMeteredDimensionsRepository DimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository)
         {
             this.apiClient = apiClient;
             subscriptionRepo = SubscriptionRepo;
@@ -128,6 +130,7 @@
             this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository);
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
+            this.eventsRepository = eventsRepository;
         }
 
         /// <summary>
@@ -455,15 +458,17 @@
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
                             this.logger.LogInformation("sendEmail");
+                            subscriptionDetail.EventName = "Activate";
+                            subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                             if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORSUBSCRIPTIONACTIVATION)) == true)
                             {
-                                EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository);
+                                EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository);
                             }
                         }
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(subscriptionResultExtension, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            EmailHelper.SendEmail(subscriptionResultExtension, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
                         }
                     }
 
@@ -480,17 +485,18 @@
                             isSuccess = true;
                             this.logger.LogInformation("GetIsActive");
                             bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
+                            subscriptionDetail.EventName = "Unsubscribe ";
 
                             if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORUNSUBSCRIPTION)) == true)
                             {
                                 this.logger.LogInformation("SendEmail to {0} :: Template{1} ", JsonConvert.SerializeObject(applicationConfigRepository), JsonConvert.SerializeObject(emailTemplateRepository));
-                                EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository);
+                                EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository);
                             }
                         }
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
                         }
                     }
 

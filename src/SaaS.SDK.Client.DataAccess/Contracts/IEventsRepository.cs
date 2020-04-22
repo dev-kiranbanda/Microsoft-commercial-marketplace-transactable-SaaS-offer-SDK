@@ -6,8 +6,8 @@ using System.Text;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
 {
-    public interface IPlanEventsMappingRepository
+    public interface IEventsRepository
     {
-        PlanEventsMapping GetPlanEventsMappingEmails(Guid PlanID,int eventID);
+        int GetEventID(String Name);
     }
 }

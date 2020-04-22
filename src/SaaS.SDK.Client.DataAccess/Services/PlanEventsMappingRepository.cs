@@ -1,5 +1,6 @@
 ﻿using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,22 +17,31 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
             Context = context;
         }
 
-        public string GetSuccessStateEmails(Guid PlanID)
+        public PlanEventsMapping GetPlanEventsMappingEmails(Guid PlanID,int eventID)
         {
-            var results = Context.PlanEventsMapping.Where(s => s.PlanId == PlanID);
+            var results = Context.PlanEventsMapping.Where(s => s.PlanId == PlanID && s.EventId== eventID);
             if (results.Count() == 0)
                 return null;
             else
-                return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().SuccessStateEmails;
+                return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID && s.EventId == eventID).FirstOrDefault();
         }
 
-        public string GetFailureStateEmails(Guid PlanID)
-        {
-            var results = Context.PlanEventsMapping.Where(s => s.PlanId == PlanID);
-            if (results.Count() == 0)
-                return null;
-            else
-                return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().FailureStateEmails;
-        }
+        //public string GetFailureStateEmails(Guid PlanID)
+        //{
+        //    var results = Context.PlanEventsMapping.Where(s => s.PlanId == PlanID);
+        //    if (results.Count() == 0)
+        //        return null;
+        //    else
+        //        return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().FailureStateEmails;
+        //}
+
+        //public string GetCustomerToCopy(Guid PlanID)
+        //{
+        //    var results = Context.PlanEventsMapping.Where(s => s.PlanId == PlanID);
+        //    if (results.Count() == 0)
+        //        return null;
+        //    else
+        //        return Context.PlanEventsMapping.Where(s => s.PlanId == PlanID).FirstOrDefault().FailureStateEmails;
+        //}
     }
 }

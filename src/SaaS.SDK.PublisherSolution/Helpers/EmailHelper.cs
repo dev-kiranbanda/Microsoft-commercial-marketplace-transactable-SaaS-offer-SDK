@@ -12,7 +12,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
     public class EmailHelper
     {
 
-        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, string planEvent = "success", SubscriptionStatusEnum oldValue = SubscriptionStatusEnum.PendingFulfillmentStart, string newValue = null)
+        public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, string planEvent = "success", SubscriptionStatusEnum oldValue = SubscriptionStatusEnum.PendingFulfillmentStart, string newValue = null)
         {
             MailMessage mail = new MailMessage();
             string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
@@ -26,11 +26,47 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
             mail.Body = body;
             mail.IsBodyHtml = true;
 
+            int eventID = eventsRepository.GetEventID(Subscription.EventName);
+
             string toReceipents = string.Empty;
+
+            bool CustomerToCopy = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.HasValue ? planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.Value : false;
+
+            if (CustomerToCopy && planEvent.ToLower() == "success")
+            {
+                toReceipents = Subscription.CustomerEmailAddress;
+                Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
+                mail.Subject = Subject;
+                mail.To.Add(toReceipents);
+                SmtpClient copy = new SmtpClient();
+                copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                copy.UseDefaultCredentials = false;
+                copy.Credentials = new NetworkCredential(
+                    username, password);
+                copy.EnableSsl = smtpSsl;
+                //copy.Send(mail);
+            }
+
+            if (CustomerToCopy && planEvent.ToLower() == "failure")
+            {
+                toReceipents = Subscription.CustomerEmailAddress;
+                Subject = emailTemplateRepository.GetSubject(planEvent);
+                mail.Subject = Subject;
+                mail.To.Add(toReceipents);
+                SmtpClient copy = new SmtpClient();
+                copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                copy.UseDefaultCredentials = false;
+                copy.Credentials = new NetworkCredential(
+                    username, password);
+                copy.EnableSsl = smtpSsl;
+                copy.Send(mail);
+            }
 
             if (planEvent.ToLower() == "success")
             {
-                toReceipents = (planEventsMappingRepository.GetSuccessStateEmails(Subscription.GuidPlanId)
+                toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
               );
                 Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
                 mail.Subject = Subject;
@@ -65,7 +101,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
             }
             if (planEvent.ToLower() == "failure")
             {
-                toReceipents = (planEventsMappingRepository.GetFailureStateEmails(Subscription.GuidPlanId)
+                toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).FailureStateEmails
                 );
                 Subject = emailTemplateRepository.GetSubject(planEvent);
                 mail.Subject = Subject;

@@ -15,7 +15,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.Models
 
         public Guid GuidPlanId { get; set; }
         public List<SubscriptionParametersModel> SubscriptionParameters { get; set; }
-
-
+        public string EventName { get; set; }
     }
 }
