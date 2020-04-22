@@ -24,6 +24,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
 
         public List<PlansModel> GetPlans()
         {
+
             List<PlansModel> plansList = new List<PlansModel>();
             var allPlansData = this.plansRepository.GetPlansByUser();
             foreach (var item in allPlansData)
@@ -39,6 +40,10 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 Plans.PlanGUID = item.PlanGuid;
                 plansList.Add(Plans);
             }
+
+            var offerDetails = this.offerRepository.Get();
+            plansList.ForEach(x => x.OfferName = offerDetails.Where(s => s.OfferGuid == x.offerID).FirstOrDefault().OfferName);
+
             return plansList;
         }
 
