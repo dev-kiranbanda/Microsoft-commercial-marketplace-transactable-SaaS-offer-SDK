@@ -123,7 +123,7 @@
 
 .cm-button-default {
     color: #fff !important;
-    background-color: #FA582D;
+    background-color: #FA582D ! important;
     border-color: #FA582D;
     display: inline-block;
     font-weight: 400;
@@ -340,4 +340,16 @@ a.cm-dropdown-option {
 
 .red-star {
     color: red;
+}
+
+.cm-button-custom-red {
+    line-height: 10px !important;
+    background-color: #B22222 !important;
+    width: 90px !important;
+    text-align: left !important;
+}
+
+.cm-button-custom-green {
+    line-height: 10px !important;
+    background-color: #2E8B57 !important;
 }
