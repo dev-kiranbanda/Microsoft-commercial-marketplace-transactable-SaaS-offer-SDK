@@ -129,7 +129,6 @@
 
      function confirmDialog() {
         //var isConfirm = confirm('Are you sure you want to change the plan?');
-        //debugger
         //if (isConfirm) {
         //    $("#frmSubscriptionDetail").submit();
         //}
@@ -142,7 +141,7 @@
             dangerMode: true,
         })
             .then((willChange) => {
-                debugger;
+                
                 if (willChange) {
                     $("#frmSubscriptionDetail").submit();
                 }

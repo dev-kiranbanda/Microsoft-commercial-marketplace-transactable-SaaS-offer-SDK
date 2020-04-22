@@ -241,7 +241,7 @@
         })
     }
     function saveOfferParameters() {
-        debugger;
+        
         var formobject = $('#frmOfferattributes').serialize();
         $.ajax({
             url: 'Offers/OfferDetails',
@@ -249,7 +249,7 @@
             data: formobject,
             cache: false,
             success: function (result) {
-                debugger;
+                
                 successconfirmDialog();
                 $('#myModal').html(result);
             },
