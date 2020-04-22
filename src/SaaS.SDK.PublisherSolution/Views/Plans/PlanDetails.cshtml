@@ -40,7 +40,7 @@
                     <div id="PlanAttributes">
                         <div calss="container">
                             <dl class="row">
-                                <dt class="col-5 text-right">Is Metering Supported</dt>
+                                <dt class="col-3 text-right">Is Metering Supported</dt>
                                 <dd class="col-3 text-left">
 
                                     <label class="switch">
@@ -48,7 +48,14 @@
                                         <span class="slider round"></span>
                                     </label>
                                 </dd>
+                                <dt class="col-3 text-right">Is Per User</dt>
+                                <dd class="col-3 text-left">
 
+                                    <label class="switch">
+                                        @Html.CheckBoxFor(model => model.IsPerUser)
+                                        <span class="slider round"></span>
+                                    </label>
+                                </dd>
 
 
 

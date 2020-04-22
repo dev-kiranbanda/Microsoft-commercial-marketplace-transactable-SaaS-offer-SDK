@@ -32,7 +32,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 Plans.planId = item.PlanId;
                 Plans.DisplayName = item.DisplayName;
                 Plans.Description = item.Description;
-                Plans.IsmeteringSupported = item.IsmeteringSupported;
+                Plans.IsPerUser = item.IsPerUser ?? false;
+                Plans.IsmeteringSupported = item.IsmeteringSupported ?? false;
                 Plans.offerID = item.OfferId;
                 Plans.DeployToCustomerSubscription = item.DeployToCustomerSubscription;
                 Plans.PlanGUID = item.PlanGuid;
@@ -54,7 +55,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
             {
                 Id = existingPlan.Id,
                 planId = existingPlan.PlanId,
-                IsmeteringSupported = existingPlan.IsmeteringSupported,
+                IsPerUser = existingPlan.IsPerUser ?? false,
+                IsmeteringSupported = existingPlan.IsmeteringSupported ?? false,
                 offerID = existingPlan.OfferId,
                 DisplayName = existingPlan.DisplayName,
                 Description = existingPlan.Description,
@@ -95,6 +97,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                 plan.PlanEvents.Add(planEventsModel);
             }
             return plan;
+        }
+
+        public int? SavePlanMeteringParameter(PlansModel plan)
+        {
+            var existingPlan = this.plansRepository.GetPlanDetailByPlanGuId(plan.PlanGUID);
+            existingPlan.IsPerUser = plan.IsPerUser;
+            existingPlan.IsmeteringSupported = plan.IsmeteringSupported;
+            this.plansRepository.Add(existingPlan);
+            return null;
         }
 
         public int? SavePlanAttributes(PlanAttributesModel planAttributes)

@@ -27,6 +27,7 @@ namespace Microsoft.Marketplace.Saas.Web.Models
 
         public Guid PlanGUID { get; set; }
 
+        public bool IsPerUser { get; set; }
         public List<PlanAttributesModel> PlanAttributes { get; set; }
         public List<PlanEventsModel> PlanEvents { get; set; }
 

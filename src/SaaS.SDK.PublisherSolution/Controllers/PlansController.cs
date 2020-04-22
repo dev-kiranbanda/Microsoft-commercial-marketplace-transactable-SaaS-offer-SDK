@@ -141,6 +141,7 @@
                 var currentUserDetail = usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
+                    this.plansService.SavePlanMeteringParameter(plans);
                     if (plans.PlanAttributes != null)
                     {
                         foreach (var attributes in plans.PlanAttributes)
