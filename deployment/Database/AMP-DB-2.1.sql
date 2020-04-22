@@ -1288,3 +1288,15 @@ select 'HomePageContent',
         </div>
     </div>',
 	'Home Page Content'
+
+
+	go
+INSERT INTO [DatabaseVersionHistory] 
+--Select 1.0, 'Master Schema',Getdate(), 'DB User' Union all
+Select 2.1,
+'Steps: email content updates. 
+Step 2: new plan attributes',
+GETDATE(),
+'DB user'
+
+GO
