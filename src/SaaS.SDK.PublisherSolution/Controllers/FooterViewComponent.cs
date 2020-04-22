@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace Microsoft.Marketplace.SaasKit.Client.Controllers
+namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
     public class FooterViewComponent : ViewComponent
     {

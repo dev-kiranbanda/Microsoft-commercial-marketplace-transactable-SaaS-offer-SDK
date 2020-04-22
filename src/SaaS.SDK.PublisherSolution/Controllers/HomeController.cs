@@ -393,7 +393,7 @@
 
                     this.TempData["ShowWelcomeScreen"] = false;
                     var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                    var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                    //var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                     var oldValue = this.subscriptionService.GetPartnerSubscriptions(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
 
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
@@ -437,7 +437,10 @@
                     subscriptionDetail.Purchaser = subscriptionResultExtension.Purchaser;
                     subscriptionDetail.GuidPlanId = PlanDetail.PlanGuid;
                     subscriptionDetail.Beneficiary = subscriptionResultExtension.Beneficiary;
-                    subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
+                    if (subscriptionResultExtension.SubscriptionParameters != null)
+                    {
+                        subscriptionDetail.SubscriptionParameters = subscriptionResultExtension.SubscriptionParameters;
+                    }
                     if (operation == "Activate")
                     {
                         try

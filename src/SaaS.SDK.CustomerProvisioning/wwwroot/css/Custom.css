@@ -1,5 +1,5 @@
 ﻿body {
-    font-family: 'Segoe UI', 'sans-serif' !important;
+    font-family: 'Montserrat' !important;
     color: black !important;
     font-size: 16px !important;
     height: 100%;
@@ -12,15 +12,14 @@
 }
 
 .cm-top-nav-bar {
-    background-color: #004578 !important;
+    background-color: #000 !important;
     margin-bottom: 0px;
-    border: 0px;
     border-radius: 0;
 }
 
 .cm-menu-bar {
     background-color: #F9F9F9 !important;
-    margin-top: -142px;
+    margin-top: -180px;
 }
 
 .cm-signin {
@@ -62,7 +61,7 @@
     width: auto;
     padding: 8px;
     max-width: 100%;
-    width: 40%;
+    width: 15%;
 }
 
 .cm-panel-default {
@@ -72,10 +71,10 @@
 }
 
 .cm-section-heading {
-    font-family: 'Segoe UI', 'sans-serif' !important;
+    font-family: 'Montserrat' !important;
     font-size: 25px;
     background-color: #fff;
-    border-bottom: 4px solid #2180a6;
+    border-bottom: 4px solid #FA582D;
     text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 40px;
@@ -118,10 +117,14 @@
     margin-top: 40px;
 }
 
+.mt0 {
+    margin-top: 0px !important;
+}
+
 .cm-button-default {
     color: #fff !important;
-    background-color: #004578;
-    border-color: #2e6da4;
+    background-color: #FA582D;
+    border-color: #FA582D;
     display: inline-block;
     font-weight: 400;
     text-align: center;
@@ -146,12 +149,8 @@
 }
 
     .cm-button-default:hover {
-        background-color: #004578 !important;
-        border-radius: 5px;
-        padding: 12px 20px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #004578;
+        background-color: #000 !important;
+        color: #FA582D;
     }
 
 .cm-button-error {
@@ -183,10 +182,6 @@
 
     .cm-button-error:hover {
         background-color: #EAE7E7 !important;
-        border-radius: 5px;
-        padding: 12px 20px;
-        font-size: 18px;
-        font-weight: bold;
         color: #004578;
     }
 
@@ -219,10 +214,6 @@
 
     .cm-button-success:hover {
         background-color: #EAE7E7;
-        border-radius: 5px;
-        padding: 12px 20px;
-        font-size: 18px;
-        font-weight: bold;
         color: #004578;
     }
 
@@ -255,10 +246,6 @@
 
     .cm-button-danger:hover {
         background-color: #EAE7E7;
-        border-radius: 5px;
-        padding: 12px 20px;
-        font-size: 18px;
-        font-weight: bold;
         color: #004578;
     }
 
@@ -303,7 +290,7 @@
 
     .cm-link-button:hover {
         cursor: pointer;
-        color: #004578 !important;
+        color: #000 !important;
     }
 
 /*.cm-footer {
@@ -320,7 +307,7 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    background-color: #E6E6E6;
+    background-color: #FA582D;
     font-size: 12px !important;
     color: black !important;
     height: 20px;
@@ -346,7 +333,6 @@ a.cm-dropdown-option {
 .maxwidth {
     width: 1300px !important;
 }
-
 
 .mr420 {
     margin-right: !important;

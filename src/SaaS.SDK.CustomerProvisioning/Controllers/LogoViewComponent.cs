@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 
-namespace Microsoft.Marketplace.Saas.Web.Controllers
+namespace Microsoft.Marketplace.SaasKit.Client.Controllers
 {
     public class LogoViewComponent : ViewComponent
     {

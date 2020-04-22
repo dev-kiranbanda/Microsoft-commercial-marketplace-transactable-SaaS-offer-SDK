@@ -648,13 +648,13 @@
 
                     this.TempData["ShowWelcomeScreen"] = false;
                     var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                    var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
+                    //var subscribeId = this.subscriptionService.AddUpdatePartnerSubscriptions(subscriptionData);
                     var oldValue = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
 
                     //var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     //subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResult>(serializedParent);
                     //subscriptionDetail = (SubscriptionResult)subscriptionData;
-
+                    var planDetails = this.planRepository.GetPlanDetailByPlanId(subscriptionData.PlanId);
                     var serializedParent = JsonConvert.SerializeObject(subscriptionData);
                     subscriptionDetail = JsonConvert.DeserializeObject<SubscriptionResultExtension>(serializedParent);
 
@@ -662,6 +662,7 @@
                     subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
+                    subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
                 }
                 return this.View("Index", subscriptionDetail);
             }

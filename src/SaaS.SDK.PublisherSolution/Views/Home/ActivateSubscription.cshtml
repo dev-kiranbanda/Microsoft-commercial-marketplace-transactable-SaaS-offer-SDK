@@ -44,6 +44,14 @@
                             @Html.HiddenFor(model => model.OfferId)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Plan ID ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.PlanId)
+                            @Html.HiddenFor(model => model.PlanId)
+                            @Html.HiddenFor(model => model.GuidPlanId)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Purchaser Email ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
@@ -88,7 +96,7 @@
                                 <dt class="col-sm-3 p-2 p10">
                                     @Html.DisplayName(Model.SubscriptionParameters[i].DisplayName)
                                     @*@if (Model.SubscriptionParameters[i].IsRequired == true)
-                                    {<span class="red-star">*</span>}*@
+                    {<span class="red-star">*</span>}*@
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)

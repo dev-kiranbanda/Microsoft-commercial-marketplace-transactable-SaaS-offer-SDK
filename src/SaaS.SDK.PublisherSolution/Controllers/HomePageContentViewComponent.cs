@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
-    public class LogoViewComponent : ViewComponent
+    public class HomePageContentViewComponent : ViewComponent
     {
         /// <summary>
         /// The Configuration
@@ -22,7 +22,7 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         public IConfiguration _iconfiguration { get; }
         private readonly IApplicationConfigRepository applicationConfigRepository;
 
-        public LogoViewComponent(IConfiguration iconfiguration, IApplicationConfigRepository applicationConfigRepository)
+        public HomePageContentViewComponent(IConfiguration iconfiguration, IApplicationConfigRepository applicationConfigRepository)
         {
             _iconfiguration = iconfiguration;
             this.applicationConfigRepository = applicationConfigRepository;
@@ -34,9 +34,9 @@ namespace Microsoft.Marketplace.Saas.Web.Controllers
         /// 
         public IViewComponentResult Invoke()
         {
-            Logo model = new Logo();
-            model.Logolink = applicationConfigRepository.GetValuefromApplicationConfig("ApplicationLogo");
-            return View("_Logo", model);
+            HomePageContent model = new HomePageContent();
+            model.HomeContent = applicationConfigRepository.GetValuefromApplicationConfig("HomePageContent");
+            return View("_HomePageContent", model);
         }
 
     }
