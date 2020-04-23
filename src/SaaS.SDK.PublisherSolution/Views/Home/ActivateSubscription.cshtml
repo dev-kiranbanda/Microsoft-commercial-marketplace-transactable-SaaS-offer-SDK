@@ -164,9 +164,10 @@
                                 }
                                 else
                                 {
-                                    <dd class="col-sm-9 p-2 p10">
-                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
-                                    </dd>
+                    <dd class="col-sm-9 p-2 p10">
+                        @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
+                    </dd>
                                 }
 
                             }
