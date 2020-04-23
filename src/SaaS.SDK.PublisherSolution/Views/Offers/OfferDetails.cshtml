@@ -5,8 +5,8 @@
 <div class="text-center maxwidth">
     <form method="post" id="frmOfferattributes" asp-action="OfferDetails" asp-controller="Offers">
         @*action="Offers/OfferDetails"*@
-        <div class="container mrtop maxwidth" style="float:left;">
-            <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
+        <div class="container mrtop maxwidth" style="float:left;margin-left:-200px;">
+            <div calss="text-right maxwidth" style="text-align:right; width:1500px;">
                 <input class="cm-button-default cm-button-custom-default mt0" style=";" type="button" id="btnAdd" value="Add new row" />
                 <input class="cm-button-default cm-button-custom-green mt0" style="" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
@@ -62,10 +62,10 @@
                                     <td>
                                         <input id="OfferAttributes_Id_@i" type="hidden" value="@i" class="iHidden" name="OfferAttributes[@i].Id" />
                                         <input id="OfferAttributes_AttributeID_@i" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID" value="@Model.OfferAttributes[i].AttributeID" />
-                                        <input type="text" style="width:70px;" id="OfferAttributes_ParameterId_@i" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
+                                        <input type="text" style="width:100px;" id="OfferAttributes_ParameterId_@i" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
                                     </td>
-                                    <td><input type="text" style="width:70px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
-                                    <td><input type="text" style="width:70px;" id="OfferAttributes_Description_@i" name="OfferAttributes[@i].Description" value="@Model.OfferAttributes[i].Description" /></td>
+                                    <td><input type="text" style="width:100px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
+                                    <td><input type="text" style="width:100px;" id="OfferAttributes_Description_@i" name="OfferAttributes[@i].Description" value="@Model.OfferAttributes[i].Description" /></td>
                                     <td>
                                         @*<input type="text" style="width:70px;" id="OfferAttributes_i__ValueTypeId" name="OfferAttributes[@i].ValueTypeId" />*@
                                         @*@Html.DropDownList("OfferAttributes[@i].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes[@i].ValueTypeId", @value = @Model.OfferAttributes[i].ValueTypeId })*@
@@ -75,13 +75,13 @@
                                         @*<input type="checkbox" id="OfferAttributes_FromList_@i" name="OfferAttributes[@i].FromList" value="@Model.OfferAttributes[i].FromList" checked="@Model.OfferAttributes[i].FromList" />*@
                                         @Html.CheckBoxFor(model => model.OfferAttributes[i].FromList, new { name = "OfferAttributes[@i].FromList", id = string.Format("OfferAttributes_FromList_{0}", @i) })
                                     </td>
-                                    <td><input type="text" style="width:70px;" id="OfferAttributes_ValuesList_@i" name="OfferAttributes[@i].ValuesList" value="@Model.OfferAttributes[i].ValuesList" /></td>
-                                    <td><input type="text" style="width:70px;" id="OfferAttributes_Max_@i" name="OfferAttributes[@i].Max" value="@Model.OfferAttributes[i].Max" /></td>
-                                    <td><input type="text" style="width:70px;" id="OfferAttributes_Min_@i" name="OfferAttributes[@i].Min" value="@Model.OfferAttributes[i].Min" /></td>
+                                    <td><input type="text" style="width:100px;" id="OfferAttributes_ValuesList_@i" name="OfferAttributes[@i].ValuesList" value="@Model.OfferAttributes[i].ValuesList" /></td>
+                                    <td><input type="text" style="width:100px;" id="OfferAttributes_Max_@i" name="OfferAttributes[@i].Max" value="@Model.OfferAttributes[i].Max" /></td>
+                                    <td><input type="text" style="width:100px;" id="OfferAttributes_Min_@i" name="OfferAttributes[@i].Min" value="@Model.OfferAttributes[i].Min" /></td>
                                     @*<td><input type="text" style="width:70px;" id="OfferAttributes_i__OfferID" name="OfferAttributes[@i].OfferID" /></td>*@
                                     <td>
-                                        <input type="hidden" style="width:70px;" id="OfferAttributes_Type_@i" name="OfferAttributes[@i].Type" value="@Model.OfferAttributes[i].Type" />
-                                        <input type="text" style="width:70px;" id="OfferAttributes_DisplaySequence_@i" name="OfferAttributes[@i].DisplaySequence" value="@Model.OfferAttributes[i].DisplaySequence" />
+                                        <input type="hidden" style="width:100px;" id="OfferAttributes_Type_@i" name="OfferAttributes[@i].Type" value="@Model.OfferAttributes[i].Type" />
+                                        <input type="text" style="width:100px;" id="OfferAttributes_DisplaySequence_@i" name="OfferAttributes[@i].DisplaySequence" value="@Model.OfferAttributes[i].DisplaySequence" />
                                     </td>
                                     <td>
                                         @*<input type="checkbox" id="OfferAttributes_Isactive_@i" name="OfferAttributes[@i].Isactive" value="@Model.OfferAttributes[i].Isactive" checked="@Model.OfferAttributes[i].Isactive" />*@
@@ -108,10 +108,10 @@
                             <td>
                                 <input id='OfferAttributes_Id_itemIndex' type='hidden' value='itemIndex' class='iHidden' name='OfferAttributes[itemIndex].Id' />
                                 <input id="OfferAttributes_AttributeID_itemIndex" type="hidden" class="iHidden" name='OfferAttributes[itemIndex].AttributeID' />
-                                <input type='text' style='width:70px;' id='OfferAttributes_ParameterId_itemIndex' name='OfferAttributes[itemIndex].ParameterId' />
+                                <input type='text' style='width:100px;' id='OfferAttributes_ParameterId_itemIndex' name='OfferAttributes[itemIndex].ParameterId' />
                             </td>
-                            <td><input type='text' style='width:70px;' id='OfferAttributes_DisplayName_itemIndex' name='OfferAttributes[itemIndex].DisplayName' /></td>
-                            <td><input type='text' style='width:70px;' id='OfferAttributes_Description_itemIndex' name='OfferAttributes[itemIndex].Description' /></td>
+                            <td><input type='text' style='width:100px;' id='OfferAttributes_DisplayName_itemIndex' name='OfferAttributes[itemIndex].DisplayName' /></td>
+                            <td><input type='text' style='width:100px;' id='OfferAttributes_Description_itemIndex' name='OfferAttributes[itemIndex].Description' /></td>
                             <td>
                                 @*<input type='text' style='width:70px;' id='OfferAttributes[itemIndex].ValueTypeId' name='OfferAttributes[itemIndex].ValueTypeId' />*@
                                 @Html.DropDownList("OfferAttributes[itemIndex].ValueTypeId", ViewBag.ValueTypes as SelectList, new { @id = "OfferAttributes_ValueTypeId_itemIndex" })
@@ -120,13 +120,13 @@
                                 @*<input type='checkbox' value='true' id='OfferAttributes_FromList_itemIndex' name='OfferAttributes[itemIndex].FromList' />*@
                                 @Html.CheckBox("OfferAttributes[itemIndex].FromList", new { @id = "OfferAttributes_FromList_itemIndex" })
                             </td>
-                            <td><input type='text' style='width:70px;' id='OfferAttributes_ValuesList_itemIndex' name='OfferAttributes[itemIndex].ValuesList' /></td>
-                            <td><input type='text' style='width:70px;' id='OfferAttributes_Max_itemIndex' name='OfferAttributes[itemIndex].Max' /></td>
-                            <td><input type='text' style='width:70px;' id='OfferAttributes_Min_itemIndex' name='OfferAttributes[itemIndex].Min' /></td>
+                            <td><input type='text' style='width:100px;' id='OfferAttributes_ValuesList_itemIndex' name='OfferAttributes[itemIndex].ValuesList' /></td>
+                            <td><input type='text' style='width:100px;' id='OfferAttributes_Max_itemIndex' name='OfferAttributes[itemIndex].Max' /></td>
+                            <td><input type='text' style='width:100px;' id='OfferAttributes_Min_itemIndex' name='OfferAttributes[itemIndex].Min' /></td>
                             @*<td><input type='text' style='width:70px;' id='OfferAttributes[itemIndex].OfferID' name='OfferAttributes[itemIndex].OfferID' /></td>*@
                             <td>
-                                <input type='hidden' style='width:70px;' id='OfferAttributes_Type_itemIndex' name='OfferAttributes[itemIndex].Type' value="Input" />
-                                <input type='text' style='width:70px;' id='OfferAttributes_DisplaySequence_itemIndex' name='OfferAttributes[itemIndex].DisplaySequence' />
+                                <input type='hidden' style='width:100px;' id='OfferAttributes_Type_itemIndex' name='OfferAttributes[itemIndex].Type' value="Input" />
+                                <input type='text' style='width:100px;' id='OfferAttributes_DisplaySequence_itemIndex' name='OfferAttributes[itemIndex].DisplaySequence' />
                             </td>
                             <td>
                                 @*<input type='checkbox' value='true' id='OfferAttributes_Isactive_itemIndex' name='OfferAttributes[itemIndex].Isactive' />*@
@@ -144,7 +144,7 @@
                     </tbody>
                 </table>
             </div>
-            <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
+            <div calss="text-right maxwidth" style="text-align:right; width:1500px;">
                 <input class="cm-button-default cm-button-custom-default mt0" style="" type="button" id="btnAdd2" value="Add new row" />
                 <input class="cm-button-default cm-button-custom-green mt0" style="" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
