@@ -15,6 +15,9 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
 
         public static void SendEmail(SubscriptionResultExtension Subscription, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, string planEvent = "success", SubscriptionStatusEnum oldValue = SubscriptionStatusEnum.PendingFulfillmentStart, string newValue = null)
         {
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls13 | SecurityProtocolType.Tls;
+
             MailMessage mail = new MailMessage();
             string FromMail = applicationConfigRepository.GetValuefromApplicationConfig("SMTPFromEmail");
             string password = applicationConfigRepository.GetValuefromApplicationConfig("SMTPPassword");
