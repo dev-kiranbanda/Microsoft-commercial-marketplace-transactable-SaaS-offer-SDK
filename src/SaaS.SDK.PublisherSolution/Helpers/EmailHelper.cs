@@ -4,6 +4,7 @@ using Microsoft.Marketplace.SaasKit.Models;
 //using SendGrid;
 //using SendGrid.Helpers.Mail;
 using Microsoft.Marketplace.SaasKit.Web.Services;
+using System;
 using System.Net;
 using System.Net.Mail;
 
@@ -32,9 +33,15 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
 
             bool CustomerToCopy = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.HasValue ? planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.Value : false;
 
-            if (CustomerToCopy && planEvent.ToLower() == "success")
+            bool isActive = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).Isactive;
+
+            if (CustomerToCopy && planEvent.ToLower() == "success" && isActive)
             {
                 toReceipents = Subscription.CustomerEmailAddress;
+                if (string.IsNullOrEmpty(toReceipents))
+                {
+                    throw new Exception(" Error while sending an email, please check the configuration. ");
+                }
                 Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
                 mail.Subject = Subject;
                 mail.To.Add(toReceipents);
@@ -51,9 +58,13 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
             mail.To.Clear();
 
 
-            if (CustomerToCopy && planEvent.ToLower() == "failure")
+            if (CustomerToCopy && planEvent.ToLower() == "failure" && isActive)
             {
                 toReceipents = Subscription.CustomerEmailAddress;
+                if (string.IsNullOrEmpty(toReceipents))
+                {
+                    throw new Exception(" Error while sending an email, please check the configuration. ");
+                }
                 Subject = emailTemplateRepository.GetSubject(planEvent);
                 mail.Subject = Subject;
                 mail.To.Add(toReceipents);
@@ -67,7 +78,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                 copy.Send(mail);
             }
 
-            if (planEvent.ToLower() == "success")
+            if (planEvent.ToLower() == "success" && isActive)
             {
                 toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
               );
@@ -102,7 +113,7 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                 }
 
             }
-            if (planEvent.ToLower() == "failure")
+            if (planEvent.ToLower() == "failure" && isActive)
             {
                 toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).FailureStateEmails
                 );
@@ -137,6 +148,10 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
                 }
             }
 
+            if (string.IsNullOrEmpty(toReceipents))
+            {
+                throw new Exception(" Error while sending an email, please check the configuration. ");
+            }
 
             SmtpClient smtp = new SmtpClient();
             smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
