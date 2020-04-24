@@ -468,7 +468,10 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(subscriptionResultExtension, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORSUBSCRIPTIONACTIVATION)) == true)
+                            {
+                                EmailHelper.SendEmail(subscriptionResultExtension, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            }
                         }
                     }
 
@@ -496,7 +499,10 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            if (Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig(EmailTriggerConfigurationConstants.ISEMAILENABLEDFORUNSUBSCRIPTION)) == true)
+                            {
+                                EmailHelper.SendEmail(subscriptionDetail, applicationConfigRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository, "failure", oldValue.SaasSubscriptionStatus, newStatus);
+                            }
                         }
                     }
 
