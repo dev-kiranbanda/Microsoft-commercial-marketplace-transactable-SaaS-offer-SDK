@@ -29,10 +29,16 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
             int eventID = eventsRepository.GetEventID(Subscription.EventName);
 
             string toReceipents = string.Empty;
+            bool CustomerToCopy = false;
+            bool isActive = false;
+            var eventrep = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+            if (eventrep != null)
+            {
+                CustomerToCopy = eventrep.CopytoCustomer ?? false;
+                isActive = eventrep.Isactive;
+            }
 
-            bool CustomerToCopy = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.HasValue ? planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.Value : false;
 
-            bool isActive = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).Isactive;
             if (isActive)
             {
                 if (CustomerToCopy && planEvent.ToLower() == "success")
