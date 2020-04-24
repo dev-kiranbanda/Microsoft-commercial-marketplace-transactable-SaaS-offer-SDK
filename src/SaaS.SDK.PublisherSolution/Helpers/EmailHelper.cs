@@ -31,136 +31,147 @@ namespace Microsoft.Marketplace.SaasKit.Web.Helpers
 
             string toReceipents = string.Empty;
 
-            bool CustomerToCopy = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.HasValue ? planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).CopytoCustomer.Value : false;
-
-            bool isActive = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).Isactive;
-
-            if (CustomerToCopy && planEvent.ToLower() == "success" && isActive)
+            bool CustomerToCopy = false;
+            bool isActive = false;
+            var eventrep = planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID);
+            if (eventrep != null)
             {
-                toReceipents = Subscription.CustomerEmailAddress;
-                if (string.IsNullOrEmpty(toReceipents))
-                {
-                    throw new Exception(" Error while sending an email, please check the configuration. ");
-                }
-                Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
-                mail.Subject = Subject;
-                mail.To.Add(toReceipents);
-                SmtpClient copy = new SmtpClient();
-                copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-                copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-                copy.UseDefaultCredentials = false;
-                copy.Credentials = new NetworkCredential(
-                    username, password);
-                copy.EnableSsl = smtpSsl;
-                copy.Send(mail);
+                CustomerToCopy = eventrep.CopytoCustomer ?? false;
+                isActive = eventrep.Isactive;
             }
 
-            mail.To.Clear();
-
-
-            if (CustomerToCopy && planEvent.ToLower() == "failure" && isActive)
+            if (isActive)
             {
-                toReceipents = Subscription.CustomerEmailAddress;
-                if (string.IsNullOrEmpty(toReceipents))
+                if (CustomerToCopy && planEvent.ToLower() == "success")
                 {
-                    throw new Exception(" Error while sending an email, please check the configuration. ");
-                }
-                Subject = emailTemplateRepository.GetSubject(planEvent);
-                mail.Subject = Subject;
-                mail.To.Add(toReceipents);
-                SmtpClient copy = new SmtpClient();
-                copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-                copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-                copy.UseDefaultCredentials = false;
-                copy.Credentials = new NetworkCredential(
-                    username, password);
-                copy.EnableSsl = smtpSsl;
-                copy.Send(mail);
-            }
-
-            if (planEvent.ToLower() == "success" && isActive)
-            {
-                toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
-              );
-                Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
-                mail.Subject = Subject;
-                if (!string.IsNullOrEmpty(toReceipents))
-                {
-                    string[] ToEmails = toReceipents.Split(';');
-
-                    foreach (string Multimailid in ToEmails)
+                    toReceipents = Subscription.CustomerEmailAddress;
+                    if (string.IsNullOrEmpty(toReceipents))
                     {
-                        mail.To.Add(new MailAddress(Multimailid));
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
+                    mail.Subject = Subject;
+                    mail.To.Add(toReceipents);
+                    SmtpClient copy = new SmtpClient();
+                    copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                    copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                    copy.UseDefaultCredentials = false;
+                    copy.Credentials = new NetworkCredential(
+                        username, password);
+                    copy.EnableSsl = smtpSsl;
+                    copy.Send(mail);
+                }
+
+                mail.To.Clear();
+
+
+                if (CustomerToCopy && planEvent.ToLower() == "failure")
+                {
+                    toReceipents = Subscription.CustomerEmailAddress;
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    Subject = emailTemplateRepository.GetSubject(planEvent);
+                    mail.Subject = Subject;
+                    mail.To.Add(toReceipents);
+                    SmtpClient copy = new SmtpClient();
+                    copy.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                    copy.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                    copy.UseDefaultCredentials = false;
+                    copy.Credentials = new NetworkCredential(
+                        username, password);
+                    copy.EnableSsl = smtpSsl;
+                    copy.Send(mail);
+                }
+
+                if (planEvent.ToLower() == "success")
+                {
+                    toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).SuccessStateEmails
+                  );
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    Subject = emailTemplateRepository.GetSubject(Subscription.SaasSubscriptionStatus.ToString());
+                    mail.Subject = Subject;
+                    if (!string.IsNullOrEmpty(toReceipents))
+                    {
+                        string[] ToEmails = toReceipents.Split(';');
+
+                        foreach (string Multimailid in ToEmails)
+                        {
+                            mail.To.Add(new MailAddress(Multimailid));
+                        }
+
+                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+                        {
+                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                            foreach (string Multimailid in CcEmails)
+                            {
+                                mail.CC.Add(new MailAddress(Multimailid));
+                            }
+                        }
                     }
 
-                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())))
+                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())))
                     {
-                        string[] CcEmails = (emailTemplateRepository.GetCCRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
-                        foreach (string Multimailid in CcEmails)
+                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
+                        foreach (string Multimailid in BccEmails)
                         {
-                            mail.CC.Add(new MailAddress(Multimailid));
+                            mail.Bcc.Add(new MailAddress(Multimailid));
+                        }
+                    }
+
+                }
+                if (planEvent.ToLower() == "failure")
+                {
+                    toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).FailureStateEmails
+                    );
+                    if (string.IsNullOrEmpty(toReceipents))
+                    {
+                        throw new Exception(" Error while sending an email, please check the configuration. ");
+                    }
+                    Subject = emailTemplateRepository.GetSubject(planEvent);
+                    mail.Subject = Subject;
+                    if (!string.IsNullOrEmpty(toReceipents))
+                    {
+                        string[] ToEmails = toReceipents.Split(';');
+
+                        foreach (string Multimailid in ToEmails)
+                        {
+                            mail.To.Add(new MailAddress(Multimailid));
+                        }
+
+                        if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(planEvent)))
+                        {
+                            string[] CcEmails = (emailTemplateRepository.GetCCRecipients(planEvent)).Split(';');
+                            foreach (string Multimailid in CcEmails)
+                            {
+                                mail.CC.Add(new MailAddress(Multimailid));
+                            }
+                        }
+                    }
+
+                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(planEvent)))
+                    {
+                        string[] BccEmails = (emailTemplateRepository.GetBccRecipients(planEvent)).Split(';');
+                        foreach (string Multimailid in BccEmails)
+                        {
+                            mail.Bcc.Add(new MailAddress(Multimailid));
                         }
                     }
                 }
 
-                if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())))
-                {
-                    string[] BccEmails = (emailTemplateRepository.GetBccRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');
-                    foreach (string Multimailid in BccEmails)
-                    {
-                        mail.Bcc.Add(new MailAddress(Multimailid));
-                    }
-                }
-
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
+                smtp.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
+                smtp.UseDefaultCredentials = false;
+                smtp.Credentials = new NetworkCredential(
+                    username, password);
+                smtp.EnableSsl = smtpSsl;
+                smtp.Send(mail);
             }
-            if (planEvent.ToLower() == "failure" && isActive)
-            {
-                toReceipents = (planEventsMappingRepository.GetPlanEventsMappingEmails(Subscription.GuidPlanId, eventID).FailureStateEmails
-                );
-                Subject = emailTemplateRepository.GetSubject(planEvent);
-                mail.Subject = Subject;
-                if (!string.IsNullOrEmpty(toReceipents))
-                {
-                    string[] ToEmails = toReceipents.Split(';');
-
-                    foreach (string Multimailid in ToEmails)
-                    {
-                        mail.To.Add(new MailAddress(Multimailid));
-                    }
-
-                    if (!string.IsNullOrEmpty(emailTemplateRepository.GetCCRecipients(planEvent)))
-                    {
-                        string[] CcEmails = (emailTemplateRepository.GetCCRecipients(planEvent)).Split(';');
-                        foreach (string Multimailid in CcEmails)
-                        {
-                            mail.CC.Add(new MailAddress(Multimailid));
-                        }
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(emailTemplateRepository.GetBccRecipients(planEvent)))
-                {
-                    string[] BccEmails = (emailTemplateRepository.GetBccRecipients(planEvent)).Split(';');
-                    foreach (string Multimailid in BccEmails)
-                    {
-                        mail.Bcc.Add(new MailAddress(Multimailid));
-                    }
-                }
-            }
-
-            if (string.IsNullOrEmpty(toReceipents))
-            {
-                throw new Exception(" Error while sending an email, please check the configuration. ");
-            }
-
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = applicationConfigRepository.GetValuefromApplicationConfig("SMTPHost");
-            smtp.Port = int.Parse(applicationConfigRepository.GetValuefromApplicationConfig("SMTPPort"));
-            smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential(
-                username, password);
-            smtp.EnableSsl = smtpSsl;
-            smtp.Send(mail);
         }
     }
 }
