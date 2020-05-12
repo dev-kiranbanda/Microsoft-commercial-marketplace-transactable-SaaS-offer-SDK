@@ -1,5 +1,11 @@
 ﻿namespace Microsoft.Marketplace.Saas.Web.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text.Json.Serialization;
+    using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,17 +15,13 @@
     using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Web.Helpers;
     using Microsoft.Marketplace.SaasKit.Client.Models;
     using Microsoft.Marketplace.SaasKit.Client.Services;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Exceptions;
     using Microsoft.Marketplace.SaasKit.Models;
-    using Microsoft.Marketplace.SaasKit.Web.Helpers;
     using Newtonsoft.Json;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
 
     [ServiceFilter(typeof(KnownUser))]
     /// <summary>
