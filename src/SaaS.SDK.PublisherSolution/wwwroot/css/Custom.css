@@ -1,7 +1,7 @@
 ﻿body {
-    font-family: 'Segoe UI', 'sans-serif' !important;
+    font-family: 'Montserrat', 'sans-serif' !important;
     color: black !important;
-    font-size: 16px !important;
+    font-size: 18px !important;
     height: 100%;
     margin: 0;
 }
@@ -12,14 +12,14 @@
 }
 
 .cm-top-nav-bar {
-    background-color: #004578 !important;
+    background-color: #FFFFFF !important;
     margin-bottom: 0px;
     border-radius: 0;
 }
 
 .cm-menu-bar {
-    background-color: #F9F9F9 !important;
-    margin-top:-142px;
+    background-color: #48C8F0 !important;
+    margin-top: -142px;
 }
 
 .cm-signin {
@@ -52,16 +52,21 @@
     padding: 0px !important;
 }
 
+.cm-nav-link {
+    font-size: .900rem !important;
+    color: #333333 !important;
+}
+
 .cm-menu-item-active {
     background-color: #D0CCCC;
 }
 
-.cm-logo { 
+.cm-logo {
     border-style: none;
     width: auto;
     padding: 8px;
     max-width: 100%;
-    width:30%;
+    width: 100%;
 }
 
 .cm-panel-default {
@@ -71,10 +76,10 @@
 }
 
 .cm-section-heading {
-    font-family: 'Segoe UI', 'sans-serif' !important;
+    font-family: 'Montserrat', 'sans-serif' !important;
     font-size: 25px;
     background-color: #fff;
-    border-bottom: 4px solid #2180a6;
+    border-bottom: 4px solid #48C8F0;
     text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 40px;
@@ -123,7 +128,7 @@
 
 .cm-button-default {
     color: #fff;
-    background-color: #004578;
+    background-color: #48C8F0;
     border-color: #2e6da4;
     display: inline-block;
     font-weight: 400;
@@ -154,7 +159,7 @@
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #004578;
+        color: #48C8F0;
     }
 
 .cm-button-error {

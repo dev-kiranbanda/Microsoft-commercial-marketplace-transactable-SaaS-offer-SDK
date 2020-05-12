@@ -25,6 +25,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.Helpers
             string body = TemplateService.ProcessTemplate(Subscription, emailTemplateRepository, applicationConfigRepository);
             mail.Body = body;
             mail.IsBodyHtml = true;
+            var result = emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString());
             if (!string.IsNullOrEmpty(emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())))
             {
                 string[] ToEmails = (emailTemplateRepository.GetToRecipients(Subscription.SaasSubscriptionStatus.ToString())).Split(';');

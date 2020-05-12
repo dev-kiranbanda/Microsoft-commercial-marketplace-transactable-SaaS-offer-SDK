@@ -33,12 +33,12 @@
             <div class="form-inline my-2 my-lg-0">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <span class="cm-username text-white">@User.Identity.Name&nbsp;</span>
-                    <a class="text-white cm-logout" asp-controller="Account" asp-action="SignOut">&nbsp;<i class="fa fa-sign-out fa-2x"></i></a>
+                    <span class="cm-username text-black">@User.Identity.Name&nbsp;</span>
+                    <a class="text-black cm-logout" asp-controller="Account" asp-action="SignOut">&nbsp;<i class="fa fa-sign-out fa-2x"></i></a>
                 }
                 else
                 {
-                    <a class="text-white" asp-controller="Account" asp-action="SignIn">Sign in</a>
+                    <a class="text-black" asp-controller="Account" asp-action="SignIn">Sign in</a>
                 }
             </div>
         </div>
@@ -49,11 +49,11 @@
             <a class="nav-link active">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
+                    <a class="nav-link cm-nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    <a class="nav-link cm-nav-link" asp-area="" asp-controller="Home" asp-action="Subscriptions">Subscriptions</a>
                     if (Convert.ToBoolean(TempData["ShowLicensesMenu"]))
                     {
-                        <a class="nav-link" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a>
+                        <a class="nav-link cm-nav-link" asp-area="" asp-controller="Licenses" asp-action="Index">Licenses</a>
                     }
                     @*<li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="RecordUsage">Record Usage</a></li>*@
                 }
