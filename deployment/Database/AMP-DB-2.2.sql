@@ -24,6 +24,8 @@ ALTER TABLE [dbo].[SubscriptionLicenses]  WITH CHECK ADD FOREIGN KEY([Subscripti
 
 Go
 
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsLicenseManagementEnabled', N'True', N'To Enable or Disable Licenses Menu') 
-
+IF NOT EXISTS (SELECT Name FROM ApplicationConfiguration WHERE NAME = 'IsLicenseManagementEnabled')
+BEGIN
+	INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsLicenseManagementEnabled', N'True', N'To Enable or Disable Licenses Menu') 
+END
 GO

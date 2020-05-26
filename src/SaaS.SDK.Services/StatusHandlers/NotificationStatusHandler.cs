@@ -152,6 +152,11 @@
                 planEventName = "Unsubscribe";
             }
 
+            if( subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
+            {
+                planEventName = "Pending Activation";
+            }
+
             string processStatus = "success";
             if (
                 subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
@@ -169,7 +174,7 @@
             bool triggerEmail = false;
             if (planEvents != null && planEvents.Isactive == true)
             {
-                if (planEventName == "Activate" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
+                if (planEventName == "Pending Activation" && isEmailEnabledForPendingActivation && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
                 {
                     triggerEmail = true;
                 }
