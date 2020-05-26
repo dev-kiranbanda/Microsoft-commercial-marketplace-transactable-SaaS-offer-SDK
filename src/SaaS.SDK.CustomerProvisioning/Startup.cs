@@ -152,6 +152,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<IPlanEventsMappingRepository, PlanEventsMappingRepository>();
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<IEmailService, SMTPEmailService>();
+            services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
         }
     }
 }

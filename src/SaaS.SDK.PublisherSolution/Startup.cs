@@ -161,6 +161,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<KnownUserAttribute>();
             services.AddScoped<IEmailService, SMTPEmailService>();
+            services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
         }
     }
 }

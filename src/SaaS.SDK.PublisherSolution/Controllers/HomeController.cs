@@ -202,6 +202,11 @@
             this.logger.LogInformation("Home Controller / Index ");
             try
             {
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
+
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 return this.View();
             }
@@ -224,6 +229,10 @@
                 SubscriptionViewModel subscriptionDetail = new SubscriptionViewModel();
                 if (this.User.Identity.IsAuthenticated)
                 {
+                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                    {
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
                     this.TempData["ShowWelcomeScreen"] = "True";
 
                     List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
@@ -277,6 +286,10 @@
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
+                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                    {
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
                     List<SubscriptionAuditLogs> subscriptionAudit = new List<SubscriptionAuditLogs>();
                     subscriptionAudit = this.subscriptionLogRepository.GetSubscriptionBySubscriptionId(subscriptionId).ToList();
                     return this.View(subscriptionAudit);
@@ -306,6 +319,10 @@
 
             if (this.User.Identity.IsAuthenticated)
             {
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                 var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                 this.subscriptionService = new SubscriptionService(this.subscriptionRepo, this.planRepository, userId);
@@ -344,6 +361,10 @@
 
                 if (this.User.Identity.IsAuthenticated)
                 {
+                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                    {
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
                     var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
@@ -384,6 +405,10 @@
                 var userDetails = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 SubscriptionProcessQueueModel queueObject = new SubscriptionProcessQueueModel();
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 if (operation == "Activate")
                 {
                     if (oldValue.SubscriptionStatus.ToString() != SubscriptionStatusEnumExtension.PendingActivation.ToString())
@@ -444,6 +469,10 @@
         /// </value>
         public IActionResult ActivatedMessage()
         {
+            if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+            {
+                this.TempData["ShowLicensesMenu"] = true;
+            }
             try
             {
                 return this.View("ProcessMessage");
@@ -466,6 +495,10 @@
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
+                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                    {
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
                     var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
                     var allDimensionsList = this.dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
                     SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
@@ -501,6 +534,10 @@
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
+                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                    {
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
                     var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
                     return this.View(subscriptionDetail);
                 }
@@ -527,6 +564,10 @@
             this.logger.LogInformation("Home Controller / ManageSubscriptionUsage  subscriptionData: {0}", JsonSerializer.Serialize(subscriptionData));
             try
             {
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 if (subscriptionData != null && subscriptionData.SubscriptionDetail != null)
                 {
                     var currentUserDetail = this.userRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -588,8 +629,13 @@
             this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
+
                 if (this.User.Identity.IsAuthenticated)
                 {
+                    if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                    {
+                        this.TempData["ShowLicensesMenu"] = true;
+                    }
                     var subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                     subscriptionDetail.PlanList = this.subscriptionService.GetAllSubscriptionPlans();
 
@@ -640,6 +686,10 @@
             this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             try
             {
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 var subscriptionId = Guid.Empty;
                 var planId = string.Empty;
 
@@ -714,6 +764,10 @@
             this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             if (this.User.Identity.IsAuthenticated)
             {
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
                 try
                 {
                     if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
