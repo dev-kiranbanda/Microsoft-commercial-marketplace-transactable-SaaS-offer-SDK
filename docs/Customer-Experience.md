@@ -10,6 +10,7 @@
     - [Unsubscribe](#unsubscribe)
     - [Change Quantity](#change-quantity)
     - [View activity log](#view-activity-log)
+	- [View Licenses](#view-licenses)
 - [Next steps](#next-steps)
   - [Configuring the Publisher Provisioning web application](./Publisher-Experience.md)
 
@@ -176,6 +177,15 @@ The Plan ID is available in the **Plan overview** tab of the offer as shown here
  ![SaaS Subscriptions](./images/activity-log-menu.png)
  ![SaaS Subscriptions](./images/activity-log-popup.png)
  
+ 
+## View Licenses
+
+1. Log on to [AMP SDK Sample application]()
+2. Click **Licenses** menu at the top to view the list of subscriptions and licenses.
+3. Use the **Copy** button to copy the license text to clipboard
+
+![View Licenses](./images/customer-view-licenses.png)
+
  
 ## Next steps
 

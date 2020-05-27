@@ -13,6 +13,7 @@
   - [Emit usage events](#emit-usage-events)
   - [Unsubscribe](#unsubscribe)
   - [View activity log](#view-activity-log)
+  - [Manage Licenses](#manage-licenses)
 
 ## Overview
 
@@ -252,3 +253,13 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
 * Click **Activity Log** to view the log of activity that happened against the subscription.
  ![SaaS Subscriptions](./images/activity-log-menu.png)
  ![SaaS Subscriptions](./images/activity-log-popup.png)
+
+ 
+## Manage Licenses
+
+- Log on to [Publisher portal]()
+- Click **Licenses** menu at the top to view the list of subscriptions and licenses.
+- There is an option to **Revoke** an active license and **Activate** an already revoked license.
+![View Licenses](./images/publisher-add-revoke-license.png)
+- Select a subscription, enter license key detail and hit **Add License** to assign a license.
+![Add License](./images/publisher-add-revoke-license.png)

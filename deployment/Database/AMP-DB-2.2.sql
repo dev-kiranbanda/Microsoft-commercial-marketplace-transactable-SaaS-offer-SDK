@@ -29,3 +29,9 @@ BEGIN
 	INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsLicenseManagementEnabled', N'True', N'To Enable or Disable Licenses Menu') 
 END
 GO
+GO
+INSERT INTO [DatabaseVersionHistory] 
+
+Select 2.2, 'Add Licensing Schema',Getdate(), 'DB User'
+
+GO
