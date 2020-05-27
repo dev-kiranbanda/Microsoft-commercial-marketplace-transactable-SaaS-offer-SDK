@@ -10,6 +10,7 @@ The SQL scripts build on top of each other. When setting up your database, do th
 
 1. Start with a blank database
 2. Run AMP-DB-2.1.sql
+3. Run AMP-DB-2.2.sql
 
 ## Description
 
@@ -39,6 +40,7 @@ The following picture illustrates the entities and the relationships among them:
 | Users | Users ( auto-registered due to purchase of subscriptions) |
 | ValueTypes | Type of attributes, for the fields that appear on the subscription landing page|
 | WebJobSubscriptionStatus | Status changes on the subscription as processed by the webjob are logged here |
+| SubscriptionLicenses | Licenses assigned to subscriptions are stored here |
 
 ### Application Configuration
 
@@ -57,6 +59,7 @@ Application configuration is initialized with the following keys that the publis
 | SMTPPort | SMTP Port name |
 | SMTPSslEnabled | Is SMTP SSL enabled |
 | SMTPUserName | Username in the credential to connect to the SMTP server |
+| IsLicenseManagementEnabled | Flag that defines if license management feature should be enabled in Provisioning and the Publisher web applications |
 
 ### EmailTemplate
 
