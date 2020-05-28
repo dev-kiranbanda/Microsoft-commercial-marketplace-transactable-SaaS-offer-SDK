@@ -14,5 +14,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public DateTime? CreateDate { get; set; }
         public int? UserId { get; set; }
         public bool? CopyToCustomer { get; set; }
+        public Guid? ArmtemplateId { get; set; }
     }
 }

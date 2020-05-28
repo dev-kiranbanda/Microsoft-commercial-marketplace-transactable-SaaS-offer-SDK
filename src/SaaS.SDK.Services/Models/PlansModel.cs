@@ -96,5 +96,13 @@
         /// The plan events.
         /// </value>
         public List<PlanEventsModel> PlanEvents { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [deploy to customer subscription].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [deploy to customer subscription]; otherwise, <c>false</c>.
+        /// </value>
+        public bool DeployToCustomerSubscription { get; set; }
     }
 }

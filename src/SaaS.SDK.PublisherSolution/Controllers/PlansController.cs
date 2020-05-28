@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text.Json;
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
@@ -36,6 +37,8 @@
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
 
+        private readonly IArmTemplateRepository armTemplateRepository;
+
         private readonly ILogger<OffersController> logger;
 
         private PlanService plansService;
@@ -50,7 +53,8 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger)
+        /// <param name="armTemplateRepository">The arm template repository.</param>
+        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger, IArmTemplateRepository armTemplateRepository)
         {
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;
@@ -59,6 +63,7 @@
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
             this.logger = logger;
+            this.armTemplateRepository = armTemplateRepository;
             this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
         }
 
@@ -71,6 +76,11 @@
             this.logger.LogInformation("Plans Controller / OfferDetails:  offerGuId");
             try
             {
+                if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName(MainMenuStatusEnum.IsLicenseManagementEnabled.ToString())) == true)
+                {
+                    this.TempData["ShowLicensesMenu"] = true;
+                }
+
                 List<PlansModel> getAllPlansData = new List<PlansModel>();
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -102,6 +112,8 @@
                 this.TempData["ShowWelcomeScreen"] = "True";
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 plans = this.plansService.GetPlanDetailByPlanGuId(planGuId);
+                var armTemplates = this.armTemplateRepository.GetAll().ToList();
+                this.ViewBag.ARMTemplate = new SelectList(armTemplates, "ArmtempalteId", "ArmtempalteName");
                 return this.PartialView(plans);
             }
             catch (Exception ex)
@@ -127,6 +139,7 @@
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
+                    this.plansService.UpdateDeployToCustomerSubscriptionFlag(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();

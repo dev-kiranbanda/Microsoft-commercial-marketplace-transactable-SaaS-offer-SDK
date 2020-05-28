@@ -85,12 +85,12 @@
                     };
                     this.subscriptionLogRepository.Save(auditLog);
 
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, "Unsubscribe Failed", SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), "Unsubscribed", SubscriptionStatusEnumExtension.Unsubscribed.ToString());
                 }
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, errorDescriptin, SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.DeleteResourceGroupSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString());
                     this.logger?.LogInformation(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString(), true);

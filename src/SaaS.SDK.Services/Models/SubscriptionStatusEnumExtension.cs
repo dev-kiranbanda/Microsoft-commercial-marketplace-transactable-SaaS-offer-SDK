@@ -44,5 +44,35 @@
         /// The unsubscribe failed
         /// </summary>
         UnsubscribeFailed,
+
+        /// <summary>
+        /// The deployment pending
+        /// </summary>
+        DeploymentPending,
+
+        /// <summary>
+        /// The deployment successful
+        /// </summary>
+        DeploymentSuccessful,
+
+        /// <summary>
+        /// The deployment failed
+        /// </summary>
+        DeploymentFailed,
+
+        /// <summary>
+        /// The delete resource pending
+        /// </summary>
+        DeleteResourcePending,
+
+        /// <summary>
+        /// The delete resource success
+        /// </summary>
+        DeleteResourceSuccess,
+
+        /// <summary>
+        /// The delete resource failed
+        /// </summary>
+        DeleteResourceFailed,
     }
 }

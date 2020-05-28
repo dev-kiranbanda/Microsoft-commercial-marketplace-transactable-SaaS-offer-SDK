@@ -186,6 +186,37 @@
         }
 
         /// <summary>
+        /// Saves the deployment credentials.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="keyVaultSecret">The key vault secret.</param>
+        /// <param name="userId">The user identifier.</param>
+        public void SaveDeploymentCredentials(Guid subscriptionId, string keyVaultSecret, int userId)
+        {
+            var existingKey = this.context.SubscriptionKeyVault.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
+            if (existingKey != null)
+            {
+                existingKey.SecureId = keyVaultSecret;
+                existingKey.SubscriptionId = subscriptionId;
+                this.context.SubscriptionKeyVault.Update(existingKey);
+            }
+            else
+            {
+                SubscriptionKeyVault subscriptionKeyVault = new SubscriptionKeyVault()
+                {
+                    SubscriptionId = subscriptionId,
+                    SecureId = keyVaultSecret,
+                    CreateDate = DateTime.Now,
+                    UserId = userId,
+                };
+
+                this.context.SubscriptionKeyVault.Add(subscriptionKeyVault);
+                this.context.SaveChanges();
+            }
+        }
+
+
+        /// <summary>
         /// Updates the plan for subscription.
         /// </summary>
         /// <param name="subscriptionParametersOutput">The subscription parameters output.</param>
@@ -211,6 +242,16 @@
                 this.context.SubscriptionAttributeValues.Add(newAttributeValue);
                 this.context.SaveChanges();
             }
+        }
+
+        /// <summary>
+        /// Gets the deployment configuration.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns> Subscription Key Vault.</returns>
+        public SubscriptionKeyVault GetDeploymentConfig(Guid subscriptionId)
+        {
+            return this.context.SubscriptionKeyVault.Where(s => s.SubscriptionId == subscriptionId).FirstOrDefault();
         }
 
         /// <summary>

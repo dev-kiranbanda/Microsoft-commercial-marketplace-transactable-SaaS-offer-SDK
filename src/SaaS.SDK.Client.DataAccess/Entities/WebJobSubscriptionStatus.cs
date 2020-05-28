@@ -10,5 +10,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public string SubscriptionStatus { get; set; }
         public string Description { get; set; }
         public DateTime? InsertDate { get; set; }
+        public Guid? ArmtemplateId { get; set; }
+        public string DeploymentStatus { get; set; }
     }
 }

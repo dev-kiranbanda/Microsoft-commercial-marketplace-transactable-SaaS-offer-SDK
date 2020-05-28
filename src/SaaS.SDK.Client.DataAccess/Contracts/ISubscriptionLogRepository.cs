@@ -24,6 +24,6 @@
         /// <param name="subscriptionID">The subscription identifier.</param>
         /// <param name="errorDescription">The error description.</param>
         /// <param name="subscriptionStatus">The subscription status.</param>
-        void LogStatusDuringProvisioning(Guid subscriptionID, string errorDescription, string subscriptionStatus);
+        void LogStatusDuringProvisioning(Guid subscriptionID, Guid? armtemplateId, string deploymentStatus, string errorDescription, string subscriptionStatus);
     }
 }

@@ -43,5 +43,20 @@
         /// <param name="offerGuId">The offer identifier.</param>
         /// <returns>List of offer attributes.</returns>
         IEnumerable<OfferAttributes> GetAllOfferAttributesByOfferId(Guid offerGuId);
+
+        /// <summary>
+        /// Adds the deployment attributes.
+        /// </summary>
+        /// <param name="offerId">The offer identifier.</param>
+        /// <param name="currentUserId">The current user identifier.</param>
+        /// <param name="deploymentAttributes">The deployment attributes.</param>
+        /// <returns>Id of the newly added deployment attribute.</returns>
+        int? AddDeploymentAttributes(Guid offerId, int currentUserId, List<DeploymentAttributes> deploymentAttributes);
+
+        /// <summary>
+        /// Gets the deployment parameters.
+        /// </summary>
+        /// <returns>List of deployment parameters across offers.</returns>
+        IEnumerable<DeploymentAttributes> GetDeploymentParameters();
     }
 }

@@ -89,12 +89,12 @@
                     };
                     this.subscriptionLogRepository.Save(auditLog);
 
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
                 }
                 catch (Exception ex)
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
+                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
                     this.logger?.LogInformation(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.ActivationFailed.ToString(), false);

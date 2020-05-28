@@ -11,6 +11,7 @@
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
@@ -81,6 +82,10 @@
 
         private readonly ISubscriptionStatusHandler notificationStatusHandlers;
 
+        private readonly ISubscriptionStatusHandler resourceDeploymentStatusHandlers;
+
+        private readonly ISubscriptionStatusHandler pendingDeleteStatusHandler;
+
         private readonly ILoggerFactory loggerFactory;
 
         private SubscriptionService subscriptionService = null;
@@ -88,6 +93,17 @@
         private ApplicationLogService applicationLogService = null;
 
         private PlanService planService = null;
+
+        private readonly IVaultService keyVaultClient;
+
+        private readonly IArmTemplateRepository armTemplateRepository;
+
+        private readonly IARMTemplateStorageService azureBlobFileClient;
+
+        private readonly ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository;
+
+        private readonly KeyVaultConfig keyVaultConfig;
+
 
         /// <summary>
         /// The user service.
@@ -113,7 +129,7 @@
         /// <param name="cloudConfigs">The cloud configs.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="emailService">The email service.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService, IVaultService keyVaultClient, IArmTemplateRepository armTemplateRepository, IARMTemplateStorageService azureBlobFileClient, ISubscriptionTemplateParametersRepository subscriptionTemplateParametersRepository, KeyVaultConfig keyVaultConfig)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -134,6 +150,12 @@
             this.eventsRepository = eventsRepository;
             this.emailService = emailService;
             this.loggerFactory = loggerFactory;
+            this.keyVaultClient = keyVaultClient;
+            this.armTemplateRepository = armTemplateRepository;
+            this.azureBlobFileClient = azureBlobFileClient;
+            this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
+            this.keyVaultConfig = keyVaultConfig;
+            var armTemplateDeploymentManager = new ARMTemplateDeploymentManager(this.loggerFactory.CreateLogger<ARMTemplateDeploymentManager>());
 
             this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
                                                                           apiClient,
@@ -173,6 +195,38 @@
                                                                         planRepository,
                                                                         userRepository,
                                                                         this.loggerFactory.CreateLogger<UnsubscribeStatusHandler>());
+
+            this.resourceDeploymentStatusHandlers = new ResourceDeploymentStatusHandler(
+                                                                            apiClient,
+                                                                           applicationConfigRepository,
+                                                                            subscriptionLogsRepo,
+                                                                            subscriptionRepo,
+                                                                            keyVaultClient,
+                                                                            azureBlobFileClient,
+                                                                            keyVaultConfig,
+                                                                            planRepository,
+                                                                            userRepository,
+                                                                            offersRepository,
+                                                                            armTemplateRepository,
+                                                                           planEventsMappingRepository,
+                                                                            eventsRepository,
+                                                                            this.loggerFactory.CreateLogger<ResourceDeploymentStatusHandler>(),
+                                                                            armTemplateDeploymentManager,
+                                                                            subscriptionTemplateParametersRepository);
+
+            this.pendingDeleteStatusHandler = new PendingDeleteStatusHandler(
+                                                                              apiClient,
+                                                                              applicationConfigRepository,
+                                                                              subscriptionLogsRepo,
+                                                                              subscriptionRepo,
+                                                                              keyVaultClient,
+                                                                              keyVaultConfig,
+                                                                              subscriptionTemplateParametersRepository,
+                                                                              planRepository,
+                                                                              userRepository,
+                                                                              this.loggerFactory.CreateLogger<PendingDeleteStatusHandler>(),
+                                                                              armTemplateDeploymentManager);
+
         }
 
         /// <summary>
@@ -226,6 +280,19 @@
                                 x.PlanGUID = Guid.NewGuid();
                             });
                             this.subscriptionService.AddPlanDetailsForSubscription(planList);
+
+                            var deploymentAttributes = this.offerAttributesRepository.GetDeploymentParameters();
+                            if (deploymentAttributes != null && deploymentAttributes.Count() > 0)
+                            {
+                                var attribures = this.offerAttributesRepository.AddDeploymentAttributes(newOfferId, currentUserId, deploymentAttributes.ToList());
+                                var allPlansOfSubscription = this.planRepository.GetPlansByOfferId(newOfferId);
+
+                                foreach (var plan in allPlansOfSubscription)
+                                {
+                                    var deploymentAttributesofPlan = this.planService.SavePlanDeploymentAttributes(plan, currentUserId);
+                                }
+                            }
+
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
@@ -248,6 +315,7 @@
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                            subscriptionExtension.DeployToCustomerSubscription = currentPlan.DeployToCustomerSubscription ?? false;
                         }
                     }
                     else
@@ -281,6 +349,46 @@
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
+            }
+        }
+
+        /// <summary>
+        /// Validates the user parameters.
+        /// </summary>
+        /// <param name="subscriptionResultExtension">The subscription result extension.</param>
+        /// <returns> Success or failure status.</returns>
+        [HttpPost]
+        public IActionResult ValidateUserParameters(SubscriptionResultExtension subscriptionResultExtension)
+        {
+            if (this.User.Identity.IsAuthenticated)
+            {
+                if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
+                {
+                    var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment").ToList();
+                    IDictionary<string, string> parms = new Dictionary<string, string>();
+                    foreach (var parm in deploymentParms)
+                    {
+                        parms.Add(parm.DisplayName, parm.Value);
+                    }
+
+                    bool isFileSupported = this.keyVaultClient.ValidateUserParameters(parms);
+                    if (!isFileSupported)
+                    {
+                        return this.Json(new { status = false, responseText = "Invalid Credentials." });
+                    }
+                    else
+                    {
+                        return this.Json(new { status = true, responseText = "Valid Credentials" });
+                    }
+                }
+                else
+                {
+                    return this.Json(new { status = false, responseText = "Enter Valid Credentials" });
+                }
+            }
+            else
+            {
+                return this.RedirectToAction(nameof(this.Index));
             }
         }
 
@@ -569,6 +677,18 @@
                                         var inputParmsList = inputParms.ToList();
                                         this.subscriptionService.AddSubscriptionParameters(inputParmsList, currentUserId);
                                     }
+                                    var deploymentParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "deployment");
+                                    if (deploymentParms != null && planDetail.DeployToCustomerSubscription == true)
+                                    {
+                                        var deploymentParmslist = deploymentParms.ToList();
+                                        IDictionary<string, string> parms = new Dictionary<string, string>();
+                                        foreach (var parm in deploymentParmslist)
+                                        {
+                                            parms.Add(parm.DisplayName, parm.Value.Trim());
+                                        }
+                                        string azureKeyValtSecret = this.keyVaultClient.WriteKeyAsync(subscriptionId.ToString(), JsonSerializer.Serialize(parms)).ConfigureAwait(false).GetAwaiter().GetResult();
+                                        this.subscriptionRepository.SaveDeploymentCredentials(subscriptionId, azureKeyValtSecret, currentUserId);
+                                    }
                                 }
 
                                 if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
@@ -591,11 +711,15 @@
                                             this.subscriptionLogRepository.Save(auditLog);
                                         }
                                     }
+                                    this.logger.LogInformation("Call ResourceDeploymentStatusHandlers");
+                                    this.resourceDeploymentStatusHandlers.Process(subscriptionId);
 
+                                    this.logger.LogInformation("Call PendingActivationStatusHandlers");
                                     this.pendingActivationStatusHandlers.Process(subscriptionId);
                                 }
                                 else
                                 {
+                                    this.logger.LogInformation("Call PendingFulfillmentStatusHandlers");
                                     this.pendingFulfillmentStatusHandlers.Process(subscriptionId);
                                 }
                             }
@@ -621,7 +745,10 @@
                                 };
                                 this.subscriptionLogRepository.Save(auditLog);
                             }
+                            this.logger.LogInformation("Call pendingDeleteStatusHandler");
+                            this.pendingDeleteStatusHandler.Process(subscriptionId);
 
+                            this.logger.LogInformation("Call unsubscribeStatusHandlers");
                             this.unsubscribeStatusHandlers.Process(subscriptionId);
                         }
                     }
