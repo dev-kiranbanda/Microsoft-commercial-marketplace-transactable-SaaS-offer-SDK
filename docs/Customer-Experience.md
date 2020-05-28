@@ -189,4 +189,4 @@ The Plan ID is available in the **Plan overview** tab of the offer as shown here
  
 ## Next steps
 
-* [Publisher provisioning experience](./Publisher-Experience.md): This document shows how to configure the web solution that enables the activation of a customer purchasing your SaaS Service and how to send Mettered based billing back to the Commercial Marketplace API.
+* [Publisher provisioning experience](./Publisher-Experience.md): This document shows how to configure the web solution that enables the activation of a customer purchasing your SaaS Service and how to send Metered based billing back to the Commercial Marketplace API.
