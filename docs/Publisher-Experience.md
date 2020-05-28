@@ -257,9 +257,9 @@ Task<OperationResult> GetOperationStatusResultAsync(Guid subscriptionId, Guid op
  
 ## Manage Licenses
 
-- Log on to [Publisher portal]()
-- Click **Licenses** menu at the top to view the list of subscriptions and licenses.
-- There is an option to **Revoke** an active license and **Activate** an already revoked license.
+* Log on to **Publisher portal**.
+* Click **Licenses** menu at the top to view the list of subscriptions and licenses.
+* There is an option to **Revoke** an active license and **Activate** an already revoked license.
 ![View Licenses](./images/publisher-add-revoke-license.png)
-- Select a subscription, enter license key detail and hit **Add License** to assign a license.
+* Select a subscription, enter license key detail and hit **Add License** to assign a license.
 ![Add License](./images/publisher-add-revoke-license.png)

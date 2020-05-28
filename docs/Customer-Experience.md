@@ -178,9 +178,9 @@ The Plan ID is available in the **Plan overview** tab of the offer as shown here
  ![SaaS Subscriptions](./images/activity-log-popup.png)
  
  
-## View Licenses
+### View Licenses
 
-1. Log on to [AMP SDK Sample application]()
+1. Log on to the customer provisioning application.
 2. Click **Licenses** menu at the top to view the list of subscriptions and licenses.
 3. Use the **Copy** button to copy the license text to clipboard
 
