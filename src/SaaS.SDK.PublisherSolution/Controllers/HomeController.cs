@@ -354,7 +354,8 @@
             {
                 if (User.Identity.IsAuthenticated)
                 {
-                    var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                    var oldValue = this.subscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId);
+                    var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(oldValue.CustomerEmailAddress, subscriptionId).FirstOrDefault();
                     return this.View(subscriptionDetail);
                 }
                 else
