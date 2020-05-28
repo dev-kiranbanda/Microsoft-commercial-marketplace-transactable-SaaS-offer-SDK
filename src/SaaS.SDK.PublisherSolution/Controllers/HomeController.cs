@@ -538,7 +538,8 @@
                     {
                         this.TempData["ShowLicensesMenu"] = true;
                     }
-                    var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                    var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
+                    var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(oldValue.CustomerEmailAddress, subscriptionId).FirstOrDefault();
                     return this.View(subscriptionDetail);
                 }
                 else
