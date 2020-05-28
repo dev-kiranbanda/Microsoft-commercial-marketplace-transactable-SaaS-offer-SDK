@@ -12,7 +12,7 @@
 }
 
 .cm-top-nav-bar {
-    background-color: #000 !important;
+    background-color: #6A27DB !important;
     margin-bottom: 0px;
     border-radius: 0;
 }
@@ -61,7 +61,7 @@
     width: auto;
     padding: 8px;
     max-width: 100%;
-    width: 15%;
+    width: 30%;
 }
 
 .cm-panel-default {
@@ -74,7 +74,7 @@
     font-family: 'Montserrat' !important;
     font-size: 25px;
     background-color: #fff;
-    border-bottom: 4px solid #FA582D;
+    border-bottom: 4px solid #6A27DB;
     text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 40px;
@@ -123,8 +123,8 @@
 
 .cm-button-default {
     color: #fff !important;
-    background-color: #FA582D ! important;
-    border-color: #FA582D;
+    background-color: #6A27DB !important;
+    border-color: #6A27DB;
     display: inline-block;
     font-weight: 400;
     text-align: center;
@@ -150,7 +150,7 @@
 
     .cm-button-default:hover {
         background-color: #000 !important;
-        color: #FA582D;
+        color: #6A27DB;
     }
 
 .cm-button-error {
@@ -290,7 +290,7 @@
 
     .cm-link-button:hover {
         cursor: pointer;
-        color: #000 !important;
+        color: #fff !important;
     }
 
 /*.cm-footer {
@@ -307,9 +307,9 @@
     left: 0;
     bottom: 0;
     width: 100%;
-    background-color: #FA582D;
+    background-color: #6A27DB;
     font-size: 12px !important;
-    color: black !important;
+    color: white !important;
     height: 20px;
     line-height: 20px;
 }
