@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.Marketplace.SaasKit.Models;
 using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
 using Newtonsoft.Json;
+using Microsoft.Marketplace.SaasKit.Client.Models;
 
 namespace Microsoft.Marketplace.SaasKit.Client.Services
 {
@@ -140,20 +141,45 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
         /// </summary>
         /// <param name="subscription">The subscription.</param>
         /// <returns></returns>
-        private SubscriptionResult PrepareSubscriptionResponse(Subscriptions subscription)
+        private SubscriptionResultExtension PrepareSubscriptionResponse(Subscriptions subscription)
         {
-            SubscriptionResult subscritpionDetail = new SubscriptionResult
-            {
-                Id = subscription.AmpsubscriptionId,
-                SubscribeId = subscription.Id,
-                PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId,
-                Name = subscription.Name,
-                SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus),
-                IsActiveSubscription = subscription.IsActive ?? false,
-                CustomerEmailAddress = subscription.User?.EmailAddress,
-                CustomerName = subscription.User?.FullName
-            };
+            SubscriptionResultExtension subscritpionDetail = new SubscriptionResultExtension();
+
+            subscritpionDetail.Id = subscription.AmpsubscriptionId;
+            subscritpionDetail.SubscribeId = subscription.Id;
+            subscritpionDetail.PlanId = string.IsNullOrEmpty(subscription.AmpplanId) ? string.Empty : subscription.AmpplanId;
+            subscritpionDetail.Quantity = subscription.Ampquantity;
+            subscritpionDetail.Name = subscription.Name;
+            subscritpionDetail.SaasSubscriptionStatus = GetSubscriptionStatus(subscription.SubscriptionStatus);
+            subscritpionDetail.IsActiveSubscription = subscription.IsActive ?? false;
+            subscritpionDetail.CustomerEmailAddress = subscription.User?.EmailAddress;
+            subscritpionDetail.CustomerName = subscription.User?.FullName;
+            subscritpionDetail.Purchaser = new PurchaserResult();
+            subscritpionDetail.Purchaser.EmailId = subscription.PurchaserEmail;
+            subscritpionDetail.Purchaser.TenantId = subscription.PurchaserTenantId ?? default;
+
             return subscritpionDetail;
+        }
+
+        /// <summary>
+        /// Gets the subscriptions for partner.
+        /// </summary>
+        /// <param name="partnerEmailAddress">The partner email address.</param>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="includeUnsubscribed">if set to <c>true</c> [include unsubscribed].</param>
+        /// <returns></returns>
+        public List<SubscriptionResultExtension> GetPartnerSubscription(string partnerEmailAddress, Guid subscriptionId, bool includeUnsubscribed = false)
+        {
+            List<SubscriptionResultExtension> allSubscriptions = new List<SubscriptionResultExtension>();
+            var allSubscriptionsForEmail = SubscriptionRepository.GetSubscriptionsByEmailAddress(partnerEmailAddress, subscriptionId, includeUnsubscribed).OrderByDescending(s => s.CreateDate).ToList();
+
+            foreach (var subscription in allSubscriptionsForEmail)
+            {
+                SubscriptionResultExtension subscritpionDetail = PrepareSubscriptionResponse(subscription);
+                if (subscritpionDetail != null && subscritpionDetail.SubscribeId > 0)
+                    allSubscriptions.Add(subscritpionDetail);
+            }
+            return allSubscriptions;
         }
 
         public SubscriptionStatusEnum GetSubscriptionStatus(string subscriptionStatus)
@@ -228,6 +254,19 @@ namespace Microsoft.Marketplace.SaasKit.Client.Services
                         PlanId = plan.PlanId,
                         DisplayName = plan.DisplayName,
                     }).ToList();
+        }
+
+        /// <summary>
+        /// Updates the subscription quantity.
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <param name="quantity">The quantity identifier.</param>
+        /// <returns></returns>
+        public bool UpdateSubscriptionQuantity(Guid subscriptionId, int quantity)
+        {
+            if (subscriptionId != default && quantity > 0)
+                SubscriptionRepository.UpdateQuantityForSubscription(subscriptionId, quantity);
+            return false;
         }
     }
 }

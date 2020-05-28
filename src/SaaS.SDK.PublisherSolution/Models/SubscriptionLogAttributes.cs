@@ -5,6 +5,7 @@
         Plan = 1,
         Status = 2,
         ProviderCount = 3,
-        Metered = 4
+        Metered = 4,
+        Quantity = 5
     }
 }

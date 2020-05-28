@@ -340,6 +340,35 @@
             return RedirectToAction(nameof(RecordUsage), new { subscriptionId = subscriptionData.SubscriptionDetail.Id });
         }
 
+        /// <summary>
+        /// Get Subscription Details for selected Subscription
+        /// </summary>
+        /// <param name="subscriptionId">The subscription identifier.</param>
+        /// <returns>
+        /// The <see cref="IActionResult" />
+        /// </returns>
+        public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
+        {
+            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonConvert.SerializeObject(subscriptionId));
+            try
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    var subscriptionDetail = this.subscriptionService.GetPartnerSubscription(CurrentUserEmailAddress, subscriptionId).FirstOrDefault();
+                    return this.View(subscriptionDetail);
+                }
+                else
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return View("Error", ex);
+            }
+        }
+
         public IActionResult ActivateSubscription(Guid subscriptionId, string planId)
         {
             this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId:{1}", subscriptionId, planId);
@@ -728,6 +757,76 @@
                     catch (FulfillmentException fex)
                     {
                         this.TempData["ErrorMsg"] = fex.Message;
+                    }
+                }
+
+                return this.RedirectToAction(nameof(this.Subscriptions));
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return View("Error", ex);
+            }
+        }
+        /// <summary>
+        /// Changes the quantity plan.
+        /// </summary>
+        /// <param name="subscriptionDetail">The subscription detail.</param>
+        /// <returns>Changes subscription quantity</returns>
+        [HttpPost]
+        public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
+        {
+            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonConvert.SerializeObject(subscriptionDetail));
+            try
+            {
+                if (subscriptionDetail != null && subscriptionDetail.Id != default && subscriptionDetail.Quantity > 0)
+                {
+                    try
+                    {
+                        var subscriptionId = subscriptionDetail.Id;
+                        var quantity = subscriptionDetail.Quantity;
+
+                        var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
+
+                        var jsonResult = await this.fulfillApiClient.ChangeQuantityForSubscriptionAsync(subscriptionId, quantity).ConfigureAwait(false);
+
+                        var changeQuantityOperationStatus = OperationStatusEnum.InProgress;
+                        if (jsonResult != null && jsonResult.OperationId != default)
+                        {
+                            while (OperationStatusEnum.InProgress.Equals(changeQuantityOperationStatus) || OperationStatusEnum.NotStarted.Equals(changeQuantityOperationStatus))
+                            {
+                                var changeQuantityOperationResult = await this.fulfillApiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
+                                changeQuantityOperationStatus = changeQuantityOperationResult.Status;
+
+                                this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonConvert.SerializeObject(subscriptionId), JsonConvert.SerializeObject(quantity));
+                                this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
+                            }
+
+                            var oldValue = this.subscriptionService.GetSubscriptionsForSubscriptionId(subscriptionId);
+
+                            this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
+                            this.logger.LogInformation("Quantity Successfully Changed.");
+                            this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
+
+                            if (oldValue != null)
+                            {
+                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                {
+                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                                    SubscriptionId = oldValue.SubscribeId,
+                                    NewValue = quantity.ToString(),
+                                    OldValue = oldValue.Quantity.ToString(),
+                                    CreateBy = currentUserId,
+                                    CreateDate = DateTime.Now
+                                };
+                                this.subscriptionLogRepository.Add(auditLog);
+                            }
+                        }
+                    }
+                    catch (FulfillmentException fex)
+                    {
+                        this.TempData["ErrorMsg"] = fex.Message;
+                        this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);
                     }
                 }
 
