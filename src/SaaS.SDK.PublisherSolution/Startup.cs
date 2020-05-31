@@ -180,6 +180,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IEmailService, SMTPEmailService>();
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
             services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
+            services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
         }
     }
 }
