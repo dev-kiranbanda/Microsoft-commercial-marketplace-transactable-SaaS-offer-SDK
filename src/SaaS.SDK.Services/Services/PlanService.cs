@@ -88,6 +88,7 @@
                 Description = existingPlan.Description,
                 PlanGUID = existingPlan.PlanGuid,
                 OfferName = offerDetails.OfferName,
+                DeployToCustomerSubscription = existingPlan.DeployToCustomerSubscription ?? false,
             };
 
             plan.PlanAttributes = new List<PlanAttributesModel>();
@@ -120,6 +121,7 @@
                     EventName = events.EventsName,
                     EventId = events.EventId,
                     CopyToCustomer = events.CopyToCustomer,
+                    ArmtemplateId = events.ArmtemplateId,
                 };
                 plan.PlanEvents.Add(planEventsModel);
             }
@@ -170,6 +172,7 @@
                 events.UserId = planEvents.UserId;
                 events.CreateDate = DateTime.Now;
                 events.CopyToCustomer = planEvents.CopyToCustomer;
+                events.ArmtemplateId = planEvents.ArmtemplateId;
                 var planEventsId = this.plansRepository.AddPlanEvents(events);
                 return planEventsId;
             }

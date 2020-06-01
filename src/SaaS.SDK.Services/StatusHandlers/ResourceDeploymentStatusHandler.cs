@@ -2,6 +2,8 @@
 {
     using System;
     using System.Linq;
+    using System.Text.Json;
+    using System.Threading.Tasks;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
@@ -10,7 +12,6 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Status handler to handle the subscription in PendingDeployment status.
@@ -151,7 +152,7 @@
             this.logger.LogInformation("ResourceDeploymentStatusHandler Process...");
             this.logger.LogInformation("Get SubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
-            this.logger?.LogInformation("Result subscription : {0}", JsonConvert.SerializeObject(subscription.AmpplanId));
+            this.logger?.LogInformation("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
             this.logger.LogInformation("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
             this.logger.LogInformation("Get User");
@@ -185,7 +186,7 @@
                                 this.logger.LogInformation("Get attributelsit");
                                 var parametersList = attributelsit.Where(s => s.ParameterType.ToLower() == "input" && s.EventsName == "Activate").ToList();
 
-                                this.logger.LogInformation("Attributelsit : {0}", JsonConvert.SerializeObject(parametersList));
+                                this.logger.LogInformation("Attributelsit : {0}", JsonSerializer.Serialize(parametersList));
                                 if (parametersList.Count() > 0)
                                 {
                                     this.logger.LogInformation("UpdateWebJobSubscriptionStatus");
@@ -207,14 +208,14 @@
                                     this.logger.LogInformation("Get DoVault");
                                     string secretValue = this.azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                                    var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
+                                    var credenitals = JsonSerializer.Deserialize<CredentialsModel>(secretValue);
                                     this.logger.LogInformation("SecretValue : {0}", secretValue);
                                     this.logger.LogInformation("Start Deployment: DeployARMTemplate");
                                     string armTemplateCOntent = this.azureBlobFileClient.GetARMTemplateContentAsString(armTemplate.ArmtempalteName);
 
-                                    var output = this.armTemplateDeploymentManager.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent).ConfigureAwait(false).GetAwaiter().GetResult();
+                                    var output =Task.Run(()=> this.armTemplateDeploymentManager.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent)).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                                    string outputstring = JsonConvert.SerializeObject(output.Properties.Outputs);
+                                    string outputstring = JsonSerializer.Serialize(output.Properties.Outputs);
                                     var outPutList = this.subscriptionService.GenerateParmlistFromResponse(output);
                                     if (outPutList != null)
                                     {

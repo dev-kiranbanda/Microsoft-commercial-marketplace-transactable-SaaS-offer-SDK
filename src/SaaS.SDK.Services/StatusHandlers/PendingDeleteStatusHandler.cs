@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using System.Text.Json;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
@@ -9,7 +10,6 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Contracts;
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Status handler to handle the subscription that is in pending delete status.
@@ -137,7 +137,7 @@
                             this.logger?.LogInformation("Get DoVault");
                             string secretValue = this.azureKeyVaultClient.GetKeyAsync(secretKey).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                            var credenitals = JsonConvert.DeserializeObject<CredentialsModel>(secretValue);
+                            var credenitals = JsonSerializer.Deserialize<CredentialsModel>(secretValue);
                             this.logger?.LogInformation("SecretValue : {0}", secretValue);
 
                             this.aRMTemplateDeploymentManager.DeleteResoureGroup(parametersList, credenitals);

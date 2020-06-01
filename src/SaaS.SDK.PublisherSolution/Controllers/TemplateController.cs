@@ -5,6 +5,7 @@
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Text.Json;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
@@ -14,8 +15,7 @@
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-    using Newtonsoft.Json.Linq;
-
+    
     /// <summary>
     /// Template Controller to manage ARM templates.
     /// </summary>
@@ -131,8 +131,8 @@
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        string str = new StreamReader(formFile.OpenReadStream()).ReadToEnd();
-                        dynamic result = JObject.Parse(str);
+                        string json = new StreamReader(formFile.OpenReadStream()).ReadToEnd();
+                        var dictionary = JsonSerializer.Deserialize<IDictionary<string, object>>(json);
 
                         ChildParameterViewModel childparms = new ChildParameterViewModel();
                         childparms.ParameterDataType = "string";
@@ -147,104 +147,52 @@
                         childparms.ParameterType = "input";
                         childlist.Add(childparms);
 
-                        foreach (JToken child in result.parameters.Children())
+                        foreach (var varib in dictionary)
                         {
-                            childparms = new ChildParameterViewModel();
-                            childparms.ParameterType = "input";
-                            var paramName = (child as JProperty).Name;
-                            childparms.ParameterName = paramName;
-                            object paramValue = string.Empty;
-
-                            foreach (JToken grandChild in child)
+                            if (varib.Key == "parameters")
                             {
-                                foreach (JToken grandGrandChild in grandChild)
+
+                                var parameters = System.Text.Json.JsonSerializer.Deserialize<IDictionary<string, object>>(varib.Value.ToString());
+                                foreach (var items in parameters)
                                 {
-                                    var property = grandGrandChild as JProperty;
-
-                                    if (property != null /*&& property.Name == "value"*/)
+                                    childparms = new ChildParameterViewModel();
+                                    childparms.ParameterName = items.Key;
+                                    var options = System.Text.Json.JsonSerializer.Deserialize<IDictionary<string, object>>(items.Value.ToString());
+                                    foreach (var opt in options)
                                     {
-                                        int propertyIntValue = 0;
-                                        bool propertyBoolValue = false;
+                                        if (opt.Key == "type")
+                                        {
+                                            string val = opt.Value.ToString();
+                                            childparms.ParameterDataType = val;
+                                        }
 
-                                        var type = property.Value.GetType();
-
-                                        if (type == typeof(JArray) ||
-                                        property.Value.Type == JTokenType.Object ||
-                                        property.Value.Type == JTokenType.Date)
-                                        {
-                                            paramValue = property.Value;
-                                        }
-                                        else if (property.Value.Type == JTokenType.Integer && int.TryParse((string)property.Value, out propertyIntValue))
-                                        {
-                                            childparms.ParameterDataType = "int";
-                                            paramValue = propertyIntValue;
-                                        }
-                                        else if (property.Value.Type == JTokenType.Boolean && bool.TryParse((string)property.Value, out propertyBoolValue))
-                                        {
-                                            childparms.ParameterDataType = "bool";
-                                            paramValue = propertyBoolValue;
-                                        }
-                                        else
-                                        {
-                                            childparms.ParameterDataType = "string";
-                                            paramValue = (string)property.Value;
-                                        }
                                     }
+                                    childparms.ParameterType = "input";
+                                    childlist.Add(childparms);
                                 }
                             }
 
-                            childlist.Add(childparms);
-                        }
-
-                        model.DeplParms = childlist;
-
-                        foreach (JToken child in result.outputs.Children())
-                        {
-                            childparms = new ChildParameterViewModel();
-                            childparms.ParameterType = "output";
-                            var paramName = (child as JProperty).Name;
-                            childparms.ParameterName = paramName;
-                            object paramValue = string.Empty;
-
-                            foreach (JToken grandChild in child)
+                            if (varib.Key == "outputs")
                             {
-                                foreach (JToken grandGrandChild in grandChild)
+                                var outputs = System.Text.Json.JsonSerializer.Deserialize<IDictionary<string, object>>(varib.Value.ToString());
+                                foreach (var items in outputs)
                                 {
-                                    var property = grandGrandChild as JProperty;
-
-                                    if (property != null /*&& property.Name == "value"*/)
+                                    childparms = new ChildParameterViewModel();
+                                    childparms.ParameterName = items.Key;
+                                    var options = System.Text.Json.JsonSerializer.Deserialize<IDictionary<string, object>>(items.Value.ToString());
+                                    foreach (var opt in options)
                                     {
-                                        int propertyIntValue = 0;
-                                        bool propertyBoolValue = false;
+                                        if (opt.Key == "type")
+                                        {
+                                            string val = opt.Value.ToString();
+                                            childparms.ParameterDataType = val;
+                                        }
 
-                                        var type = property.Value.GetType();
-
-                                        if (type == typeof(JArray) ||
-                                        property.Value.Type == JTokenType.Object ||
-                                        property.Value.Type == JTokenType.Date)
-                                        {
-                                            paramValue = property.Value;
-                                        }
-                                        else if (property.Value.Type == JTokenType.Integer && int.TryParse((string)property.Value, out propertyIntValue))
-                                        {
-                                            childparms.ParameterDataType = "int";
-                                            paramValue = propertyIntValue;
-                                        }
-                                        else if (property.Value.Type == JTokenType.Boolean && bool.TryParse((string)property.Value, out propertyBoolValue))
-                                        {
-                                            childparms.ParameterDataType = "bool";
-                                            paramValue = propertyBoolValue;
-                                        }
-                                        else
-                                        {
-                                            childparms.ParameterDataType = "string";
-                                            paramValue = (string)property.Value;
-                                        }
                                     }
+                                    childparms.ParameterType = "output";
+                                    childlist.Add(childparms);
                                 }
                             }
-
-                            childlist.Add(childparms);
                         }
 
                         model.DeplParms = childlist;

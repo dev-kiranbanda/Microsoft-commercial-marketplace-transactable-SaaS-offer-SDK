@@ -78,5 +78,13 @@
         ///   <c>true</c> if [copy to customer]; otherwise, <c>false</c>.
         /// </value>
         public bool CopyToCustomer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the armtemplate identifier.
+        /// </summary>
+        /// <value>
+        /// The armtemplate identifier.
+        /// </value>
+        public Guid ArmtemplateId { get; set; }
     }
 }

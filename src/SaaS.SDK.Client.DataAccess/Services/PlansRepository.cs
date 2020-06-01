@@ -210,6 +210,7 @@
                         planEvent.EventsName = events.EventsName;
                         planEvent.EventId = events.EventId;
                         planEvent.CopyToCustomer = events.CopyToCustomer ?? false;
+                        planEvent.ArmtemplateId = events.ArmtemplateId ?? default;
                         if (planEvent.EventsName != "Pending Activation")
                         {
                             eventsList.Add(planEvent);
@@ -286,6 +287,7 @@
                     existingPlanEvents.UserId = planEvents.UserId;
                     existingPlanEvents.CreateDate = DateTime.Now;
                     existingPlanEvents.CopyToCustomer = planEvents.CopyToCustomer;
+                    existingPlanEvents.ArmtemplateId = planEvents.ArmtemplateId;
                     this.context.PlanEventsMapping.Update(existingPlanEvents);
                     this.context.SaveChanges();
                     return existingPlanEvents.Id;

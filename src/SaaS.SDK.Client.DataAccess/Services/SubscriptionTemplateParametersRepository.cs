@@ -210,24 +210,13 @@
         /// <returns> Template Paramemters.</returns>
         public List<SubscriptionTemplateParametersOutPut> ReplaceDeploymentparms(List<SubscriptionTemplateParametersOutPut> parmList, List<SubscriptionKeyValueOutPut> subscriptionKeyValuesList)
         {
-            //Hashtable hashTable = new Hashtable();
-            //foreach (var keys in subscriptionKeyValuesList)
-            //{
-            //    hashTable.Add(keys.Key, keys.Value);
-            //}
-
-            //ExtendedProperties properties = new ExtendedProperties();
-
-            //VelocityEngine engine = new VelocityEngine();
-            //engine.Init(properties);
-
-            //VelocityContext context = new VelocityContext(hashTable);
-            //StringWriter writer = new StringWriter();
-            //engine.Evaluate(context, writer, string.Empty, JsonConvert.SerializeObject(parmList));
-
-            //parmList = JsonConvert.DeserializeObject<List<SubscriptionTemplateParametersOutPut>>(writer.ToString());
-           
-
+            foreach (var parm in parmList)
+            {
+                foreach (var keyval in subscriptionKeyValuesList)
+                {
+                    parm.Value = parm.Value.Replace("${" + keyval.Key + "}", keyval.Value);
+                }
+            }
 
             return parmList;
         }

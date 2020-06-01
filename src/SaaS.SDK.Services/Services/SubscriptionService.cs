@@ -316,8 +316,8 @@
         public List<SubscriptionTemplateParameters> GenerateParmlistFromResponse(DeploymentExtended outputstring)
         {
             List<SubscriptionTemplateParameters> childlist = new List<SubscriptionTemplateParameters>();
-            //var templateOutputs = JsonSerializer.Serialize(outputstring.Properties.Outputs);
-            //foreach (JToken child in templateOutputs.Children())
+            var templateOutputs = JsonSerializer.Serialize(outputstring.Properties.Outputs);
+            //foreach (JToken child in outputstring.Properties.Outputs)
             //{
             //    SubscriptionTemplateParameters childparms = new SubscriptionTemplateParameters();
             //    childparms = new SubscriptionTemplateParameters();

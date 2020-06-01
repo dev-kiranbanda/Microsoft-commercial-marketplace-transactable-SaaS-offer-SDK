@@ -1,6 +1,6 @@
 ﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.Models
 {
-    using Newtonsoft.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     /// Credentials Model.
@@ -13,7 +13,7 @@
         /// <value>
         /// The tenant identifier.
         /// </value>
-        [JsonProperty("Tenant ID")]
+        [JsonPropertyName("Tenant ID")]
         public string TenantID { get; set; }
 
         /// <summary>
@@ -22,7 +22,7 @@
         /// <value>
         /// The subscription identifier.
         /// </value>
-        [JsonProperty("Subscription ID")]
+        [JsonPropertyName("Subscription ID")]
         public string SubscriptionID { get; set; }
 
         /// <summary>
@@ -31,7 +31,7 @@
         /// <value>
         /// The service principal identifier.
         /// </value>
-        [JsonProperty("Service Principal ID")]
+        [JsonPropertyName("Service Principal ID")]
         public string ServicePrincipalID { get; set; }
 
         /// <summary>
@@ -40,7 +40,7 @@
         /// <value>
         /// The client secret.
         /// </value>
-        [JsonProperty("Client Secret")]
+        [JsonPropertyName("Client Secret")]
         public string ClientSecret { get; set; }
     }
 }

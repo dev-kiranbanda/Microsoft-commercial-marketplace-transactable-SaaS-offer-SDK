@@ -11,8 +11,9 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Rest.Azure.Authentication;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
+    using System.Text.Json;
+    using System.Text.Json.Serialization;
+
 
     /// <summary>
     /// Helper to deploy ARM templates to Azure / delete resource group.
@@ -53,7 +54,7 @@
                 var serviceCreds = await ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false);
 
                 // Read the template and parameter file contents
-                JObject templateFileContents = JObject.Parse(armTemplateContent);
+                JsonDocument templateFileContents = System.Text.Json.JsonDocument.Parse(armTemplateContent);
 
                 this.logger.LogInformation("Get resourceGroupName");
                 var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
@@ -177,14 +178,14 @@
         /// <param name="templateFileContents">The template file contents.</param>
         /// <param name="hashTable">The hash table.</param>
         /// <returns> DeploymentExtended.</returns>
-        private DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JObject templateFileContents, Hashtable hashTable)
+        private DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JsonDocument templateFileContents, Hashtable hashTable)
         {
             try
             {
                 this.logger.LogInformation(string.Format("Starting template deployment '{0}' in resource group '{1}'", deploymentName, resourceGroupName));
                 var deployment = new Deployment();
 
-                string parameters = JsonConvert.SerializeObject(hashTable, Formatting.Indented, new JsonARMPropertiesConverter(typeof(Hashtable)));
+                string parameters = JsonSerializer.Serialize(hashTable);
 
                 deployment.Properties = new DeploymentProperties
                 {
