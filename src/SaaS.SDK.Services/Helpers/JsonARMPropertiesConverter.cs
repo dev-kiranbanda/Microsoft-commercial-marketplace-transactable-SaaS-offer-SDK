@@ -23,7 +23,7 @@
         /// <param name="types">The types.</param>
         //public JsonARMPropertiesConverter(params Type[] types)
         //{
-        //    this.types = types;
+        //    this.types = types; 
         //}
 
         /// <summary>
