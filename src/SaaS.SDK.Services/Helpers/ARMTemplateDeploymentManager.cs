@@ -54,7 +54,7 @@
                 var serviceCreds = await ApplicationTokenProvider.LoginSilentAsync(tenantId, clientId, clientSecret).ConfigureAwait(false);
 
                 // Read the template and parameter file contents
-                JsonDocument templateFileContents = System.Text.Json.JsonDocument.Parse(armTemplateContent);
+                // JsonDocument templateFileContents = System.Text.Json.JsonDocument.Parse(armTemplateContent);
 
                 this.logger.LogInformation("Get resourceGroupName");
                 var resourceGroupName = templateParameters.Where(s => s.Parameter.ToLower() == "resourcegroup").FirstOrDefault();
@@ -77,15 +77,20 @@
 
                 this.logger.LogInformation("Prepare input parms list");
 
-                Hashtable hashTable = new Hashtable();
+                var objectDictionary = new Dictionary<string, object>();
+                //var stringDictionaly = new Dictionary<string, string>();
+
                 foreach (var cred in templateParameters)
                 {
-                    hashTable.Add(cred.Parameter, cred.Value);
+                   var stringDictionaly = new Dictionary<string, string>();
+                    stringDictionaly.Add("value", cred.Value);
+                    objectDictionary.Add(cred.Parameter, stringDictionaly);
+
                 }
 
                 string deploymentName = string.Format("{0}-deployment", resourceGroupName.Value);
                 this.logger.LogInformation("Start a deployment {0}: DeployTemplate: {1}", deploymentName, template.ArmtempalteName);
-                var result = this.DeployTemplate(resourceManagementClient, resourceGroupName.Value, deploymentName, templateFileContents, hashTable);
+                var result = this.DeployTemplate(resourceManagementClient, resourceGroupName.Value, deploymentName, armTemplateContent, objectDictionary);
                 this.logger.LogInformation("DeployTemplate Request Complete");
                 return result;
             }
@@ -178,14 +183,14 @@
         /// <param name="templateFileContents">The template file contents.</param>
         /// <param name="hashTable">The hash table.</param>
         /// <returns> DeploymentExtended.</returns>
-        private DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, JsonDocument templateFileContents, Hashtable hashTable)
+        private DeploymentExtended DeployTemplate(ResourceManagementClient resourceManagementClient, string resourceGroupName, string deploymentName, string templateFileContents, IDictionary<string, object> objectDictionary)
         {
             try
             {
                 this.logger.LogInformation(string.Format("Starting template deployment '{0}' in resource group '{1}'", deploymentName, resourceGroupName));
                 var deployment = new Deployment();
 
-                string parameters = JsonSerializer.Serialize(hashTable);
+                string parameters = JsonSerializer.Serialize(objectDictionary);
 
                 deployment.Properties = new DeploymentProperties
                 {

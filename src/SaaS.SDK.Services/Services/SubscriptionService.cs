@@ -313,46 +313,26 @@
         /// </summary>
         /// <param name="outputstring">The outputstring.</param>
         /// <returns> Subscription Template Parameters.</returns>
-        public List<SubscriptionTemplateParameters> GenerateParmlistFromResponse(DeploymentExtended outputstring)
+        public List<SubscriptionTemplateParameters> GenerateParmlistFromResponse(DeploymentExtended output)
         {
             List<SubscriptionTemplateParameters> childlist = new List<SubscriptionTemplateParameters>();
-            var templateOutputs = JsonSerializer.Serialize(outputstring.Properties.Outputs);
-            //foreach (JToken child in outputstring.Properties.Outputs)
-            //{
-            //    SubscriptionTemplateParameters childparms = new SubscriptionTemplateParameters();
-            //    childparms = new SubscriptionTemplateParameters();
-            //    childparms.ParameterType = "output";
-            //    var paramName = (child as JProperty).Name;
-            //    childparms.Parameter = paramName;
-            //    object paramValue = string.Empty;
-
-            //    foreach (JToken grandChild in child)
-            //    {
-            //        foreach (JToken grandGrandChild in grandChild)
-            //        {
-            //            var property = grandGrandChild as JProperty;
-
-            //            if (property != null && property.Name == "value")
-            //            {
-            //                var type = property.Value.GetType();
-
-            //                if (type == typeof(JValue) || type == typeof(JArray) ||
-            //                property.Value.Type == JTokenType.Object ||
-            //                property.Value.Type == JTokenType.Date)
-            //                {
-            //                    paramValue = property.Value;
-            //                    if (paramValue != null)
-            //                    {
-            //                        childparms.Value = paramValue.ToString();
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    }
-
-            //    childlist.Add(childparms);
-            //}
-
+            var parameters = JsonSerializer.Deserialize<IDictionary<string, object>>(output.Properties.Outputs.ToString());
+            SubscriptionTemplateParameters childparms = new SubscriptionTemplateParameters();
+            foreach (var child in parameters)
+            {
+                childparms = new SubscriptionTemplateParameters();
+                childparms.ParameterType = "output";
+                childparms.Parameter = child.Key;
+                var values = System.Text.Json.JsonSerializer.Deserialize<IDictionary<string, string>>(child.Value.ToString());
+                foreach (var value in values)
+                {
+                    if (value.Key == "value")
+                    {
+                        childparms.Value = value.Value;
+                    }
+                }
+                childlist.Add(childparms);
+            }
             return childlist;
         }
     }

@@ -85,6 +85,7 @@
                                                             <a class="dropdown-item cm-dropdown-option" onclick="ViewSubscriptionQuantityDetail('@Model.Subscriptions[i].Id')" data-target="#Mymode">Change Quantity</a>
                                                         }
                                                         <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionlogdetailsById('@subscription.Id')">Activity Log</a>
+                                                        <a class="dropdown-item cm-dropdown-option" data-target="#myModal" onclick="ViewSubscriptionParmsById('@subscription.Id')">Deployment Parameters</a>
                                                     </div>
                                                 </div>
 
@@ -190,13 +191,6 @@
         });
     }
     function confirmQuantityDialog() {
-        //var isConfirm = confirm('Are you sure you want to change the plan?');
-        //debugger
-        //if (isConfirm) {
-        //    $("#frmSubscriptionDetail").submit();
-        //}
-
-        var newPlanName = $('#PlanId').val();
         swal({
             text: "Are you sure you want to Change the quantity?",
             icon: "warning",
@@ -210,5 +204,20 @@
                 }
             });
     }
-
+    function ViewSubscriptionParmsById(subscriptionId) {
+        $.ajax({
+            type: "Get",
+            url: "SubscriptionTemplateParmeters",
+            data: { subscriptionId: subscriptionId },
+            contentType: "application/json; charset=utf-8",
+            datatype: "json",
+            success: function (data) {
+                $('#myModal').html(data);
+                $('#myModal').modal();
+            },
+            error: function () {
+                alert("Content load failed.");
+            }
+        });
+    }
 </script>

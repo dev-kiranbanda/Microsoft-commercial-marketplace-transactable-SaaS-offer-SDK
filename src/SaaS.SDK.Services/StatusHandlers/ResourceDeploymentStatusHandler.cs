@@ -213,16 +213,13 @@
                                     this.logger.LogInformation("Start Deployment: DeployARMTemplate");
                                     string armTemplateCOntent = this.azureBlobFileClient.GetARMTemplateContentAsString(armTemplate.ArmtempalteName);
 
-                                    var output =Task.Run(()=> this.armTemplateDeploymentManager.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent)).ConfigureAwait(false).GetAwaiter().GetResult();
-
-                                    string outputstring = JsonSerializer.Serialize(output.Properties.Outputs);
+                                    var output = this.armTemplateDeploymentManager.DeployARMTemplate(armTemplate, parametersList, credenitals, armTemplateCOntent).ConfigureAwait(false).GetAwaiter().GetResult();
                                     var outPutList = this.subscriptionService.GenerateParmlistFromResponse(output);
                                     if (outPutList != null)
                                     {
                                         this.subscriptionTemplateParametersRepository.Update(outPutList.ToList(), subscriptionID);
                                     }
 
-                                    this.logger.LogInformation(outputstring);
                                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString(), true);
 
                                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
