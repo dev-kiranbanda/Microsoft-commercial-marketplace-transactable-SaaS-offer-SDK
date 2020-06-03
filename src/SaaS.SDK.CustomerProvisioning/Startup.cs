@@ -77,6 +77,11 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
 
+            var cloudConfig = new CloudStorageConfigs
+            {
+                AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
+            };
+
             var keyVaultConfig = new KeyVaultConfig()
             {
                 ClientID = this.Configuration["KeyVaultConfig:ClientID"],
@@ -110,15 +115,14 @@ namespace Microsoft.Marketplace.SaasKit.Client
 
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
+            services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
             services.AddSingleton<IARMTemplateStorageService>(new AzureBlobStorageService(azureBlobConfig));
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
             services.AddSingleton<AzureBlobConfig>(azureBlobConfig);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
-
             InitializeRepositoryServices(services);
-
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);
         }
@@ -172,7 +176,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddScoped<ISubscriptionLicensesRepository, SubscriptionLicensesRepository>();
             services.AddScoped<IArmTemplateRepository, ArmTemplateRepository>();
             services.AddScoped<ISubscriptionTemplateParametersRepository, SubscriptionTemplateParametersRepository>();
-            
+
 
         }
     }

@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
+﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
     using System;
 

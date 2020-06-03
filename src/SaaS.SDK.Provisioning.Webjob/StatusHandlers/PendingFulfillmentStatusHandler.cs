@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers
+﻿namespace Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers
 {
     using System;
     using System.Text.Json;
@@ -9,15 +9,20 @@
     using Microsoft.Marketplace.SaasKit.Contracts;
 
     /// <summary>
-    /// Status handler to handle the subscriptions that are in PendingActivation status.
+    /// Status handler to handle the subscription in PendingFulfillment.
     /// </summary>
     /// <seealso cref="Microsoft.Marketplace.SaasKit.Provisioning.Webjob.StatusHandlers.AbstractSubscriptionStatusHandler" />
-    public class PendingActivationStatusHandler : AbstractSubscriptionStatusHandler
+    public class PendingFulfillmentStatusHandler : AbstractSubscriptionStatusHandler
     {
         /// <summary>
-        /// The fulfillment apiclient.
+        /// The fulfillment API client.
         /// </summary>
         private readonly IFulfillmentApiClient fulfillmentApiClient;
+
+        /// <summary>
+        /// The application configuration repository.
+        /// </summary>
+        private readonly IApplicationConfigRepository applicationConfigRepository;
 
         /// <summary>
         /// The subscription log repository.
@@ -27,28 +32,30 @@
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<PendingActivationStatusHandler> logger;
+        private readonly ILogger<PendingFulfillmentStatusHandler> logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PendingActivationStatusHandler"/> class.
+        /// Initializes a new instance of the <see cref="PendingFulfillmentStatusHandler" /> class.
         /// </summary>
         /// <param name="fulfillApiClient">The fulfill API client.</param>
+        /// <param name="applicationConfigRepository">The application configuration repository.</param>
         /// <param name="subscriptionsRepository">The subscriptions repository.</param>
         /// <param name="subscriptionLogRepository">The subscription log repository.</param>
-        /// <param name="subscriptionTemplateParametersRepository">The subscription template parameters repository.</param>
         /// <param name="plansRepository">The plans repository.</param>
         /// <param name="usersRepository">The users repository.</param>
         /// <param name="logger">The logger.</param>
-        public PendingActivationStatusHandler(
+        public PendingFulfillmentStatusHandler(
                                                 IFulfillmentApiClient fulfillApiClient,
+                                                IApplicationConfigRepository applicationConfigRepository,
                                                 ISubscriptionsRepository subscriptionsRepository,
                                                 ISubscriptionLogRepository subscriptionLogRepository,
                                                 IPlansRepository plansRepository,
                                                 IUsersRepository usersRepository,
-                                                ILogger<PendingActivationStatusHandler> logger)
-                                                : base(subscriptionsRepository, plansRepository, usersRepository)
+                                                ILogger<PendingFulfillmentStatusHandler> logger)
+            : base(subscriptionsRepository, plansRepository, usersRepository)
         {
             this.fulfillmentApiClient = fulfillApiClient;
+            this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
             this.logger = logger;
         }
@@ -63,50 +70,40 @@
             var subscription = this.GetSubscriptionById(subscriptionID);
             this.logger?.LogInformation("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
             this.logger?.LogInformation("Get User");
-            var userdeatils = this.GetUserById(subscription.UserId);
-            string oldstatus = subscription.SubscriptionStatus;
+            var userdetails = this.GetUserById(subscription.UserId);
 
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart.ToString())
             {
                 try
                 {
-                    this.logger?.LogInformation("Get attributelsit");
-
-                    var subscriptionData = this.fulfillmentApiClient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
-
-                    this.logger?.LogInformation("UpdateWebJobSubscriptionStatus");
-
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.Subscribed.ToString(), true);
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
 
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionStatusEnumExtension.Subscribed.ToString(),
-                        OldValue = oldstatus,
-                        CreateBy = userdeatils.UserId,
+                        NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
+                        OldValue = SubscriptionStatusEnumExtension.PendingFulfillmentStart.ToString(),
+                        CreateBy = userdetails.UserId,
                         CreateDate = DateTime.Now,
                     };
                     this.subscriptionLogRepository.Save(auditLog);
-
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), "Activated", SubscriptionStatusEnumExtension.Subscribed.ToString());
                 }
                 catch (Exception ex)
                 {
-                    string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
-                    this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, default, DeploymentStatusEnum.ARMTemplateDeploymentSuccess.ToString(), errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
-                    this.logger?.LogInformation(errorDescriptin);
+                    string errorDescription = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
 
-                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.ActivationFailed.ToString(), false);
+                    this.logger?.LogInformation(errorDescription);
 
-                    // Set the status as ActivationFailed.
+                    this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
+
                     SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
                     {
                         Attribute = SubscriptionLogAttributes.Status.ToString(),
                         SubscriptionId = subscription.Id,
-                        NewValue = SubscriptionStatusEnumExtension.ActivationFailed.ToString(),
+                        NewValue = SubscriptionStatusEnumExtension.PendingActivation.ToString(),
                         OldValue = subscription.SubscriptionStatus,
-                        CreateBy = userdeatils.UserId,
+                        CreateBy = userdetails.UserId,
                         CreateDate = DateTime.Now,
                     };
                     this.subscriptionLogRepository.Save(auditLog);

@@ -77,6 +77,10 @@ namespace Microsoft.Marketplace.Saas.Web
                 SignedOutRedirectUri = this.Configuration["SaaSApiConfiguration:SignedOutRedirectUri"],
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
+            var cloudConfig = new CloudStorageConfigs
+            {
+                AzureWebJobsStorage = this.Configuration["AzureWebJobsStorage"],
+            };
             var keyVaultConfig = new KeyVaultConfig()
             {
                 ClientID = this.Configuration["KeyVaultConfig:ClientID"],
@@ -112,6 +116,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
+            services.AddSingleton<CloudStorageConfigs>(cloudConfig);
             services.AddSingleton<IVaultService>(new AzureKeyVaultClient(keyVaultConfig, loggerFactory.CreateLogger<AzureKeyVaultClient>()));
             services.AddSingleton<IARMTemplateStorageService>(new AzureBlobStorageService(azureBlobConfig));
             services.AddSingleton<KeyVaultConfig>(keyVaultConfig);
