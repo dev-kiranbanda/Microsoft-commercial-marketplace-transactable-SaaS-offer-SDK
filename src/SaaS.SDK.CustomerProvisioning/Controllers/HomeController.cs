@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
+    using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -650,7 +651,7 @@
 
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
-                    subscriptionDetail.DeployToCustomerSubscription = planDetails.DeployToCustomerSubscription ?? false;
+
                 }
 
                 return this.View("Index", subscriptionDetail);
@@ -769,7 +770,20 @@
                             }
 
                         }
-                        Task.Run(() => this.RunSubscriptionOperationProcess(subscriptionId, operation));
+                        
+                        SubscriptionOpertationRequest obj = new SubscriptionOpertationRequest()
+                        {
+                            SubscriptionId = subscriptionId,
+                            Operation = operation,
+
+                        };
+
+                        var cancellationTokenSource = new CancellationTokenSource();
+                        Task.Factory.StartNew((o)=> RunSubscriptionOperationProcess(obj)
+                                              , TaskCreationOptions.LongRunning
+                                              , cancellationTokenSource.Token);
+
+                        //Task.Run(() => this.RunSubscriptionOperationProcess(subscriptionId, operation));
                     }
 
 
@@ -983,6 +997,7 @@
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
                     subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                    subscriptionDetail.DeployToCustomerSubscription = planDetails.DeployToCustomerSubscription ?? false;
                 }
 
                 return this.View("Index", subscriptionDetail);
@@ -994,22 +1009,28 @@
             }
         }
 
-        public void RunSubscriptionOperationProcess(Guid subscriptionId, string operation)
+        public void RunSubscriptionOperationProcess(SubscriptionOpertationRequest model)
         {
-            if (operation == "Activate")
+            if (model.Operation == "Activate")
             {
                 foreach (var subscriptionStatusHandler in this.activateStatusHandlers)
                 {
-                    subscriptionStatusHandler.Process(subscriptionId);
+                    subscriptionStatusHandler.Process(model.SubscriptionId);
                 }
             }
-            if (operation == "Deactivate")
+            if (model.Operation == "Deactivate")
             {
                 foreach (var subscriptionStatusHandler in this.deactivateStatusHandlers)
                 {
-                    subscriptionStatusHandler.Process(subscriptionId);
+                    subscriptionStatusHandler.Process(model.SubscriptionId);
                 }
             }
         }
+    }
+
+    public class SubscriptionOpertationRequest
+    {
+        public Guid SubscriptionId { get; set; }
+        public string Operation { get; set; }
     }
 }
