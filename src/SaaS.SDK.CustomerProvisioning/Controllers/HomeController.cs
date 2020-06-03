@@ -168,7 +168,8 @@
             this.subscriptionTemplateParametersRepository = subscriptionTemplateParametersRepository;
             this.keyVaultConfig = keyVaultConfig;
             var armTemplateDeploymentManager = new ARMTemplateDeploymentManager(this.loggerFactory.CreateLogger<ARMTemplateDeploymentManager>());
-
+            this.activateStatusHandlers = new List<ISubscriptionStatusHandler>();
+            this.deactivateStatusHandlers = new List<ISubscriptionStatusHandler>();
             // Activation Flow Status Handelrs
             this.activateStatusHandlers.Add(new ResourceDeploymentStatusHandler(
                                                                          apiClient,
@@ -649,6 +650,7 @@
 
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
+                    subscriptionDetail.DeployToCustomerSubscription = planDetails.DeployToCustomerSubscription ?? false;
                 }
 
                 return this.View("Index", subscriptionDetail);
@@ -769,7 +771,7 @@
                         }
                         Task.Run(() => this.RunSubscriptionOperationProcess(subscriptionId, operation));
                     }
-                    
+
 
                     return this.RedirectToAction(nameof(this.ProcessMessage), new { action = operation, status = operation });
                 }
