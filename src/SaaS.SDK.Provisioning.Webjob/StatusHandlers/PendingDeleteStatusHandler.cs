@@ -108,7 +108,7 @@
             this.logger?.LogInformation("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
 
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString())
+            if (SubscriptionStatusEnumExtension.PendingUnsubscribe.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
                 try
                 {

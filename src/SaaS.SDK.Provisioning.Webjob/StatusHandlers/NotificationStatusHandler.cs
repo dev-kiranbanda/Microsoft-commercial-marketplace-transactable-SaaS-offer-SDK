@@ -146,21 +146,24 @@
             string planEventName = "Activate";
 
             if (
-             subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Unsubscribed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString())
+SubscriptionStatusEnumExtension.Unsubscribed.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) ||
+SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) ||
+SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
                 planEventName = "Unsubscribe";
             }
 
-            if( subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
+            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
             {
                 planEventName = "Pending Activation";
             }
 
             string processStatus = "success";
             if (
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.ActivationFailed.ToString() ||
-                subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString())
+                SubscriptionStatusEnumExtension.DeploymentFailed.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) ||
+                SubscriptionStatusEnumExtension.ActivationFailed.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) ||
+                SubscriptionStatusEnumExtension.UnsubscribeFailed.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) ||
+                SubscriptionStatusEnumExtension.DeleteResourceFailed.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
                 processStatus = "failure";
             }

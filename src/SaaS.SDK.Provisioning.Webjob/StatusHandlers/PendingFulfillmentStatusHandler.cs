@@ -72,7 +72,7 @@
             this.logger?.LogInformation("Get User");
             var userdetails = this.GetUserById(subscription.UserId);
 
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart.ToString())
+            if (SubscriptionStatusEnumExtension.PendingFulfillmentStart.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
                 try
                 {

@@ -66,7 +66,8 @@
             var userdeatils = this.GetUserById(subscription.UserId);
             string oldstatus = subscription.SubscriptionStatus;
 
-            if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation.ToString())
+            if (SubscriptionStatusEnumExtension.PendingActivation.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase) ||
+               SubscriptionStatusEnumExtension.DeploymentSuccessful.ToString().Equals(subscription?.SubscriptionStatus, StringComparison.InvariantCultureIgnoreCase))
             {
                 try
                 {
