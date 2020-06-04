@@ -1,6 +1,12 @@
  # Installation instructions
 
   - [Overview](#overview)
+  - [Set up storage account for queues and blob storage](#set-up-storage-account-for-queues-and-blob-storage)
+    - [Create queue](#create-queue)
+    - [Create Blob storage](#create-blob-storage)
+  - [Set up key vault](#set-up-key-vault)
+  - [Grant key vault access to an Azure AD application](#grant-key-vault-access-to-an-azure-ad-application)
+  - [Add the secret to hold the hosted subscription credentials](#add-the-secret-to-hold-the-hosted-subscription-credentials)
   - [Clone the repository, create an Azure SQL Database single database and prepare](#clone-the-repository-create-an-azure-sql-database-single-database-and-prepare)
   - [Change configuration](#change-configuration)
   - [Create Web Apps on Azure and deploy the code](#create-web-apps-on-azure-and-deploy-the-code)
@@ -17,6 +23,133 @@ Learn more about what's included and how to-use the SDK [here.](https://github.c
 
 Please note: this SDK is community-supported. If you need help or have questions using this SDK, please create a GitHub issue. Do not contact the marketplace pubisher support alias directly regarding use of this SDK. Thank you.
 
+## Set up storage account for queues and blob storage
+- Log on to [Azure](https://portal.azure.com)
+- Click **Create a resource** in the left menu
+
+![Create resource](./images/key-vault-create-resource.png)
+- Type **storage account** in the search box in the top bar
+- Click the item labelled **Storage account - blob, file, table, queue** in the results to navigate to the **Storage Account** creation page
+- Click **Create** button to initiate the creation of a storage account
+
+![Create storage account](./images/storage-account-create.png)
+- Fill out the details in the **Basics** tab 
+  - Select a **Subscription** and **Resource Group**
+![Basic Info](./images/storage-account-basic-info.png)
+
+- Fill out the **Instance Details** section by providing the values for the following fields as illustrated in the below image
+   
+![Basic Details](./images/storage-account-basic-info-details.png)
+
+- Click **Review + Create**
+- **Create** button appears after the validation of the input is complete
+- Click **Create** to create the storage account
+![ Validate Storage Account](./images/storage-account-basic-info-validate.png)
+
+### Create queue
+
+- After creating the **Storage Account**, navigate to the resource and search for **Queue**
+![Queues](./images/storage-account-queue-menu.png)
+- Click **Queues** from the menu in the left
+- Click **Add Queue** button in the top bar
+- In the pane that opens, provide the name of the queue as **saas-provisioning-queue**
+- > Note: The name of the queue is important and should read **saas-provisioning-queue** as the webjob monitors the storage account for messages in a queue named **saas-provisioning-queue**
+
+![Queue name](./images/storage-account-queue-add.png)
+- Navigate to the **Storage Account**, click **Access Keys** item in the left menu
+- Copy the value in the field labelled **Connection string** as shown in the below image
+
+![Storage account connection string](./images/storage-account-queue-connection-string.png)
+- The connection string is going to be used as the value for the keys **AzureWebJobsStorage** and **AzureBlobConfig** > **BlobConnectionString** in appSettings.json / Azure application configuration
+
+### Create Blob storage
+
+- Azure blob storage is used to hold the ARM template files
+- Navigate to the **Storage Account** that was created earlier
+- Click **Containers** in the **Blob service** section in the left menu
+- Click **+ Container** button in the top bar
+- Give the container a name and set the access level as **Private (no anonymous access)** 
+
+![Blob container](./images/storage-account-blob-container.png)
+
+- The name of the container should be set as value for the key **AzureBlobConfig** > **BlobContainer** in appSettings.json / Azure application configuration
+
+## Set up key vault
+
+- Log on to [Azure](https://portal.azure.com)
+- Search for **Key vaults** in the search box in the top bar
+- Click **Key vaults**
+- Click **+ Add** to add a new key vault
+- Fill out the **Basics** using the below image as a reference
+
+![Key vault basic details](./images/key-vault-name-details.png)
+
+- Click **Review + Create**  to trigger the validation of the input detail
+
+![Key vault basic details validation successful](./images/key-vault-name-validation.png)
+
+- Click **Create** to create the key vault
+
+## Grant key vault access to an Azure AD application
+
+- Log on to [Azure](https://portal.azure.com)
+- Click **Azure Active Directory** in the left menu
+- Click **App registrations** in the left menu
+- Click **+ New registration** button in the top bar
+- Provide a name to the application and click **Create**
+
+![New AD app](./images/key-vault-ad-app-registration.png)
+- Grab the **Application ID** and the **Tenant ID** values from the **Overview** section
+
+![AD App details](./images/key-vault-ad-app-details.png)
+- Click **Certificates & secrets** 
+- Click **+ New client secret** to generate a new secret
+![Secret](./images/key-vault-ad-app-create-secret.png)
+- Give a name to the secret and copy the secret value to a text file. The secret, AD Application ID and the tenant ID 
+- Click **API permissions** 
+- Click **+ Add permission**
+- Select **Azure Key Vault** from the list under **Microsoft APIs**
+![Azure Key Vault API permission](./images/key-vault-ad-app-api-permissions.png)
+
+- Select the **user_impersonation** permission and click **Add permissions**
+![Delegated app permissions](./images/key-vault-ad-app-delegated-permissions.png)
+
+- Now, navigate to the key vault that we created in an earlier step
+- Click **Access policies** menu item on the left
+- Click **+ Add access policy**
+- Open the dropdown - **key permissions** and **Select all**
+- Open the dropdown - **secret permissions** and **Select all**
+- Click the field next to **Select principal** and search for the AD app that was just created
+- Select the AD app from the search results and Click **Select**
+
+![Key vault access policy](./images/key-vault-ad-app-access-policy-to-app.png)
+- Click **Add** to give the AD app permission to access the key vault
+- Go to the **Overview** and copy the key vault URL ( DNS name)
+![Key vault url](./images/key-vault-url.png)
+
+- The key vault url should be used in the **keyVaultConfig** > **KeyVaultUrl** 
+
+## Add the secret to hold the hosted subscription credentials
+
+- Log on to [Azure](https://portal.azure.com)
+- Search for **Key vaults** in the search box in the top bar
+- Click **Key vaults**
+- Locate the key vault that was just created
+- Click **Secrets** from the left menu
+- Click **+Generate/Import** button in the top bar
+- Add the details as shown in the below image
+    - Name : **HostedsubscriptionCredentials**
+    - Value : 
+```json    
+{
+"Tenant ID":"<tenantID>",
+"Subscription ID":"<Azure Subscription ID>",
+"Service Principal ID":"<service principal that has contributor permissions on the Azure subscription>",
+"Client Secret":"<secret of the service principal>"
+} 
+```
+
+![Default secret](./images/keyvault-default-secret.png)
 
 ## Clone the repository, create an Azure SQL Database single database and prepare
  Create a single database following the instructions on the SQL Database service [quickstart] (https://docs.microsoft.com/en-us/azure/sql-database/sql-database-single-database-get-started?tabs=azure-portal) document.
@@ -24,6 +157,8 @@ Please note: this SDK is community-supported. If you need help or have questions
  - Run the script **AMP-DB-2.1.sql** to initialize the database using your favorite SQL management tool, such as [SQL Server Management Studio](https://docs.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms?view=sql-server-ver15), or [Azure Data Studio](https://docs.microsoft.com/en-us/sql/azure-data-studio/download-azure-data-studio?view=sql-server-ver15). The scripts are in [deployment/database](../deployment/Database) folder.
 
  - Run the script  **AMP-DB-2.2.sql** to update your existing database to 2.2.
+ 
+ - Run the script  **AMP-DB-2.3.sql** to update your existing database to 2.3.
  
 - Add the email for the Azure Active Directory user you are planning to log in to the solution to **KnownUsers** table on the database, with value "1" for the RoleId column. For example, if the user is expected to login with **user@contoso.com** run the following script in your favorite management tool.
 
@@ -45,6 +180,15 @@ Open the files **appsettings.json** under the project **SaaS.SDK.CustomerProvisi
 - **AdAuthenticationEndpoint** - https://login.microsoftonline.com
 - **SaaSAppUrl** - URL to the SaaS solution 
 - **DefaultConnection** - Set the connection string to connect to the database.     
+- **AzureWebJobsStorage** - Connection string to the Azure storage queue. Adding a message to this queue would trigger the **Provisioning webjob** that monitors the queue for messages
+    - **keyVaultConfig** - Contains the credentials to access the key vault. Key vault is used as the storage to keep the sensitive information related to deployment of ARM templates
+        - **ClientID** - Azure AD Application ID that has access to the key vault
+        - **ClientSecret** - Secret for the AD application ID that has access to the key vault
+        - **KeyVaultUrl** - URL to the key vault
+        - **TenantID** - ID of the tenant where the Azure AD application that can access the key vault exists
+    - **AzureBlobConfig**  - Contains the access detail to the Azure blob storage. ARM templates uploaded via the publisher solution are stored in the Azure Blob storage
+      - **BlobContainer** - Name of the container for the blob storage
+      - **BlobConnectionString** - Connection string to the Azure Blob storage 
 
 After making all of the above changes, the **appSettings.json** would look like sample below.
 
@@ -73,6 +217,17 @@ After making all of the above changes, the **appSettings.json** would look like 
     "DefaultConnection": "Data source=<server>;initial catalog=<database>;user id=<username>;password=<password>"
     },
   "AllowedHosts": "*"
+ "AzureWebJobsStorage": "<Connection String for storage queue. Enqueueing a message to this queue triggers the webjob>",
+  "keyVaultConfig": {
+    "ClientID": "<Azure-AD-Application-ID>",
+    "ClientSecret": "***********",
+    "KeyVaultUrl": "<Url for azure key vault>",
+    "TenantID": "<TenantID-of-AD-Application>"
+  },
+  "AzureBlobConfig": {
+    "BlobContainer": "<Azure storage account container>",
+    "BlobConnectionString": "<Azure storage account  connection string>"
+  }
 }
 ```
 

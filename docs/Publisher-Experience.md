@@ -3,6 +3,7 @@
 ## Table of contents
   - [Table of contents](#table-of-contents)
   - [Overview](#overview)
+  - [Manage ARM templates](#manage-arm-templates)
   - [Manage new subscription landing page input fields](#manage-new-subscription-landing-page-input-fields)
   - [Manage existing subscription landing page input fields](#manage-existing-subscription-landing-page-input-fields)
   - [Subscription events](#subscription-events)
@@ -18,6 +19,31 @@
 ## Overview
 
 The publisher web application is the admin console for the publisher for defining the input fields on the landing page and managing marketplace subscriptions.
+
+
+## Manage ARM templates
+
+- Log on to the **Publisher Portal**
+- Click **ARM templates** in the menu
+- The page lists down the ARM Templates ( if already uploaded ). These are the ARM templates that can be associated to events like activation / unsubscription of a SaaS subscription
+
+![List ARM templates](./images/list-arm-templates.png)
+
+- Click **Add** to upload an ARM template
+- Click **Browse** to browse to the file and click **Upload**
+![Upload ARM template](./images/upload-arm-template.png)
+
+- The page presents the input and output parameters after parsing the template. The ARM template is stored as a file to the Azure blob storage ( refer to [Installation Instructions](./Installation-Instructions.md) for details on the configuration)
+
+![ARM template parameters](./images/arm-template-parameters.png)
+
+- You could define the values for the input parameters and the values support the following keywords. Here is an explanation on the keywords supported and how they get substituted at runtime just before the ARM template is deployed. The substituted values get saved against SaaS subscription as deployment parameters.
+
+| Keyword | Value|
+|---------|------|
+| $\{Subscription} | Name of the subscription (spaces replaced with hyphen)|
+| $\{Plan} | Name of the plan associated with the SaaS subscription (spaces replaced with hyphen) |
+| $\{Offer} | Name of the offer associated with the SaaS subscription (spaces replaced with hyphen) |
 
 ## Manage new subscription landing page input fields
 
