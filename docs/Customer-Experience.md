@@ -5,6 +5,8 @@
   - [Table of contents](#table-of-contents)
   - [Overview](#overview)
   - [Subscribing to the offer](#subscribing-to-the-offer)
+    - [Landing Page](#landing-page)
+    - [Subscription](#subscription)
     - [Activate](#activate)
     - [Change plan](#change-plan)
     - [Unsubscribe](#unsubscribe)
@@ -54,6 +56,24 @@ Assuming that the SaaS offer was published and is available for the known tenant
 11. Click **Configure Account** option in the header bar. You will now be transferred to the SaaS offer landing page as configured on the technical configuration page of the offer, in a new tab / window
 
 > In a real scenario, the landing page would collect additional details relevant for starting the on-boarding process for the customer.
+
+## Landing Page
+- Customer lands on the page served from the Customer provisioning application that presents the details of the subscription related to the purchase. The landing page might present additional input fields in the form based on the configuration set by the Publisher for the plan. Besides, the fields might comprise the following, in case the Publisher has set the **Deploy to customer subscription** switch turned on.
+- User needs to fill the fields like below which will help in deploying app in the subscription.
+   - *Tenant Id*
+   - *Subscription Id*
+   - *Client ID*
+   - *Client Secret*
+   ![Landing page](./images/subscription-landingpage.png) 
+ - Click **Validate** to validate the deployment parameters
+ - Click **Activate** to either place a request for the publisher to act on ( applicable if activation workflow is turned on or activate the subscription, otherwise)
+
+## Subscriptions
+- All the subscriptions purchased by the customer will be availabe under the subscriptions screen.
+- The status of each subscription will be available in the list.
+- From this scree the actions on the subscriptions like Change Plan, Chan Quantity, Activate and unsubscribe can be done depending on the status.
+
+![SaaS Subscriptions](./images/customer-subscriptions.png)
 
 ### Activate
 

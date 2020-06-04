@@ -11,6 +11,7 @@ The SQL scripts build on top of each other. When setting up your database, do th
 1. Start with a blank database
 2. Run AMP-DB-2.1.sql
 3. Run AMP-DB-2.2.sql
+4. Run AMP-DB-2.3.sql
 
 ## Description
 
@@ -36,11 +37,24 @@ The following picture illustrates the entities and the relationships among them:
 | Roles | User roles |
 | SubscriptionAttributeValues | Values provided by the user on the landing page, for the additional input attributes as configured at the plan level |
 | SubscriptionAuditLogs | Activity on the subscription is saved to this table |
-| Subscriptions | List of SaaS subscriptions
+| Subscriptions | List of SaaS subscriptions |
 | Users | Users ( auto-registered due to purchase of subscriptions) |
 | ValueTypes | Type of attributes, for the fields that appear on the subscription landing page|
 | WebJobSubscriptionStatus | Status changes on the subscription as processed by the webjob are logged here |
 | SubscriptionLicenses | Licenses assigned to subscriptions are stored here |
+| ARMTemplates | List of ARM Templates Uploaded |
+| ARMTemplateParameters | List of input and output parameters from the ARM Templates |
+| DeploymentAttributes | List of attributes required to deploy an app in azure subscription |
+| SubscriptionTemplateParameters | List of input and output ARM Template parameters for each Subscription |
+| SubscriptionKeyVault | Keyvault details of subscription were the Deployment parameters are stored |
+| PlanAttributeOutput |  Table to hold the spGetSubscriptionParameters stored procedure result |
+| SubscriptionParametersOutput |  Table to hold the spGetPlanEvents stored procedure result |
+| PlanEventsOutPut |  Table to hold the spGetOfferParameters stored procedure result |
+| SubscriptionKeyValueOutPut | Table to hold the spGetSubscriptionKeyValue stored procedure result |
+| SubscriptionEmailOutput | Table to hold the spGetFormattedEmailBody stored procedure result |
+| SubscriptionTemplateParametersOutPut | Table to hold the spGetSubscriptionTemplateParameters stored procedure result |
+
+
 
 ### Application Configuration
 
