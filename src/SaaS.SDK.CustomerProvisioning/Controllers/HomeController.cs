@@ -12,6 +12,7 @@
     using Microsoft.Marketplace.SaasKit.Client.Models;
     using Microsoft.Marketplace.SaasKit.Client.Services;
     using Microsoft.Marketplace.SaasKit.Contracts;
+    using Microsoft.Marketplace.SaasKit.Exceptions;
     using Microsoft.Marketplace.SaasKit.Models;
     using Newtonsoft.Json;
     using System;
@@ -71,6 +72,11 @@
         private ApplicationLogService applicationLogService = null;
 
         /// <summary>
+        /// The subscription usage logs repository
+        /// </summary>
+        private readonly ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository;
+
+        /// <summary>
         /// The user service
         /// </summary>
         private UserService userService;
@@ -83,6 +89,9 @@
 
         private readonly IEventsRepository eventsRepository;
 
+        private readonly IMeteredBillingApiClient meteredApiClient;
+
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -93,7 +102,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredBillingApiClient meteredApiClient)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -110,6 +119,8 @@
             this.eventsRepository = eventsRepository;
             this.logger = logger;
             this.offersRepository = offersRepository;
+            this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
+            this.meteredApiClient = meteredApiClient;
         }
 
         #region View Action Methods
@@ -438,7 +449,6 @@
                     {
                         try
                         {
-
                             this.logger.LogInformation("operation == Activate");
                             if (!Convert.ToBoolean(applicationConfigRepository.GetValuefromApplicationConfig("IsAutomaticProvisioningSupported")))
                             {
@@ -457,6 +467,60 @@
                                 this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                                 subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                                 subscriptionDetail.EventName = "Activate";
+                                MeteringUsageRequest usage = new MeteringUsageRequest();
+                                List<MeteringUsageRequest> usageList = new List<MeteringUsageRequest>();
+                                var subscriptionUsageRequest = new MeteringUsageRequest()
+                                {
+                                    Dimension = "one-time-fee",
+                                    PlanId = planId,
+                                    Quantity = 1,
+                                    ResourceId = subscriptionId,
+                                    EffectiveStartTime = DateTime.UtcNow
+                                };
+                                this.logger.LogInformation("Save subscriptionUsageRequest:", JsonConvert.SerializeObject(subscriptionUsageRequest));
+                                usageList.Add(subscriptionUsageRequest);
+                                var newRequestData = new { request = usageList };
+                                var requestJson = JsonConvert.SerializeObject(newRequestData);
+                                var meteringBatchUsageResult = new MeteringBatchUsageResult();
+                                string responseJson = string.Empty;
+                                ResponseModel batchResponse = new ResponseModel();
+                                this.logger.LogInformation("apiClient.EmitBatchUsageEventAsync");
+                                try
+                                {
+                                    meteringBatchUsageResult = meteredApiClient.EmitBatchUsageEventAsync(usageList).ConfigureAwait(false).GetAwaiter().GetResult();
+                                    this.logger.LogInformation("meteringBatchUsageResult:", JsonConvert.SerializeObject(meteringBatchUsageResult));
+                                }
+                                catch (MeteredBillingException mex)
+                                {
+                                    batchResponse.Message = "There are some Exception occured, Please verify the Meter batch usage!";
+                                    batchResponse.IsSuccess = false;
+
+                                    return View("RecordBatchUsage", response);
+                                }
+                                foreach (var meteringUsageResult in meteringBatchUsageResult.BatchUsageResponse)
+                                {
+                                    if (meteringUsageResult.ResourceId != Guid.Empty)
+                                    {
+                                        var existingSubscriptionDetail = subscriptionRepository.GetSubscriptionsByScheduleId(meteringUsageResult.ResourceId);
+                                        if (existingSubscriptionDetail != null)
+                                        {
+                                            responseJson = JsonConvert.SerializeObject(meteringUsageResult);
+                                            this.logger.LogInformation("responseJson:", responseJson);
+                                            var newMeteredAuditLog = new MeteredAuditLogs()
+                                            {
+                                                RequestJson = requestJson,
+                                                ResponseJson = responseJson,
+                                                StatusCode = meteringUsageResult.Status,
+                                                SubscriptionId = existingSubscriptionDetail.Id,
+                                                SubscriptionUsageDate = DateTime.UtcNow,
+                                                CreatedBy = currentUserId,
+                                                CreatedDate = DateTime.Now
+                                            };
+                                            this.logger.LogInformation("subscriptionUsageLogsRepository:", JsonConvert.SerializeObject(newMeteredAuditLog));
+                                            subscriptionUsageLogsRepository.Add(newMeteredAuditLog);
+                                        }
+                                    }
+                                }
                             }
 
                             isSuccess = true;

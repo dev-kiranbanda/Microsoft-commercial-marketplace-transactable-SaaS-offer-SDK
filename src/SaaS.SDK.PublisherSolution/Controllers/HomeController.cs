@@ -486,6 +486,62 @@
                             this.logger.LogInformation("GetAllSubscriptionPlans");
                             subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                            MeteringUsageRequest usage = new MeteringUsageRequest();
+                            List<MeteringUsageRequest> usageList = new List<MeteringUsageRequest>();
+                            var subscriptionUsageRequest = new MeteringUsageRequest()
+                            {
+                                Dimension = "one-time-fee",
+                                PlanId = planId,
+                                Quantity = 1,
+                                ResourceId = subscriptionId,
+                                EffectiveStartTime = DateTime.UtcNow
+                            };
+                            this.logger.LogInformation("Save subscriptionUsageRequest:", JsonConvert.SerializeObject(subscriptionUsageRequest));
+                            usageList.Add(subscriptionUsageRequest);
+                            var newRequestData = new { request = usageList };
+                            var requestJson = JsonConvert.SerializeObject(newRequestData);
+                            var meteringBatchUsageResult = new MeteringBatchUsageResult();
+                            string responseJson = string.Empty;
+                            ResponseModel batchResponse = new ResponseModel();
+                            this.logger.LogInformation("apiClient.EmitBatchUsageEventAsync");
+                            try
+                            {
+                                meteringBatchUsageResult = apiClient.EmitBatchUsageEventAsync(usageList).ConfigureAwait(false).GetAwaiter().GetResult();
+                                this.logger.LogInformation("meteringBatchUsageResult:", JsonConvert.SerializeObject(meteringBatchUsageResult));
+                            }
+                            catch (MeteredBillingException mex)
+                            {
+                                batchResponse.Message = "There are some Exception occured, Please verify the Meter batch usage!";
+                                batchResponse.IsSuccess = false;
+
+                                return View("RecordBatchUsage", response);
+                            }
+                            foreach (var meteringUsageResult in meteringBatchUsageResult.BatchUsageResponse)
+                            {
+                                if (meteringUsageResult.ResourceId != Guid.Empty)
+                                {
+                                    var existingSubscriptionDetail = subscriptionRepo.GetSubscriptionsByScheduleId(meteringUsageResult.ResourceId);
+                                    if (existingSubscriptionDetail != null)
+                                    {
+                                        responseJson = JsonConvert.SerializeObject(meteringUsageResult);
+                                        this.logger.LogInformation("responseJson:", responseJson);
+                                        var newMeteredAuditLog = new MeteredAuditLogs()
+                                        {
+                                            RequestJson = requestJson,
+                                            ResponseJson = responseJson,
+                                            StatusCode = meteringUsageResult.Status,
+                                            SubscriptionId = existingSubscriptionDetail.Id,
+                                            SubscriptionUsageDate = DateTime.UtcNow,
+                                            CreatedBy = currentUserId,
+                                            CreatedDate = DateTime.Now
+                                        };
+                                        this.logger.LogInformation("subscriptionUsageLogsRepository:", JsonConvert.SerializeObject(newMeteredAuditLog));
+                                        subscriptionUsageLogsRepository.Add(newMeteredAuditLog);
+                                    }
+                                }
+                            }
+
                             bool checkIsActive = emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).HasValue ? emailTemplateRepository.GetIsActive(subscriptionDetail.SaasSubscriptionStatus.ToString()).Value : false;
                             this.logger.LogInformation("sendEmail");
                             subscriptionDetail.EventName = "Activate";

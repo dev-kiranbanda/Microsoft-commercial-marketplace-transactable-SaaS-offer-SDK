@@ -70,5 +70,24 @@
 
             return meteringUsageResult;
         }
+
+        /// <summary>
+        /// Emits the batch usage event asynchronous.
+        /// </summary>
+        /// <param name="subscriptionUsageRequestList">The subscription usage request list.</param>
+        /// <returns></returns>
+
+        public async Task<MeteringBatchUsageResult> EmitBatchUsageEventAsync(List<MeteringUsageRequest> subscriptionUsageRequestList)
+        {
+            Dictionary<string, object> batchUsageEventRequest = new Dictionary<string, object>();
+            var restClient = new MeteringApiRestClient<MeteringBatchUsageResult>(this.ClientConfiguration, this.Logger);
+
+            //IN BATCH USAGE EVENT URL, There is no need for Subscription Id to pass, So new Guid()
+            var url = UrlHelper.GetSaaSApiUrl(this.ClientConfiguration, new Guid(), SaaSResourceActionEnum.SUBSCRIPTION_BATCHUSAGEEVENT);
+            batchUsageEventRequest.Add("request", subscriptionUsageRequestList);
+            var meteringUsageResult = await restClient.DoRequest(url, HttpMethods.POST, batchUsageEventRequest).ConfigureAwait(false);
+
+            return meteringUsageResult;
+        }
     }
 }

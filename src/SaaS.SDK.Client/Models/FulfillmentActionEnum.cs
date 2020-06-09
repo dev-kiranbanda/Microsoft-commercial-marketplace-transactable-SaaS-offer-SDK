@@ -38,6 +38,11 @@
         /// <summary>
         /// The subscription usageevent
         /// </summary>
-        SUBSCRIPTION_USAGEEVENT
+        SUBSCRIPTION_USAGEEVENT,
+
+        /// <summary>
+        /// The subscription batch usage event
+        /// </summary>
+        SUBSCRIPTION_BATCHUSAGEEVENT
     }
 }
