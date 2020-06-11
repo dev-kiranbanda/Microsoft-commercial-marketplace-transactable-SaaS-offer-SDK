@@ -1,12 +1,21 @@
 
-
+update [ApplicationConfiguration] set [value]='https://www.bittitan.com/media/b3plrrdn/bt-logo.png' where [Name] = 'EmailLogo'
 GO
-update [ApplicationConfiguration] set [value]='https://c3devkbstor.blob.core.windows.net/amp-saaskit-db/PANW_Parent_Brand_Primary_Logo_RGB_email.png' where [Name] = 'EmailLogo'
-update [ApplicationConfiguration] set [value]='https://c3devkbstor.blob.core.windows.net/amp-saaskit-db/PANW_Parent_Brand_Primary_Logo_RGB_Red_White.png' where [Name] = 'ApplicationLogo'
-update [ApplicationConfiguration] set [value]='<div class="container text-center">  &copy; 2020 Palo Alto Networks, Inc. All rights reserved  </div>' where [Name] = 'Footer'
-update [ApplicationConfiguration] set [value]='https://pantest-portal.azurewebsites.net/' where [Name] = 'SaasAppURL'
-update [ApplicationConfiguration] set [value]='https://www.paloaltonetworks.com/' where [Name] = 'ContactURL'
-update [ApplicationConfiguration] set [value]='Paloalto' where [Name] ='ApplicationName'
+
+update [ApplicationConfiguration] set [value]='https://www.bittitan.com/media/plsalyat/bt-logo-white.png' where [Name] = 'ApplicationLogo'
+GO
+
+update [ApplicationConfiguration] set [value]='<div class="container text-center">  &copy; 2020 BitTitan, Inc. All rights reserved  </div>' where [Name] = 'Footer'
+GO
+
+update [ApplicationConfiguration] set [value]='https://www.portal.azure.com/' where [Name] = 'SaasAppURL'
+GO
+
+update [ApplicationConfiguration] set [value]='https://www.bittitan.com/' where [Name] = 'ContactURL'
+GO
+
+update [ApplicationConfiguration] set [value]='BitTitan' where [Name] ='ApplicationName'
+GO
 
 GO
 Insert into ApplicationConfiguration

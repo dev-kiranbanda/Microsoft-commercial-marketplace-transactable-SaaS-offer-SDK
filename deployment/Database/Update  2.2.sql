@@ -324,23 +324,14 @@ TemplateBody ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
 where Status='UnSubscribed'
 GO
 
-update [ApplicationConfiguration] set [value]='https://www.bittitan.com/media/b3plrrdn/bt-logo.png' where [Name] = 'EmailLogo'
-GO
-
-update [ApplicationConfiguration] set [value]='https://www.bittitan.com/media/plsalyat/bt-logo-white.png' where [Name] = 'ApplicationLogo'
-GO
-
-update [ApplicationConfiguration] set [value]='<div class="container text-center">  &copy; 2020 BitTitan, Inc. All rights reserved  </div>' where [Name] = 'Footer'
-GO
-
-update [ApplicationConfiguration] set [value]='https://www.portal.azure.com/' where [Name] = 'SaasAppURL'
-GO
-
-update [ApplicationConfiguration] set [value]='https://www.bittitan.com/' where [Name] = 'ContactURL'
-GO
-
-update [ApplicationConfiguration] set [value]='BitTitan' where [Name] ='ApplicationName'
-GO
-
 ALTER TABLE Metereddimensions
 ADD Multiplier DECIMAL (6,2)
+GO
+
+INSERT INTO [DatabaseVersionHistory] 
+--Select 1.0, 'Master Schema',Getdate(), 'DB User' Union all
+Select 2.2,
+'Email Script Updated and Multiplier Column added',
+GETDATE(),
+'DB user'
+
