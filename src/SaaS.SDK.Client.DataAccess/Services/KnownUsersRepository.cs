@@ -44,6 +44,33 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
         }
 
         /// <summary>
+        /// Adds the know users from application configuration.
+        /// </summary>
+        /// <param name="knownUsers">The known users.</param>
+        public void AddKnowUsersFromAppConfig(string knownUsers)
+        {
+            var existingUsers = this.Context.KnownUsers;
+            if (existingUsers != null && existingUsers.ToList().Count() == 0)
+            {
+                List<string> knownUsersList = knownUsers.Split(',').ToList();
+                foreach (var user in knownUsersList)
+                {
+                    var users = new KnownUsers()
+                    {
+
+                        UserEmail = user.Trim(),
+                        RoleId = 1,
+
+                    };
+                    this.Context.KnownUsers.Add(users);
+                    this.Context.SaveChanges();
+                }
+
+            }
+
+        }
+
+        /// <summary>
         /// Gets this instance.
         /// </summary>
         /// <returns></returns>
