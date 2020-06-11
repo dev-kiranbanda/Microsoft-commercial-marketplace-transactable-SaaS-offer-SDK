@@ -199,7 +199,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasMaxLength(150)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Multiplier).HasColumnType("decimal(5, 2)");
+                entity.Property(e => e.Multiplier).HasColumnType("decimal(6, 2)");
 
                 entity.HasOne(d => d.Plan)
                     .WithMany(p => p.MeteredDimensions)
