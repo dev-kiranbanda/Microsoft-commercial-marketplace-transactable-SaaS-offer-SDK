@@ -8,6 +8,7 @@
     using Microsoft.Marketplace.SaaS.SDK.CustomerProvisioning.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Services;
     using Microsoft.Marketplace.SaasKit.Client.Helpers;
     using Microsoft.Marketplace.SaasKit.Client.Models;
     using Microsoft.Marketplace.SaasKit.Client.Services;
@@ -77,6 +78,11 @@
         private readonly ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository;
 
         /// <summary>
+        /// The Metered Dimension repository
+        /// </summary>
+        private readonly IMeteredDimensionsRepository dimensionsRepository;
+
+        /// <summary>
         /// The user service
         /// </summary>
         private UserService userService;
@@ -102,7 +108,7 @@
         /// <param name="userRepository">The user repository.</param>
         /// <param name="applicationLogRepository">The application log repository.</param>
         /// <param name="subscriptionLogsRepo">The subscription logs repository.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredBillingApiClient meteredApiClient)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredBillingApiClient meteredApiClient, IMeteredDimensionsRepository dimensionsRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -121,6 +127,7 @@
             this.offersRepository = offersRepository;
             this.subscriptionUsageLogsRepository = subscriptionUsageLogsRepository;
             this.meteredApiClient = meteredApiClient;
+            this.dimensionsRepository = dimensionsRepository;
         }
 
         #region View Action Methods
@@ -467,13 +474,16 @@
                                 this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnum.Subscribed, true);
                                 subscriptionDetail.SaasSubscriptionStatus = SubscriptionStatusEnum.Subscribed;
                                 subscriptionDetail.EventName = "Activate";
+                                var meteredDimensions = dimensionsRepository.GetDimensionsFromPlanId(subscriptionDetail.PlanId);
+                                string dimension = meteredDimensions[0].Dimension;
+                                double quantity = Convert.ToDouble(subscriptionDetail.SubscriptionParameters[0].Value) * Convert.ToDouble(meteredDimensions[0].Multiplier);
                                 MeteringUsageRequest usage = new MeteringUsageRequest();
                                 List<MeteringUsageRequest> usageList = new List<MeteringUsageRequest>();
                                 var subscriptionUsageRequest = new MeteringUsageRequest()
                                 {
-                                    Dimension = "one-time-fee",
+                                    Dimension = dimension,
                                     PlanId = planId,
-                                    Quantity = 1,
+                                    Quantity = quantity,
                                     ResourceId = subscriptionId,
                                     EffectiveStartTime = DateTime.UtcNow
                                 };

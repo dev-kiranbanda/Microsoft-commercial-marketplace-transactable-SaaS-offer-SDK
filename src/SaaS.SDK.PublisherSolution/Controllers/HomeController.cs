@@ -486,14 +486,16 @@
                             this.logger.LogInformation("GetAllSubscriptionPlans");
                             subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-
+                            var meteredDimensions = dimensionsRepository.GetDimensionsFromPlanId(subscriptionDetail.PlanId);
+                            string dimension = meteredDimensions[0].Dimension;
+                            double quantity = Convert.ToDouble(subscriptionDetail.SubscriptionParameters[0].Value) * Convert.ToDouble(meteredDimensions[0].Multiplier);
                             MeteringUsageRequest usage = new MeteringUsageRequest();
                             List<MeteringUsageRequest> usageList = new List<MeteringUsageRequest>();
                             var subscriptionUsageRequest = new MeteringUsageRequest()
                             {
-                                Dimension = "one-time-fee",
+                                Dimension = dimension,
                                 PlanId = planId,
-                                Quantity = 1,
+                                Quantity = quantity,
                                 ResourceId = subscriptionId,
                                 EffectiveStartTime = DateTime.UtcNow
                             };
