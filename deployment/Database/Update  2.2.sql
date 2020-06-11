@@ -341,3 +341,6 @@ GO
 
 update [ApplicationConfiguration] set [value]='BitTitan' where [Name] ='ApplicationName'
 GO
+
+ALTER TABLE Metereddimensions
+ADD Multiplier DECIMAL (6,2)
