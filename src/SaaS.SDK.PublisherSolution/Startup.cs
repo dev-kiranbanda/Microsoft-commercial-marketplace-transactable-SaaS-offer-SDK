@@ -19,6 +19,7 @@ namespace Microsoft.Marketplace.Saas.Web
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Services;
     using Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities;
+    using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 
     /// <summary>
     /// Startup
@@ -70,6 +71,12 @@ namespace Microsoft.Marketplace.Saas.Web
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"]
             };
 
+            var knownUsers = new KnownUsersModel()
+            {
+                KnownUsers = this.Configuration["KnownUsers"],
+
+            };
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -92,7 +99,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
-
+            services.AddSingleton<KnownUsersModel>(knownUsers);
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 

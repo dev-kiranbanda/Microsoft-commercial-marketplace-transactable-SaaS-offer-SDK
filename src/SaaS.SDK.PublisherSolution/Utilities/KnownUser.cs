@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Marketplace.Saas.Web.Utilities;
+using Microsoft.Marketplace.SaaS.SDK.Services.Models;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
 
 namespace Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities
@@ -20,22 +21,33 @@ namespace Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities
         /// </summary>
         private readonly IKnownUsersRepository knownUsersRepository;
 
-        public KnownUser(IKnownUsersRepository KnownUsersRepository)
+        /// <summary>
+        /// The known users
+        /// </summary>
+        private KnownUsersModel knownUsers;
+
+        public KnownUser(IKnownUsersRepository KnownUsersRepository, KnownUsersModel knownUsers)
         {
             knownUsersRepository = KnownUsersRepository;
-
+            this.knownUsers = knownUsers;
         }
         public void OnAuthorization(AuthorizationFilterContext context)
         {
             var isKnownuser = false;
             string email = "";
+
+            if (this.knownUsers != null && !string.IsNullOrWhiteSpace(this.knownUsers.KnownUsers))
+            {
+                this.knownUsersRepository.AddKnowUsersFromAppConfig(this.knownUsers.KnownUsers);
+            }
+
             if (context.HttpContext != null && context.HttpContext.User.Claims.Count() > 0)
             {
-                
+
                 email = context.HttpContext.User.Claims.Where(s => s.Type == WebConstants.CLAIM_EMAILADDRESS).FirstOrDefault().Value;
+
                 //KnownUsersRepository 
                 isKnownuser = knownUsersRepository.GetKnownUserDetail(email, 1)?.Id > 0;
-                //if (email == "Phaneendra.Nagubandi@spektrasystems.com")
                 if (!isKnownuser)
                 {
                     var routeValues = new RouteValueDictionary();
@@ -53,8 +65,7 @@ namespace Microsoft.Marketplace.SaaS.SDK.PublisherSolution.Utilities
                 //Other route values if needed.
                 context.Result = new RedirectToRouteResult(routeValues);
             }
-
-
         }
+
     }
 }

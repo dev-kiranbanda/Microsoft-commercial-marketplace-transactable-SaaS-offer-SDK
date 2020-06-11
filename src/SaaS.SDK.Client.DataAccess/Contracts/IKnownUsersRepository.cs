@@ -17,5 +17,11 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts
         /// <param name="roleId">The role identifier.</param>
         /// <returns></returns>
         KnownUsers GetKnownUserDetail(string emailAddress, int roleId);
+
+        /// <summary>
+        /// Adds the know users from application configuration.
+        /// </summary>
+        /// <param name="knownUsers">The known users.</param>
+        void AddKnowUsersFromAppConfig(string knownUsers);
     }
 }
