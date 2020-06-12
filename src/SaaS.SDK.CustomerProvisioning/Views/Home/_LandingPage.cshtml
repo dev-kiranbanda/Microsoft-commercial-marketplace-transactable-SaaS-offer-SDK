@@ -176,7 +176,7 @@
                 <div class="text-right">
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
+                        <button type="submit" id="btnDeactivate" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right">Go to Subscription List</button>
                     }
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
@@ -194,12 +194,27 @@ else
     @await Component.InvokeAsync("HomePageContent")
 }
 <script type="text/javascript">
+    $(document).ready(function () {
 
+        $("#frmIndex").submit(function (e) {
+            alert('ji');
+            //stop submitting the form to see the disabled button effect
+            //disable the submit button
+            $("#btnDeactivate").attr("disabled", true);
+            $("#btnDeactivate").prop("disabled", true);
+            $("#btnDeactivate").text("Processing...");
+            //disable a normal button
+            $("#btnActivate").attr("disabled", true);
+            $("#btnActivate").text("Processing...");
+            return true;
+
+        });
+    });
     function SubscriptionOperation(subscriptionId, planId, operation) {
 
         if (validate()) {
             var formobject = $('#frmIndex').serialize();
-            $("#btnActivate").attr("disabled", true);
+            $("#btnActivate").removeAttr('onclick');
             $("#btnActivate").text("Processing...");
             $.ajax({
                 url: '/Home/SubscriptionOperation',
