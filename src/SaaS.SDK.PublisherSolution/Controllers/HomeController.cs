@@ -487,10 +487,23 @@
                             subscriptionDetail.PlanList = this.webSubscriptionService.GetAllSubscriptionPlans();
                             var subscriptionData = this.fulfillApiClient.GetSubscriptionByIdAsync(subscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var meteredDimensions = dimensionsRepository.GetDimensionsFromPlanId(subscriptionDetail.PlanId);
-                            string dimension = meteredDimensions[0].Dimension;
-                            double quantity = Convert.ToDouble(subscriptionDetail.SubscriptionParameters[0].Value) * Convert.ToDouble(meteredDimensions[0].Multiplier);
-                            MeteringUsageRequest usage = new MeteringUsageRequest();
-                            List<MeteringUsageRequest> usageList = new List<MeteringUsageRequest>();
+                            string dimension = string.Empty;
+                            double quantity = 0.00;
+                            double inputValue = 0.00;
+                            if (subscriptionDetail.SubscriptionParameters != null && subscriptionDetail.SubscriptionParameters.Count() > 0)
+                            {
+                                inputValue = Convert.ToDouble(subscriptionDetail.SubscriptionParameters[0].Value);
+                            }
+
+                            if (meteredDimensions != null && meteredDimensions.ToList().Count() > 0)
+                            {
+                                foreach (var meterdimesion in meteredDimensions)
+                                {
+                                    dimension = meterdimesion.Dimension;
+                                    quantity = inputValue * Convert.ToDouble(meterdimesion.Multiplier);
+                                }
+                            }
+
                             var subscriptionUsageRequest = new MeteringUsageRequest()
                             {
                                 Dimension = dimension,
@@ -500,17 +513,16 @@
                                 EffectiveStartTime = DateTime.UtcNow
                             };
                             this.logger.LogInformation("Save subscriptionUsageRequest:", JsonConvert.SerializeObject(subscriptionUsageRequest));
-                            usageList.Add(subscriptionUsageRequest);
-                            var newRequestData = new { request = usageList };
+                            var newRequestData = new { request = subscriptionUsageRequest };
                             var requestJson = JsonConvert.SerializeObject(newRequestData);
-                            var meteringBatchUsageResult = new MeteringBatchUsageResult();
+                            var meteringUsageResult = new MeteringUsageResult();
                             string responseJson = string.Empty;
                             ResponseModel batchResponse = new ResponseModel();
                             this.logger.LogInformation("apiClient.EmitBatchUsageEventAsync");
                             try
                             {
-                                meteringBatchUsageResult = apiClient.EmitBatchUsageEventAsync(usageList).ConfigureAwait(false).GetAwaiter().GetResult();
-                                this.logger.LogInformation("meteringBatchUsageResult:", JsonConvert.SerializeObject(meteringBatchUsageResult));
+                                meteringUsageResult = apiClient.EmitUsageEventAsync(subscriptionUsageRequest).ConfigureAwait(false).GetAwaiter().GetResult();
+                                this.logger.LogInformation("meteringBatchUsageResult:", JsonConvert.SerializeObject(meteringUsageResult));
                             }
                             catch (MeteredBillingException mex)
                             {
@@ -519,28 +531,40 @@
 
                                 return View("RecordBatchUsage", response);
                             }
-                            foreach (var meteringUsageResult in meteringBatchUsageResult.BatchUsageResponse)
+
+                            if (meteringUsageResult != null && meteringUsageResult.ResourceId != Guid.Empty)
                             {
-                                if (meteringUsageResult.ResourceId != Guid.Empty)
+                                var existingSubscriptionDetail = subscriptionRepository.GetSubscriptionsByScheduleId(meteringUsageResult.ResourceId);
+                                if (existingSubscriptionDetail != null)
                                 {
-                                    var existingSubscriptionDetail = subscriptionRepo.GetSubscriptionsByScheduleId(meteringUsageResult.ResourceId);
-                                    if (existingSubscriptionDetail != null)
+                                    responseJson = JsonConvert.SerializeObject(meteringUsageResult);
+                                    this.logger.LogInformation("responseJson:", responseJson);
+                                    var newMeteredAuditLog = new MeteredAuditLogs()
                                     {
-                                        responseJson = JsonConvert.SerializeObject(meteringUsageResult);
-                                        this.logger.LogInformation("responseJson:", responseJson);
-                                        var newMeteredAuditLog = new MeteredAuditLogs()
-                                        {
-                                            RequestJson = requestJson,
-                                            ResponseJson = responseJson,
-                                            StatusCode = meteringUsageResult.Status,
-                                            SubscriptionId = existingSubscriptionDetail.Id,
-                                            SubscriptionUsageDate = DateTime.UtcNow,
-                                            CreatedBy = currentUserId,
-                                            CreatedDate = DateTime.Now
-                                        };
-                                        this.logger.LogInformation("subscriptionUsageLogsRepository:", JsonConvert.SerializeObject(newMeteredAuditLog));
-                                        subscriptionUsageLogsRepository.Add(newMeteredAuditLog);
-                                    }
+                                        RequestJson = requestJson,
+                                        ResponseJson = responseJson,
+                                        StatusCode = meteringUsageResult.Status,
+                                        SubscriptionId = existingSubscriptionDetail.Id,
+                                        SubscriptionUsageDate = DateTime.UtcNow,
+                                        CreatedBy = currentUserId,
+                                        CreatedDate = DateTime.Now
+                                    };
+
+                                    this.logger.LogInformation("subscriptionUsageLogsRepository:", JsonConvert.SerializeObject(newMeteredAuditLog));
+                                    subscriptionUsageLogsRepository.Add(newMeteredAuditLog);
+
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Quantity),
+                                        SubscriptionId = oldValue.SubscribeId,
+                                        NewValue = Convert.ToString(subscriptionUsageRequest.Quantity),
+                                        OldValue = Convert.ToString(0),
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now
+                                    };
+                                    this.subscriptionLogRepository.Add(auditLog);
+
+
                                 }
                             }
 

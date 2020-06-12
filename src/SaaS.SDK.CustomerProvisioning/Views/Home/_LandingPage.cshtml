@@ -181,7 +181,7 @@
                     }
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" class="cm-button-default text-right">Activate</a>
+                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActivate" class="cm-button-default text-right">Activate</a>
                     }
                     @* <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default text-right">Save</button>*@
                 </div>
@@ -196,9 +196,11 @@ else
 <script type="text/javascript">
 
     function SubscriptionOperation(subscriptionId, planId, operation) {
-        
+
         if (validate()) {
             var formobject = $('#frmIndex').serialize();
+            $("#btnActivate").attr("disabled", true);
+            $("#btnActivate").text("Processing...");
             $.ajax({
                 url: '/Home/SubscriptionOperation',
                 type: 'POST',

@@ -6,7 +6,7 @@
 }
 
 <div class="container">
-    <form method="post">
+    <form method="post" id="SubmitForm">
 
         <div>
             <div class="text-left mt40">
@@ -96,7 +96,7 @@
                                 <dt class="col-sm-3 p-2 p10">
                                     @Html.DisplayName(Model.SubscriptionParameters[i].DisplayName)
                                     @*@if (Model.SubscriptionParameters[i].IsRequired == true)
-                    {<span class="red-star">*</span>}*@
+                                        {<span class="red-star">*</span>}*@
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
                                     @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)
@@ -164,10 +164,10 @@
                                 }
                                 else
                                 {
-                    <dd class="col-sm-9 p-2 p10">
-                        @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
-                        @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
-                    </dd>
+                                    <dd class="col-sm-9 p-2 p10">
+                                        @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
+                                        @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
+                                    </dd>
                                 }
 
                             }
@@ -179,12 +179,12 @@
                 <div class="text-right">
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Subscribed || Model.SaasSubscriptionStatus == SubscriptionStatusEnum.Unsubscribed)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
+                        <button type="submit" id="btnDeactivate" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default mt40 text-right">Go to Subscription List</button>
                     }
                     @if (Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart || Model.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingActivation)
                     {
-                        <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right">Activate</button>
+                        <button type="submit" id="btnActivate" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Activate" class="cm-button-default mt40 text-right">Activate</button>
                     }
                 </div>
 
@@ -192,3 +192,20 @@
         </div>
     </form>
 </div>
+<script>
+    $(document).ready(function () {
+
+        $("#SubmitForm").submit(function (e) {
+
+            //stop submitting the form to see the disabled button effect
+            //disable the submit button
+            $("#btnDeactivate").attr("disabled", true);
+            $("#btnDeactivate").text("Processing...");
+            //disable a normal button
+            $("#btnActivate").attr("disabled", true);
+            $("#btnActivate").text("Processing...");
+            return true;
+
+        });
+    });
+</script>

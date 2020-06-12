@@ -324,6 +324,8 @@ TemplateBody ='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "h
 where Status='UnSubscribed'
 GO
 
+update [dbo].[ApplicationConfiguration] set value='true' where Name='IsAutomaticProvisioningSupported'
+Go
 ALTER TABLE Metereddimensions
 ADD Multiplier DECIMAL (6,2)
 GO
