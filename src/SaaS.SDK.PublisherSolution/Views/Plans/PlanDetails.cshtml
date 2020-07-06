@@ -121,8 +121,6 @@
                                             <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
                                             <td><input type="text" style="width:200px;" id="PlanEvents_FailureStateEmails_@i" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
                                         </tr>
-
-
                                     }
                                 </tbody>
                             </table>
@@ -159,6 +157,7 @@
         })
     }
     function savePlanParameters() {
+        debugger;
         var formobject = $('#frmPlanEvents').serialize();
         $.ajax({
             url: 'Plans/PlanDetails',
