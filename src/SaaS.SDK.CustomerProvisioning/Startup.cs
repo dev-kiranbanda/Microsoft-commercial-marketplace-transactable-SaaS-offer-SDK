@@ -77,6 +77,12 @@ namespace Microsoft.Marketplace.SaasKit.Client
                 TenantId = this.Configuration["SaaSApiConfiguration:TenantId"],
             };
 
+            var azureBlobConfig = new AzureBlobConfig()
+            {
+                BlobContainer = this.Configuration["AzureBlobConfig:BlobContainer"],
+                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"],
+            };
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -97,6 +103,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
 
             services.AddSingleton<IFulfillmentApiClient>(new FulfillmentApiClient(config, new FulfillmentApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
+            services.AddSingleton<IBatchUsageStorageService>(new BatchUsageStorageService(azureBlobConfig));
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 

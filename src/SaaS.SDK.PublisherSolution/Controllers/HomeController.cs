@@ -2,10 +2,12 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Diagnostics;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
@@ -16,11 +18,16 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.StatusHandlers;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
     using Microsoft.Marketplace.SaasKit.Configurations;
     using Microsoft.Marketplace.SaasKit.Contracts;
     using Microsoft.Marketplace.SaasKit.Exceptions;
     using Microsoft.Marketplace.SaasKit.Models;
+    using CsvHelper;
+    using System.Text;
+    using Microsoft.Marketplace.Saas.Web.Mapper;
+
 
     /// <summary>
     /// Home Controller.
@@ -96,11 +103,20 @@
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
+        private readonly IBatchLogRepository batchLogRepository;
+
+        private readonly IBulkUploadUsageStagingRepository bulkUploadUsageStagingRepository;
+
+
+
         private UserService userService;
 
         private SubscriptionService subscriptionService = null;
 
         private ApplicationLogService applicationLogService = null;
+
+        private readonly IBatchUsageStorageService batchUsageStorageService;
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HomeController" /> class.
@@ -127,7 +143,7 @@
         /// <param name="offersRepository">The offers repository.</param>
         /// <param name="offersAttributeRepository">The offers attribute repository.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository)
+                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, IBatchUsageStorageService batchUsageStorageService, IBatchLogRepository batchLogRepository, IBulkUploadUsageStagingRepository bulkUploadUsageStagingRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepo = subscriptionRepo;
@@ -152,7 +168,9 @@
             this.offersRepository = offersRepository;
             this.offersAttributeRepository = offersAttributeRepository;
             this.loggerFactory = loggerFactory;
-
+            this.batchUsageStorageService = batchUsageStorageService;
+            this.batchLogRepository = batchLogRepository;
+            this.bulkUploadUsageStagingRepository = bulkUploadUsageStagingRepository;
             this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
                                                                           fulfillApiClient,
                                                                           subscriptionRepo,
@@ -778,6 +796,259 @@
             else
             {
                 return this.RedirectToAction(nameof(this.Index));
+            }
+        }
+
+        /// <summary>
+        /// Records the batch usage.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult RecordBatchUsage()
+        {
+            this.logger.LogInformation("Home Controller / RecordBatchUsage ");
+            try
+            {
+                this.logger.LogInformation("Initiate Batch Usage.");
+
+                var newBatchModel = new BatchUsageUploadModel();
+                newBatchModel.BulkUploadUsageStagings = new List<BulkUploadUsageStagingResult>();
+                return View(newBatchModel);
+
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+        }
+
+        /// <summary>
+        /// Uploads the batch usage.
+        /// </summary>
+        /// <param name="uploadfile">The uploadfile.</param>
+        /// <returns></returns>
+        [HttpPost("UploadBatchUsage")]
+        public async Task<IActionResult> UploadBatchUsage(List<IFormFile> uploadfile)
+        {
+            //this.logger.LogInformation("Home Controller / UploadBatchUsage uploadfile:{0}", JsonSerializer.Serialize(uploadfile));
+
+            try
+            {
+                BatchUsageUploadModel bulkUploadModel = new BatchUsageUploadModel();
+                bulkUploadModel.BulkUploadUsageStagings = new List<BulkUploadUsageStagingResult>();
+                bulkUploadModel.BatchLogId = 0;
+
+                ResponseModel response = new ResponseModel();
+                var userId = this.userService.AddUser(this.GetCurrentUserDetail());
+                var filename = string.Empty;
+                var filePath = string.Empty;
+                var fileContantType = string.Empty;
+                var formFile = uploadfile.FirstOrDefault();
+                var referenceid = Guid.NewGuid();
+                if (formFile.Length > 0)
+                {
+                    filename = formFile.FileName;
+                    this.logger.LogInformation("Upload Initiate For Batch Usage with File Name " + filename + " at " + DateTime.Now + ".");
+
+                    fileContantType = formFile.ContentType;
+                    string fileExtension = Path.GetExtension(formFile.FileName);
+                    if (fileExtension == ".csv")
+                    {
+                        // full path to file in temp location
+                        filePath = Path.GetTempFileName(); //we are using Temp file name just for the example. Add your own file path.
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+
+                            await formFile.CopyToAsync(stream);
+                            string fileuploadPath = this.batchUsageStorageService.UploadFile(formFile, filename, fileContantType, referenceid);
+
+                        }
+                    }
+                    else
+                    {
+                        response.Message = "Please select CSV file.";
+                        response.IsSuccess = false;
+
+                        return View("RecordBatchUsage", response);
+                    }
+
+                    var isValidateFile = ValidateBatchUsageUpload(filePath);
+                    BatchLog batchLog = new BatchLog();
+                    //Validate Header list for the Batch Upload Usage
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        batchLog.ReferenceId = referenceid;
+                        batchLog.FileName = filename;
+                        batchLog.UploadedBy = Convert.ToString(userId);
+                        batchLog.UploadedOn = DateTime.Now;
+                        batchLog.BatchStatus = "Initiated";
+                        var batchLogId = this.batchLogRepository.Save(batchLog);
+                        this.logger.LogInformation($"New Batch Log Created Successfully with BatchLogId", batchLogId);
+
+                        if (batchLogId > 0)
+                        {
+                            List<BulkUploadUsageStaging> BulkUploadUsageStaging = new List<BulkUploadUsageStaging>();
+                            var allUploadedBatch = GetBatchUsageViewModels(filePath);
+                            foreach (var meteringUsageData in allUploadedBatch)
+                            {
+                                var guidOutput = new Guid();
+
+                                ///Check For the Valid Subscription ID && All the Default Fields must have Values in Upload
+                                if (Guid.TryParse(meteringUsageData.SubscriptionID, out guidOutput) && meteringUsageData.SubscriptionID != Convert.ToString(new Guid()) && !string.IsNullOrEmpty(meteringUsageData.APIType)
+                                    && !string.IsNullOrEmpty(meteringUsageData.ConsumedUnits))
+                                {
+                                    BulkUploadUsageStaging uploadUsage = new BulkUploadUsageStaging();
+                                    uploadUsage.BatchLogId = batchLogId;
+                                    uploadUsage.SubscriptionId = Convert.ToString(meteringUsageData.SubscriptionID);
+                                    uploadUsage.Apitype = meteringUsageData.APIType;
+                                    uploadUsage.ConsumedUnits = meteringUsageData.ConsumedUnits;
+                                    uploadUsage.ValidationStatus = false;
+                                    uploadUsage.ValidationErrorDetail = string.Empty;
+                                    uploadUsage.StagedOn = DateTime.Now;
+                                    uploadUsage.ProcessedOn = DateTime.Now;
+
+                                    BulkUploadUsageStaging.Add(uploadUsage);
+                                    this.bulkUploadUsageStagingRepository.Save(uploadUsage);
+                                }
+                            }
+
+                            var validateData = this.bulkUploadUsageStagingRepository.ValidateBulkUploadUsageStaging(batchLogId);
+                            this.logger.LogDebug($"Validation for Batch-{batchLogId} is complete.");
+
+                            bulkUploadModel.BulkUploadUsageStagings = validateData;
+                            bulkUploadModel.BatchLogId = batchLogId;
+                            bulkUploadModel.Response = response;
+                        }
+                    }
+                    else
+                    {
+                        if (!isValidateFile)
+                        {
+                            response.Message = "Please select Valid CSV File!";
+                            response.IsSuccess = false;
+                        }
+                        else
+                        {
+                            response.Message = "Please select File!";
+                            response.IsSuccess = false;
+                        }
+                    }
+                }
+                else
+                {
+                    response.Message = "Please select File!";
+                    response.IsSuccess = false;
+                }
+                bulkUploadModel.Response = response;
+                return View("RecordBatchUsage", bulkUploadModel);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+        }
+
+
+        /// <summary>
+        /// Validates the batch usage upload.
+        /// </summary>
+        /// <param name="filePath">The file path.</param>
+        /// <returns></returns>
+        public bool ValidateBatchUsageUpload(string filePath)
+        {
+            logger.LogInformation("Home Controller / ValidateBatchUsageUpload filePath:{0}", JsonSerializer.Serialize(filePath));
+            try
+            {
+                if (!string.IsNullOrEmpty(filePath))
+                {
+                    BatchUsageUploadModel BatchUsageUploadModel = new BatchUsageUploadModel();
+                    CsvReader newCsv = new CsvReader(System.IO.File.OpenText(filePath));
+                    newCsv.Read();
+                    newCsv.ReadHeader();
+
+                    List<string> headers = newCsv.Context.HeaderRecord.ToList();
+                    for (int i = 0; i < 3; i++)
+                    {
+                        var actualHeaders = headers.Take(3).ToList();
+                        actualHeaders.ForEach(s => s = s.ToLower().Trim());
+
+                        actualHeaders = actualHeaders.ConvertAll(d => d.ToLower());
+
+                        /////Check for the Valid Files with following conditions
+                        /// 1: Header Count should ne same as Default Set
+                        /// 2: Header Text should match with the Default Set
+                        /// 3: No Extra headers are allowed except Default Set
+                        if (headers.Count >= i && actualHeaders.SequenceEqual(BatchUsageUploadModel.UploadedHeaderStrings) &&
+                            headers.Count(s => !string.IsNullOrEmpty(s)) == BatchUsageUploadModel.UploadedHeaderStrings.Count)
+                        { }
+                        else
+                            return false;
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the batch usage view models.
+        /// </summary>
+        /// <param name="filePaths">The file paths.</param>
+        /// <returns></returns>
+        public List<BatchUsageRequest> GetBatchUsageViewModels(string filePath)
+        {
+            logger.LogInformation("Home Controller / ActivatedMessage List filepaths:{0}", JsonSerializer.Serialize(filePath));
+            var batchUsageRequests = new List<BatchUsageRequest>();
+            try
+            {
+
+                using (var reader = new StreamReader(filePath, Encoding.Default))
+                using (var csv = new CsvReader(reader))
+                {
+                    csv.Configuration.RegisterClassMap<BatchUsageMapper>();
+                    try
+                    {
+                        batchUsageRequests = csv.GetRecords<BatchUsageRequest>().ToList();
+                    }
+                    catch (Exception ex)
+                    {
+                        this.logger.LogError($"Batch Upload Usage Mapping Error - {ex.Message} with StackTrace- {ex.StackTrace}.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+            }
+            return batchUsageRequests;
+        }
+
+        /// <summary>
+        /// Downloads the batch usage template.
+        /// </summary>
+        /// <returns></returns>
+        public IActionResult DownloadBatchUsageTemplate()
+        {
+            logger.LogInformation("Home Controller / DownloadBatchUsageTemplate ");
+            try
+            {
+                var filename = @"RecordUsageTemplate.csv";
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "Template", filename);
+                var memory = new MemoryStream();
+                byte[] fileBytes = System.IO.File.ReadAllBytes(path);
+
+                return File(fileBytes, "application/force-download", filename);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
             }
         }
     }

@@ -1,0 +1,121 @@
+﻿@model BatchUsageUploadModel
+@{
+    ViewData["Title"] = "RecordBatchUsage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container partner-font-family">
+    @if (Model.Response != null && !string.IsNullOrEmpty(Model.Response.Message) && !Model.Response.IsSuccess)
+    {
+        <div class="alert alert-danger" role="alert">
+            @Model.Response.Message
+        </div>
+    }
+    else if (Model.Response != null && !string.IsNullOrEmpty(Model.Response.Message) && Model.Response.IsSuccess)
+    {
+        <div class="alert alert-success" role="alert">
+            @Model.Response.Message
+        </div>
+    }
+
+    <form method="post" enctype="multipart/form-data" asp-controller="Home" asp-action="UploadBatchUsage">
+        <div class="">
+            <div class="card-body ">
+                <div class="text-left ">
+                    <span class="cm-section-heading">Batch Usage</span>
+                </div>
+                <div class="card-body partner-card-body">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-12">
+                                <p>Select file:</p>
+                            </div>
+                            <div class="col-lg-10 col-md-12">
+                                <input type="file" name="uploadfile" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-2 col-md-12"> </div>
+                            <div class="col-lg-10 col-md-12 text-lg-left">
+                                <span class="col-lg-3">
+                                    <input type="submit" class="cm-button-default" value="Upload">
+                                </span>
+                                <span class="col-lg-2">
+                                    <a class="btn btn-outline-secondary" href="/Home/DownloadBatchUsageTemplate">
+                                        Download Template &nbsp;<i class="fa fa-download"></i>
+                                    </a>
+                                </span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.BulkUploadUsageStagings.Count > 0)
+    {
+        <form method="post" asp-action="BulkUploadUsageMeters" asp-controller="Home" asp-route-batchLogId="@Model.BatchLogId">
+            <div class="card-body ">
+                <div class="text-left ">
+                    <span class="cm-section-heading"> Data Validation Result</span>
+                </div>
+                <div class="card-body partner-card-body">
+                    <div class="form-group">
+                        <div class="row">
+                            @Html.HiddenFor(s => s.BatchLogId)
+                            @if (Model.BulkUploadUsageStagings.Any(s => s.ValidationStatus == null || s.ValidationStatus.Value == false))
+                            {
+                                <div class="col-lg-2 col-md-2">
+                                    <button type="button" class="btn btn-primary" disabled>Submit to Azure</button>
+                                </div>
+                                <div class="col-lg-10 col-md-10">
+                                    <span class="alert-danger font-weight-bold">There are some invalid entries in the file, please fix and upload again!</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-lg-2 col-md-2">
+                                    <button type="submit" class="cm-button-default">Submit to Azure</button>
+                                </div>
+                            }
+                        </div>
+
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <table id="table" class="table table-bordered dt-responsive table-condensed cm-table" width="100%">
+                                <thead class="cm-table-head">
+                                    <tr>
+                                        <th>Subscription Id</th>
+                                        <th>API Type</th>
+                                        <th>Consumed Units</th>
+                                        <th>Validation Status</th>
+                                        <th>Validation Error Detail</th>
+                                        <th>Staged On</th>
+                                        <th>Processed On</th>
+                                    </tr>
+                                    @foreach (var batchUploadStaging in Model.BulkUploadUsageStagings)
+                                    {
+                                        <tr>
+                                            <td class="text-left">@batchUploadStaging.SubscriptionId</td>
+                                            <td class="text-left">@batchUploadStaging.Apitype</td>
+                                            <td class="text-left">@batchUploadStaging.ConsumedUnits</td>
+                                            <td class="text-left">@batchUploadStaging.ValidationStatus</td>
+                                            <td class="text-left">@batchUploadStaging.ValidationErrorDetail</td>
+                                            <td class="text-left">@batchUploadStaging.StagedOn</td>
+                                            <td class="text-left">@batchUploadStaging.ProcessedOn</td>
+                                        </tr>
+                                    }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </form>
+    }
+</div>

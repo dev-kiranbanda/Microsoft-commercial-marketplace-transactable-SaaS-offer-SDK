@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
 using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
 namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
@@ -18,6 +19,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
         public virtual DbSet<ApplicationConfiguration> ApplicationConfiguration { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
+        public virtual DbSet<BatchLog> BatchLog { get; set; }
+        public virtual DbSet<BulkUploadUsageStaging> BulkUploadUsageStaging { get; set; }
         public virtual DbSet<DatabaseVersionHistory> DatabaseVersionHistory { get; set; }
         public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
         public virtual DbSet<Events> Events { get; set; }
@@ -40,6 +43,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<Users> Users { get; set; }
         public virtual DbSet<ValueTypes> ValueTypes { get; set; }
         public virtual DbSet<WebJobSubscriptionStatus> WebJobSubscriptionStatus { get; set; }
+        public virtual DbSet<UploadUsageMetersResult> UploadUsageMetersResult { get; set; }
+        public virtual DbSet<BulkUploadUsageStagingResult> BulkUploadUsageStagingResult { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -67,6 +72,55 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                 entity.Property(e => e.LogDetail)
                     .HasMaxLength(4000)
                     .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<BatchLog>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.BatchStatus)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.FileName)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ReferenceId).HasColumnName("ReferenceID");
+
+                entity.Property(e => e.UploadedBy)
+                    .HasMaxLength(225)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.UploadedOn).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<BulkUploadUsageStaging>(entity =>
+            {
+                entity.Property(e => e.Id).HasColumnName("ID");
+
+                entity.Property(e => e.Apitype)
+                    .HasColumnName("APIType")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.BatchLogId).HasColumnName("BatchLogID");
+
+                entity.Property(e => e.ConsumedUnits).IsUnicode(false);
+
+                entity.Property(e => e.ProcessedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.StagedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.SubscriptionId)
+                    .HasColumnName("SubscriptionID")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ValidationErrorDetail).IsUnicode(false);
+
+                entity.HasOne(d => d.BatchLog)
+                    .WithMany(p => p.BulkUploadUsageStaging)
+                    .HasForeignKey(d => d.BatchLogId)
+                    .HasConstraintName("FK__BulkUploa__Batch__6FE99F9F");
             });
 
             modelBuilder.Entity<DatabaseVersionHistory>(entity =>
@@ -228,7 +282,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeMapping>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A98C058FAF2");
+                    .HasName("PK__PlanAttr__8B476A98139AFB6E");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -238,7 +292,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanAttr__AAAC09D888FE3E40");
+                    .HasName("PK__PlanAttr__AAAC09D859943AE1");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -268,7 +322,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanEventsOutPut>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanEven__AAAC09D8C9229532");
+                    .HasName("PK__PlanEven__AAAC09D8D2C28457");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -363,7 +417,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__Subscrip__AAAC09D8BA727059");
+                    .HasName("PK__Subscrip__AAAC09D8621FA7F6");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -455,7 +509,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<ValueTypes>(entity =>
             {
                 entity.HasKey(e => e.ValueTypeId)
-                    .HasName("PK__ValueTyp__A51E9C5AEA096123");
+                    .HasName("PK__ValueTyp__A51E9C5AF4A0A3CD");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 

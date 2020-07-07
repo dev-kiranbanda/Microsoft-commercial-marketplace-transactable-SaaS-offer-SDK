@@ -82,6 +82,11 @@ namespace Microsoft.Marketplace.Saas.Web
                 KnownUsers = this.Configuration["KnownUsers"],
 
             };
+            var azureBlobConfig = new AzureBlobConfig()
+            {
+                BlobContainer = this.Configuration["AzureBlobConfig:BlobContainer"],
+                BlobConnectionString = this.Configuration["AzureBlobConfig:BlobConnectionString"],
+            };
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = OpenIdConnectDefaults.AuthenticationScheme;
@@ -105,6 +110,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddSingleton<IMeteredBillingApiClient>(new MeteredBillingApiClient(config, new MeteringApiClientLogger()));
             services.AddSingleton<SaaSApiClientConfiguration>(config);
             services.AddSingleton<KnownUsersModel>(knownUsers);
+            services.AddSingleton<IBatchUsageStorageService>(new BatchUsageStorageService(azureBlobConfig));
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -167,6 +173,8 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IEventsRepository, EventsRepository>();
             services.AddScoped<KnownUserAttribute>();
             services.AddScoped<IEmailService, SMTPEmailService>();
+            services.AddScoped<IBatchLogRepository, BatchLogRepository>();
+            services.AddScoped<IBulkUploadUsageStagingRepository, BulkUploadUsageStagingRepository>();
         }
     }
 }
