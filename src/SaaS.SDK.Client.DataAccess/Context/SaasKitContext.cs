@@ -20,6 +20,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<ApplicationConfiguration> ApplicationConfiguration { get; set; }
         public virtual DbSet<ApplicationLog> ApplicationLog { get; set; }
         public virtual DbSet<BatchLog> BatchLog { get; set; }
+        public virtual DbSet<BatchUsageUploadHistory> BatchUsageUploadHistory { get; set; }
         public virtual DbSet<BulkUploadUsageStaging> BulkUploadUsageStaging { get; set; }
         public virtual DbSet<DatabaseVersionHistory> DatabaseVersionHistory { get; set; }
         public virtual DbSet<EmailTemplate> EmailTemplate { get; set; }
@@ -45,7 +46,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         public virtual DbSet<WebJobSubscriptionStatus> WebJobSubscriptionStatus { get; set; }
         public virtual DbSet<UploadUsageMetersResult> UploadUsageMetersResult { get; set; }
         public virtual DbSet<BulkUploadUsageStagingResult> BulkUploadUsageStagingResult { get; set; }
-
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -93,6 +93,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .IsUnicode(false);
 
                 entity.Property(e => e.UploadedOn).HasColumnType("datetime");
+            });
+
+            modelBuilder.Entity<BatchUsageUploadHistory>(entity =>
+            {
+                entity.Property(e => e.BatchId).HasMaxLength(50);
+
+                entity.Property(e => e.Filename).HasMaxLength(50);
+
+                entity.Property(e => e.UploadDate).HasColumnType("date");
             });
 
             modelBuilder.Entity<BulkUploadUsageStaging>(entity =>
@@ -238,6 +247,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasForeignKey(d => d.PlanId)
                     .HasConstraintName("FK__MeteredDi__PlanI__6383C8BA");
             });
+
 
             modelBuilder.Entity<OfferAttributes>(entity =>
             {
@@ -387,10 +397,12 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.NewValue).IsUnicode(false);
+                entity.Property(e => e.NewValue)
+                    .HasMaxLength(8000)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.OldValue)
-                    .HasMaxLength(50)
+                    .HasMaxLength(8000)
                     .IsUnicode(false);
 
                 entity.Property(e => e.SubscriptionId).HasColumnName("SubscriptionID");

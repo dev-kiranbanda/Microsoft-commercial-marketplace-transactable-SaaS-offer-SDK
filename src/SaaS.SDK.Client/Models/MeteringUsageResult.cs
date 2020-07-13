@@ -63,7 +63,7 @@ namespace Microsoft.Marketplace.SaasKit.Models
         /// The quantity.
         /// </value>
         [JsonPropertyName("quantity")]
-        public long Quantity { get; set; }
+        public decimal Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets the dimension.

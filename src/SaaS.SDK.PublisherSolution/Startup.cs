@@ -175,6 +175,7 @@ namespace Microsoft.Marketplace.Saas.Web
             services.AddScoped<IEmailService, SMTPEmailService>();
             services.AddScoped<IBatchLogRepository, BatchLogRepository>();
             services.AddScoped<IBulkUploadUsageStagingRepository, BulkUploadUsageStagingRepository>();
+            services.AddScoped<IBatchUsageUploadHistoryRepository, BatchUsageUploadHistoryRepository>();
         }
     }
 }

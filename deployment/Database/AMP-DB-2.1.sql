@@ -323,7 +323,7 @@ CREATE TABLE [dbo].[SubscriptionAuditLogs](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[SubscriptionID] [int] NULL,
 	[Attribute] [varchar](20) NULL,
-	[OldValue] [varchar](50) NULL,
+	[OldValue] [varchar](max) NULL,
 	[NewValue] [varchar](max) NULL,
 	[CreateDate] [datetime] NULL,
 	[CreateBy] [int] NULL,

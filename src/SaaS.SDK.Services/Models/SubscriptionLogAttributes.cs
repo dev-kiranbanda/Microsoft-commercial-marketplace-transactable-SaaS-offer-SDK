@@ -24,5 +24,10 @@
         /// The deployment
         /// </summary>
         Deployment = 4,
+
+        /// <summary>
+        /// The Metered
+        /// </summary>
+        Metered = 5
     }
 }

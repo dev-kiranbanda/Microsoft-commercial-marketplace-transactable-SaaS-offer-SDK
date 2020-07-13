@@ -107,7 +107,7 @@
 
         private readonly IBulkUploadUsageStagingRepository bulkUploadUsageStagingRepository;
 
-
+        private readonly IBatchUsageUploadHistoryRepository batchUsageUploadHistoryRepository;
 
         private UserService userService;
 
@@ -143,7 +143,7 @@
         /// <param name="offersRepository">The offers repository.</param>
         /// <param name="offersAttributeRepository">The offers attribute repository.</param>
         public HomeController(
-                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, IBatchUsageStorageService batchUsageStorageService, IBatchLogRepository batchLogRepository, IBulkUploadUsageStagingRepository bulkUploadUsageStagingRepository)
+                        IUsersRepository usersRepository, IMeteredBillingApiClient apiClient, ILogger<HomeController> logger, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, ISubscriptionUsageLogsRepository subscriptionUsageLogsRepository, IMeteredDimensionsRepository dimensionsRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IUsersRepository userRepository, IFulfillmentApiClient fulfillApiClient, IApplicationLogRepository applicationLogRepository, IEmailTemplateRepository emailTemplateRepository, IPlanEventsMappingRepository planEventsMappingRepository, IEventsRepository eventsRepository, IOptions<SaaSApiClientConfiguration> options, ILoggerFactory loggerFactory, IEmailService emailService, IOffersRepository offersRepository, IOfferAttributesRepository offersAttributeRepository, IBatchUsageStorageService batchUsageStorageService, IBatchLogRepository batchLogRepository, IBulkUploadUsageStagingRepository bulkUploadUsageStagingRepository, IBatchUsageUploadHistoryRepository batchUsageUploadHistoryRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepo = subscriptionRepo;
@@ -171,6 +171,7 @@
             this.batchUsageStorageService = batchUsageStorageService;
             this.batchLogRepository = batchLogRepository;
             this.bulkUploadUsageStagingRepository = bulkUploadUsageStagingRepository;
+            this.batchUsageUploadHistoryRepository = batchUsageUploadHistoryRepository;
             this.pendingActivationStatusHandlers = new PendingActivationStatusHandler(
                                                                           fulfillApiClient,
                                                                           subscriptionRepo,
@@ -903,7 +904,7 @@
                                     uploadUsage.SubscriptionId = Convert.ToString(meteringUsageData.SubscriptionID);
                                     uploadUsage.Apitype = meteringUsageData.APIType;
                                     uploadUsage.ConsumedUnits = meteringUsageData.ConsumedUnits;
-                                    uploadUsage.ValidationStatus = false;
+                                    uploadUsage.ValidationStatus = true;
                                     uploadUsage.ValidationErrorDetail = string.Empty;
                                     uploadUsage.StagedOn = DateTime.Now;
                                     uploadUsage.ProcessedOn = DateTime.Now;
@@ -912,11 +913,23 @@
                                     this.bulkUploadUsageStagingRepository.Save(uploadUsage);
                                 }
                             }
-
-                            var validateData = this.bulkUploadUsageStagingRepository.ValidateBulkUploadUsageStaging(batchLogId);
-                            this.logger.LogDebug($"Validation for Batch-{batchLogId} is complete.");
-
-                            bulkUploadModel.BulkUploadUsageStagings = validateData;
+                            List<BulkUploadUsageStagingResult> bulkUploadUsageStagingsList = new List<BulkUploadUsageStagingResult>();
+                            var validateData = this.bulkUploadUsageStagingRepository.GetByBatchLogId(batchLogId);
+                            foreach (var item in validateData)
+                            {
+                                BulkUploadUsageStagingResult uploadStaging = new BulkUploadUsageStagingResult();
+                                uploadStaging.Id = item.Id;
+                                uploadStaging.BatchLogId = item.BatchLogId;
+                                uploadStaging.SubscriptionId = item.SubscriptionId;
+                                uploadStaging.Apitype = item.Apitype;
+                                uploadStaging.ConsumedUnits = item.ConsumedUnits;
+                                uploadStaging.ValidationStatus = item.ValidationStatus;
+                                uploadStaging.ValidationErrorDetail = item.ValidationErrorDetail;
+                                uploadStaging.StagedOn = item.StagedOn;
+                                uploadStaging.ProcessedOn = item.ProcessedOn;
+                                bulkUploadUsageStagingsList.Add(uploadStaging);
+                            }
+                            bulkUploadModel.BulkUploadUsageStagings = bulkUploadUsageStagingsList;
                             bulkUploadModel.BatchLogId = batchLogId;
                             bulkUploadModel.Response = response;
                         }
@@ -1050,6 +1063,128 @@
                 logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
+        }
+
+        /// <summary>
+        /// Gets the bulk uploadusage meteres.
+        /// </summary>
+        /// <param name="batchLogId">The batch log identifier.</param>
+        /// <returns></returns>
+        [HttpPost]
+        public IActionResult BulkUploadUsageMeters(int batchLogId)
+        {
+            logger.LogInformation("Home Controller / BulkUploadUsageMeters:{0} ", JsonSerializer.Serialize(batchLogId));
+            try
+            {
+                this.logger.LogInformation($"Bulk Upload Subscription Usage Meters for Batch-{batchLogId} Initiate.");
+                var userId = this.userService.AddUser(this.GetCurrentUserDetail());
+
+                //Get Bulk Upload Usage Meters from db for the Batch Log Id
+                var uploadUsageMeters = this.bulkUploadUsageStagingRepository.GetByBatchLogId(batchLogId);
+
+                List<MeteringUsageRequest> subscriptionUsageRequestList = new List<MeteringUsageRequest>();
+                foreach (var request in uploadUsageMeters)
+                {
+                    var newResourceid = new Guid();
+                    Guid.TryParse(request.SubscriptionId, out newResourceid);
+                    if (newResourceid != new Guid())
+                    {
+                        MeteringUsageRequest newUsageRequest = new MeteringUsageRequest()
+                        {
+                            ResourceId = newResourceid,
+                            Dimension = request.Apitype,
+                            EffectiveStartTime = DateTime.UtcNow,
+                            Quantity = Convert.ToDouble(request.ConsumedUnits)
+                        };
+                        subscriptionUsageRequestList.Add(newUsageRequest);
+                    }
+                }
+
+                //Create Batch Usage Events
+                var newRequestData = new { request = subscriptionUsageRequestList };
+                var requestJson = JsonSerializer.Serialize(newRequestData);
+                var meteringBatchUsageResult = new MeteringBatchUsageResult();
+
+                try
+                {
+                    meteringBatchUsageResult = apiClient.EmitBatchUsageEventAsync(subscriptionUsageRequestList).ConfigureAwait(false).GetAwaiter().GetResult();
+                }
+                catch (MeteredBillingException mex)
+                {
+                    ResponseModel response = new ResponseModel();
+                    response.Message = "There are some Exception occured, Please upload valid data!";
+                    response.IsSuccess = false;
+                    this.logger.LogError($"Bulk Upload Subscription Usage Meters for Batch-{batchLogId} Error - {mex.Message} with StackTrace- {mex.StackTrace}.");
+
+                    return RedirectToAction(nameof(RecordBatchUsage));
+                }
+
+                //Audit Logs Entries
+                var responseJson = string.Empty;
+                foreach (var meteringUsageResult in meteringBatchUsageResult.Result)
+                {
+                    if (meteringUsageResult.ResourceId != Guid.Empty)
+                    {
+                        var existingSubscriptionDetail = subscriptionRepo.GetById(meteringUsageResult.ResourceId);
+                        if (existingSubscriptionDetail != null)
+                        {
+                            ////Add Metered Audit Logs
+                            responseJson = JsonSerializer.Serialize(meteringUsageResult);
+                            var newMeteredAuditLog = new MeteredAuditLogs()
+                            {
+                                RequestJson = requestJson,
+                                ResponseJson = responseJson,
+                                StatusCode = meteringUsageResult.Status,
+                                SubscriptionId = existingSubscriptionDetail.Id,
+                                SubscriptionUsageDate = DateTime.UtcNow,
+                                CreatedBy = userId,
+                                CreatedDate = DateTime.Now
+                            };
+                            subscriptionUsageLogsRepository.Save(newMeteredAuditLog);
+
+                            var batchlogDetails = this.batchLogRepository.Get(batchLogId);
+
+                            var newbatchUsageUploadHistory = new BatchUsageUploadHistory()
+                            {
+                                Request = requestJson,
+                                Response = responseJson,
+                                BatchId = Convert.ToString(batchLogId),
+                                Filename = batchlogDetails.FileName,
+                                UploadBy = Convert.ToInt32(batchlogDetails.UploadedBy),
+                                UploadDate = batchlogDetails.UploadedOn
+                            };
+                            batchUsageUploadHistoryRepository.Save(newbatchUsageUploadHistory);
+
+                            ////Add Subscription Audit Logs
+                            SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                            {
+                                Attribute = Convert.ToString(SubscriptionLogAttributes.Metered),
+                                SubscriptionId = existingSubscriptionDetail.Id,
+                                NewValue = requestJson,
+                                OldValue = responseJson,
+                                CreateBy = userId,
+                                CreateDate = DateTime.Now
+
+                            };
+                            this.subscriptionLogRepository.Save(auditLog);
+
+                            BatchLog batchLog = new BatchLog();
+                            batchLog = batchLogRepository.Get(batchLogId);
+                            batchLog.BatchStatus = "Complete";
+                            batchLogRepository.Save(batchLog);
+
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", ex);
+            }
+            return View("BatchUploadSuccessMessage");
+            //RedirectToAction(nameof(RecordBatchUsage));
         }
     }
 }

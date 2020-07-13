@@ -1,21 +1,18 @@
 ﻿namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
 {
-
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Context;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
-    using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
-
-
     /// <summary>
-    /// Bulk Upload Usage Staging Repository
+    /// 
     /// </summary>
-    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBulkUploadUsageStagingRepository" />
-    public class BulkUploadUsageStagingRepository : IBulkUploadUsageStagingRepository
+    /// <seealso cref="Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts.IBatchUsageUploadHistoryRepository" />
+    public class BatchUsageUploadHistoryRepository : IBatchUsageUploadHistoryRepository
     {
         /// <summary>
         /// The context
@@ -28,12 +25,29 @@
         private bool disposed = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BulkUploadUsageStagingRepository"/> class.
+        /// Initializes a new instance of the <see cref="BatchUsageUploadHistoryRepository"/> class.
         /// </summary>
         /// <param name="context">The context.</param>
-        public BulkUploadUsageStagingRepository(SaasKitContext context)
+        public BatchUsageUploadHistoryRepository(SaasKitContext context)
         {
             Context = context;
+        }
+
+        /// <summary>
+        /// Adds the specified batchusagehistory.
+        /// </summary>
+        /// <param name="batchusagehistory">The batchusagehistory.</param>
+        /// <returns></returns>
+        public int Save(BatchUsageUploadHistory batchusagehistory)
+        {
+            try
+            {
+                Context.BatchUsageUploadHistory.Add(batchusagehistory);
+                Context.SaveChanges();
+                return batchusagehistory.Id;
+            }
+            catch (Exception) { }
+            return 0;
         }
 
         /// <summary>
@@ -53,7 +67,7 @@
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         public void Dispose()
         {
@@ -66,9 +80,9 @@
         /// Gets this instance.
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<BulkUploadUsageStaging> Get()
+        public IEnumerable<BatchUsageUploadHistory> Get()
         {
-            return Context.BulkUploadUsageStaging;
+            return Context.BatchUsageUploadHistory;
         }
 
         /// <summary>
@@ -76,47 +90,24 @@
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        public BulkUploadUsageStaging Get(int id)
+        public BatchUsageUploadHistory Get(int id)
         {
-            return Context.BulkUploadUsageStaging.Where(s => s.Id == id).FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Adds the specified entities.
-        /// </summary>
-        /// <param name="entities">The entities.</param>
-        /// <returns></returns>
-        public int Save(BulkUploadUsageStaging entities)
-        {
-            try
-            {
-                Context.BulkUploadUsageStaging.Add(entities);
-                Context.SaveChanges();
-                return entities.Id;
-            }
-            catch (Exception) { }
-            return 0;
+            return Context.BatchUsageUploadHistory.Where(s => s.Id == id).FirstOrDefault();
         }
 
         /// <summary>
         /// Removes the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        public void Remove(BulkUploadUsageStaging entity)
+        public void Remove(BatchUsageUploadHistory entity)
         {
-            Context.BulkUploadUsageStaging.Remove(entity);
+            Context.BatchUsageUploadHistory.Remove(entity);
             Context.SaveChanges();
         }
 
-        /// <summary>
-        /// Gets the bulk upload staging records.
-        /// </summary>
-        /// <param name="batchLogId">The batch log identifier.</param>
-        /// <returns></returns>
-        public List<BulkUploadUsageStaging> GetByBatchLogId(int batchLogId)
+        public List<BatchUsageUploadHistory> GetBatchUsageUploadHistoryList(DateTime? UploadedDate, string FileName)
         {
-            return Context.BulkUploadUsageStaging.Where(s => s.BatchLogId == batchLogId).ToList();
+            return Context.BatchUsageUploadHistory.FromSqlRaw("dbo.spGetBatchUsageHistory {0},{1}", UploadedDate, FileName).ToList();
         }
-
     }
 }
