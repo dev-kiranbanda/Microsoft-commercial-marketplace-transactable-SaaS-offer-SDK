@@ -1167,13 +1167,10 @@
 
                             };
                             this.subscriptionLogRepository.Save(auditLog);
-
                             BatchLog batchLog = new BatchLog();
                             batchLog = batchLogRepository.Get(batchLogId);
                             batchLog.BatchStatus = "Complete";
                             batchLogRepository.Save(batchLog);
-
-
                         }
                     }
                 }

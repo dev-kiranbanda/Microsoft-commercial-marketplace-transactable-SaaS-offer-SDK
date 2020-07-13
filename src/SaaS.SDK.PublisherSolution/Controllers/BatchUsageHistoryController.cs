@@ -95,17 +95,19 @@
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult Search(DateTime? uploadDate,string fileName)
+        public IActionResult Search(DateTime? uploadDate, string fileName)
         {
             logger.LogInformation("Home Controller / BatchUsageHistory ");
             try
             {
                 BatchUsageHistorySearchModel searchCriteria = new BatchUsageHistorySearchModel();
                 searchCriteria.UploadDate = uploadDate;
-                searchCriteria.Filename = fileName.Trim();
+                if (!string.IsNullOrEmpty(fileName)){
+                    searchCriteria.Filename = fileName.Trim();
+                }
                 searchCriteria.batchUsageUploadHistorylist = batchUsageUploadHistoryRepository.GetBatchUsageUploadHistoryList(searchCriteria.UploadDate, searchCriteria.Filename);
                 Thread.Sleep(1000);
-                return this.PartialView("BatchUsageHistoryList",searchCriteria);
+                return this.PartialView("BatchUsageHistoryList", searchCriteria);
             }
             catch (Exception ex)
             {

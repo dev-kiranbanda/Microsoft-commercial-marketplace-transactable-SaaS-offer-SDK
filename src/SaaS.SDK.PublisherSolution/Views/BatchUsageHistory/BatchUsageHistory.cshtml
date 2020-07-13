@@ -3,15 +3,15 @@
     ViewData["Title"] = "BatchUsageHistory";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="text-center" >
+<div class="text-center">
     <div class="container">
         <div class="">
             <div class="card-body ">
                 <div class="text-left ">
                     <span class="cm-section-heading">Batch Usage History</span>
-                </div>  
+                </div>
 
-                <form  id="frmBatchUsageHistory">
+                <form id="frmBatchUsageHistory">
                     <div class="row mt20">
                         <div class="col-2 text-right">@Html.Label("Uploaded Date")</div>
                         <div class="col-3 text-left">
@@ -33,34 +33,35 @@
                     @{await Html.RenderPartialAsync("BatchUsageHistoryList");}
                 </div>
             </div>
+        </div>
     </div>
 </div>
-    <script>
-        $(document).ready(function () {
-            $("#divProcessing").hide();
-        });
-        $(document).keypress(function (e) {
-            if (e.which == 13) {
-                search();
-            }
-        });
-        function search() {
-            $("#divProcessing").show();
-            var formobject = $('#frmBatchUsageHistory').serialize();
-            debugger;
-            $.ajax({
-                url: 'Search',
-                type: 'GET',
-                data: formobject,
-                cache: false,
-                success: function (result) {
-                    $("#divProcessing").hide();
-                    $('#BatchUsageHistoryModal').html(result);
-                },
-                Error:
-                    function (result) {
-                        $('#BatchUsageHistoryModal').html(result);
-                    }
-            });
+<script>
+    $(document).ready(function () {
+        $("#divProcessing").hide();
+    });
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+            e.preventDefault()
         }
-    </script>
+    });
+    function search() {
+        $("#divProcessing").show();
+        var formobject = $('#frmBatchUsageHistory').serialize();
+        debugger;
+        $.ajax({
+            url: 'Search',
+            type: 'GET',
+            data: formobject,
+            cache: false,
+            success: function (result) {
+                $("#divProcessing").hide();
+                $('#BatchUsageHistoryModal').html(result);
+            },
+            Error:
+                function (result) {
+                    $('#BatchUsageHistoryModal').html(result);
+                }
+        });
+    }
+</script>

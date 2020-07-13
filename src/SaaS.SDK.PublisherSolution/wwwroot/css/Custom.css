@@ -12,7 +12,7 @@
 }
 
 .cm-top-nav-bar {
-    background-color: #004578 !important;
+    background-color: #FFFFFF !important;
     margin-bottom: 0px;
     border-radius: 0;
 }
@@ -61,7 +61,7 @@
     width: auto;
     padding: 8px;
     max-width: 100%;
-    width: 30%;
+    width: 40%;
 }
 
 .cm-panel-default {
@@ -74,7 +74,7 @@
     font-family: 'Segoe UI', 'sans-serif' !important;
     font-size: 25px;
     background-color: #fff;
-    border-bottom: 4px solid #2180a6;
+    border-bottom: 4px solid #F37440;
     text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 40px;
@@ -127,7 +127,7 @@
 
 .cm-button-default {
     color: #fff !important;
-    background-color: #004578;
+    background-color: #F37440;
     border-color: #2e6da4;
     display: inline-block;
     font-weight: 400;
@@ -158,12 +158,12 @@
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #004578;
+        color: #F37440;
     }
 
 .cm-button-error {
     color: #fff;
-    background-color: #004578 !important;
+    background-color: #F37440 !important;
     border-color: #2e6da4;
     display: inline-block;
     font-weight: 400;
@@ -194,7 +194,7 @@
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #004578;
+        color: #F37440;
     }
 
 .cm-button-success {
@@ -230,7 +230,7 @@
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #004578;
+        color: #F37440;
     }
 
 .cm-button-danger {
@@ -266,7 +266,7 @@
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #004578;
+        color: #F37440;
     }
 
 .cm-table {
@@ -310,7 +310,7 @@
 
     .cm-link-button:hover {
         cursor: pointer;
-        color: #004578 !important;
+        color: #F37440 !important;
     }
 
 /*.cm-footer {
@@ -342,7 +342,7 @@ a.cm-dropdown-option {
 
     a.cm-dropdown-option:hover {
         background: transparent !important;
-        color: #004578 !important;
+        color: #F37440 !important;
         cursor: pointer;
     }
 
@@ -398,11 +398,11 @@ a.cm-dropdown-option {
     }
 
 input:checked + .slider {
-    background-color: #004578;
+    background-color: #F37440;
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #004578;
+    box-shadow: 0 0 1px #F37440;
 }
 
 input:checked + .slider:before {
@@ -432,7 +432,7 @@ input:checked + .slider:before {
     margin: -50px 0 0 -100px;
     border: 8px solid #000000;
     border-radius: 50%;
-    border-top: 8px solid #004578;
+    border-top: 8px solid #F37440;
     width: 40px;
     height: 40px;
     -webkit-animation: spin 2s linear infinite;

@@ -739,7 +739,7 @@ INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'SMTPSslEnabled', N'TRUE', N'SMTP Ssl Enabled')
 GO
-INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'ApplicationName', N'Contoso', N'Application Name')
+INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'ApplicationName', N'TeraData', N'Application Name')
 GO
 INSERT [dbo].[ApplicationConfiguration] ( [Name], [Value], [Description]) VALUES ( N'IsEmailEnabledForSubscriptionActivation', N'True', N'Active Email Enabled')
 GO
@@ -1017,7 +1017,7 @@ Select 'Failed','Failed',GetDate(),'<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0
                            <!-- BEGIN HEADER // -->                                  
                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateHeader">
                               <tr>
-                                 <td valign="top" class="headerContent">                                              <img src="https://media-exp1.licdn.com/dms/image/C510BAQHaTIBZfLFCGg/company-logo_200_200/0?e=1592438400&v=beta&t=AHOqaRJR_Thf72VDOKQId2QKdwepIp-sIiSIDtALzhQ" style="max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
+                                 <td valign="top" class="headerContent">                                              <img src="http://seekvectorlogo.com/wp-content/uploads/2019/03/teradata-vector-logo.png" style="max-width: 200px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
@@ -1082,7 +1082,7 @@ Select 'PendingActivation','Pending Activation',GetDate(),'<!DOCTYPE html PUBLIC
                            <!-- BEGIN HEADER // -->                                  
                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateHeader">
                               <tr>
-                                 <td valign="top" class="headerContent">                                              <img src="https://media-exp1.licdn.com/dms/image/C510BAQHaTIBZfLFCGg/company-logo_200_200/0?e=1592438400&v=beta&t=AHOqaRJR_Thf72VDOKQId2QKdwepIp-sIiSIDtALzhQ" style="max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
+                                 <td valign="top" class="headerContent">                                              <img src="http://seekvectorlogo.com/wp-content/uploads/2019/03/teradata-vector-logo.png" style="max-width: 200px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
@@ -1146,7 +1146,7 @@ Select 'Subscribed','Subscribed',GetDate(),'<!DOCTYPE html PUBLIC "-//W3C//DTD X
                            <!-- BEGIN HEADER // -->                                  
                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateHeader">
                               <tr>
-                                 <td valign="top" class="headerContent">                                              <img src="https://media-exp1.licdn.com/dms/image/C510BAQHaTIBZfLFCGg/company-logo_200_200/0?e=1592438400&v=beta&t=AHOqaRJR_Thf72VDOKQId2QKdwepIp-sIiSIDtALzhQ" style="max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
+                                 <td valign="top" class="headerContent">                                              <img src="http://seekvectorlogo.com/wp-content/uploads/2019/03/teradata-vector-logo.png" style="max-width: 200px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
@@ -1210,7 +1210,7 @@ Select 'Unsubscribed','Unsubscribed',GetDate(),'<!DOCTYPE html PUBLIC "-//W3C//D
                            <!-- BEGIN HEADER // -->                                  
                            <table border="0" cellpadding="0" cellspacing="0" width="100%" id="templateHeader">
                               <tr>
-                                 <td valign="top" class="headerContent">                                              <img src="https://media-exp1.licdn.com/dms/image/C510BAQHaTIBZfLFCGg/company-logo_200_200/0?e=1592438400&v=beta&t=AHOqaRJR_Thf72VDOKQId2QKdwepIp-sIiSIDtALzhQ" style="max-width: 300px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
+                                 <td valign="top" class="headerContent">                                              <img src="http://seekvectorlogo.com/wp-content/uploads/2019/03/teradata-vector-logo.png" style="max-width: 200px; display: block; margin-left: auto; margin-right: auto; padding-top:10px;padding-bottom:10px;" id="headerImage" />                                          </td>
                               </tr>
                            </table>
                            <!-- // END HEADER -->                              
