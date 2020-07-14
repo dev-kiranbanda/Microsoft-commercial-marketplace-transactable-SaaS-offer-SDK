@@ -70,5 +70,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\css\jquery-ui\images\" />
+  </ItemGroup>
+
 
 </Project>
