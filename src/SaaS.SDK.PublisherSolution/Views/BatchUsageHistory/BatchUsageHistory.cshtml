@@ -23,7 +23,7 @@
                     <div class="row mt20">
                         <div class="col-2 text-right">@Html.Label("Uploaded Date")</div>
                         <div class="col-3 text-left">
-                            @Html.TextBoxFor(model => model.UploadDate, new { @id = "datepicker", @type = "text", @Value = Model.UploadDate.ToString() })
+                            @Html.TextBoxFor(model => model.UploadDate, new { @style = "padding:5px 25px;", @id = "datepicker", @type = "text", @Value = Model.UploadDate.ToString() })
                         </div>
                         <div class="col-2 text-right">@Html.Label("Filename")</div>
                         <div class="col-3 text-left">
