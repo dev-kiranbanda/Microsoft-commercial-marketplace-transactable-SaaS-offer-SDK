@@ -153,9 +153,45 @@
 }
 
     .cm-button-default:hover {
-        background-color: #EAE7E7 !important;
+        background-color: #000000 !important;
         border-radius: 5px;
         padding: 12px 20px;
+        font-size: 18px;
+        font-weight: bold;
+        color: #F37440;
+    }
+
+.cm-button-bulkUploadSearch {
+    color: #fff !important;
+    background-color: #F37440;
+    border-color: #2e6da4;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    border: 1px solid transparent;
+    padding: 8px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.42857143;
+    border-radius: 4px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    margin-top: 25px;
+    margin-bottom: 20px;
+}
+
+    .cm-button-bulkUploadSearch:hover {
+        background-color: #000000 !important;
+        border-radius: 5px;
+        padding: 8px 30px;
         font-size: 18px;
         font-weight: bold;
         color: #F37440;
@@ -189,7 +225,7 @@
 }
 
     .cm-button-error:hover {
-        background-color: #EAE7E7 !important;
+        background-color: #000000 !important;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
@@ -225,7 +261,7 @@
 }
 
     .cm-button-success:hover {
-        background-color: #EAE7E7;
+        background-color: #000000;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
@@ -261,7 +297,7 @@
 }
 
     .cm-button-danger:hover {
-        background-color: #EAE7E7;
+        background-color: #000000;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
@@ -328,10 +364,11 @@
     bottom: 0;
     width: 100%;
     background-color: #E6E6E6;
-    font-size: 12px !important;
+    font-size: 14px !important;
     color: black !important;
-    height: 20px;
-    line-height: 20px;
+    height: 10px;
+    line-height: 1px;
+    padding: 20px;
 }
 
 a.cm-dropdown-option {

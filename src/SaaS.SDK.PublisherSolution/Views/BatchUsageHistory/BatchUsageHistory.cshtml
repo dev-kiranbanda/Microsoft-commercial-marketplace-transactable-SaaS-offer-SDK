@@ -3,6 +3,14 @@
     ViewData["Title"] = "BatchUsageHistory";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="~/css/jquery-ui/jquery-ui.css" rel="stylesheet" />
+    <link href="~/css/jquery-ui/style.css" rel="stylesheet" />
+    <script src="~/lib/jquery-ui/jquery-1.12.4.js"></script>
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+</head>
 <div class="text-center">
     <div class="container">
         <div class="">
@@ -15,14 +23,13 @@
                     <div class="row mt20">
                         <div class="col-2 text-right">@Html.Label("Uploaded Date")</div>
                         <div class="col-3 text-left">
-                            @Html.TextBoxFor(model => model.UploadDate, new { @type = "date", @class = "form-control datepicker", @Value = Model.UploadDate.ToString() })
-                            @Html.ValidationMessageFor(model => model.UploadDate, "", new { @class = "text-danger" })
+                            @Html.TextBoxFor(model => model.UploadDate, new { @id = "datepicker", @type = "text", @Value = Model.UploadDate.ToString() })
                         </div>
                         <div class="col-2 text-right">@Html.Label("Filename")</div>
                         <div class="col-3 text-left">
                             @Html.TextBox("Filename", "", new { @class = "form-control", @Value = Model.Filename })
                         </div>
-                        <input class="cm-button-default mt0" type="button" onclick="search()" value="Search" />
+                        <input class="cm-button-bulkUploadSearch mt0" type="button" onclick="search()" value="Search" />
                     </div>
                 </form>
                 <div id="divProcessing" class="overlay">
@@ -39,16 +46,19 @@
 <script>
     $(document).ready(function () {
         $("#divProcessing").hide();
+        $("#datepicker").datepicker();
     });
+
+
     $(document).keypress(function (e) {
         if (e.which == 13) {
             e.preventDefault()
         }
     });
     function search() {
+
         $("#divProcessing").show();
         var formobject = $('#frmBatchUsageHistory').serialize();
-        debugger;
         $.ajax({
             url: 'Search',
             type: 'GET',

@@ -20,10 +20,8 @@
 <body>
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark cm-top-nav-bar">
         <a class="navbar-brand mr-auto mr-lg-0" href="@Url.Action("Index", "Home")">
-            <img class="cm-logo pull-left" src="~/teradata.png" />
-            @*<img class="cm-logo pull-left" src="https://kblnuser.azurewebsites.net/logo.png" />*@
+            @await Component.InvokeAsync("Logo")
         </a>
-        @*<a class="navbar-brand mr-auto mr-lg-0" asp-area="" asp-controller="Home" asp-action="Index">SaasWeb Demo</a>*@
 
         <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
             <div class="navbar-nav mr-auto">
@@ -71,13 +69,12 @@
 
     <footer class="cm-footer">
         <div class="container text-center">
-            &copy; 2020 Teradata. All Rights Reserved.
+            @await Component.InvokeAsync("Footer")
         </div>
     </footer>
 
 
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 

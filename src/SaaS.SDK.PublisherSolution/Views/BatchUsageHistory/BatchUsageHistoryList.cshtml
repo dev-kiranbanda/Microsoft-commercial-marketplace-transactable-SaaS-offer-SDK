@@ -1,29 +1,28 @@
 ﻿<div>
-    <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20 -ml100" width="100%">
+    <table id="table" class="table table-bordered dt-responsive table-condensed cm-table mt20 -ml100" style="width: 130% ! important;">
         <thead class="cm-table-head">
             <tr>
+                <th width="20%">Filename</th>
+                <th width="20%">UploadOn</th>
                 <th width="25%">Request</th>
                 <th width="25%">Response</th>
-                <th width="10%">BatchId</th>
-                <th width="20%">Filename</th>
-                <th width="20%">UploadDate</th>
             </tr>
         </thead>
         <tbody>
             @for (var i = 0; i < Model.batchUsageUploadHistorylist.Count; i++)
             {
                 var batch = Model.batchUsageUploadHistorylist[i];
-                <tr>
-                    <td  width="25%" class="text-left">@batch.Request</td>
-                    <td  width="25%" class="text-left">@batch.Response</td>
-                    <td  width="10%" class="text-left">@batch.BatchId</td>
-                    <td  width="20%" class="text-left">@batch.Filename</td>
-                    <td width="20%" class="text-left">
-                        <input id="batchUsageuploadHistory[@i].UploadedBy" type="hidden" value="@Model.batchUsageUploadHistorylist[i].UploadBy" class="iHidden" name="batchUsageUploadHistorylist[@i].UploadedBy" />
-                        <input id="batchUsageuploadHistory[@i].Id" type="hidden" value="@Model.batchUsageUploadHistorylist[i].Id" class="iHidden" name="batchUsageUploadHistorylist[@i].Id" />
-                        @batch.UploadDate.ToString("dd/MM/yyyy")
-                    </td>
-                </tr>
+            <tr>
+                <td width="20%" class="text-left">@batch.Filename</td>
+                <td width="20%" class="text-left">
+                    <input id="batchUsageuploadHistory[@i].UploadedBy" type="hidden" value="@Model.batchUsageUploadHistorylist[i].UploadBy" class="iHidden" name="batchUsageUploadHistorylist[@i].UploadedBy" />
+                    <input id="batchUsageuploadHistory[@i].Id" type="hidden" value="@Model.batchUsageUploadHistorylist[i].Id" class="iHidden" name="batchUsageUploadHistorylist[@i].Id" />
+                    @batch.UploadDate.ToString("MM/dd/yyyy")
+                </td>
+                <td width="25%" class="text-left">@batch.Request</td>
+                <td width="25%" class="text-left">@batch.Response</td>
+
+            </tr>
             }
         </tbody>
     </table>

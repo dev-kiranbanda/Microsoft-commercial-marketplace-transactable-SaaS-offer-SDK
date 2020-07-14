@@ -1,18 +1,4 @@
 ﻿@{
     ViewData["Title"] = "Welcome";
 }
-<div class="pt-5">
-    <div class="card p-3 ">
-        <div class="text-center">
-            <h1 class="display-4">Welcome</h1>
-        </div>
-        <div class="text-left">
-            <p>This is the publisher solution.</p>
-            @if (!this.User.Identity.IsAuthenticated)
-            {
-                <p> Please sign in to continue.</p>
-            }
-
-        </div>
-    </div>
-</div>
+@await Component.InvokeAsync("HomePageContent")
