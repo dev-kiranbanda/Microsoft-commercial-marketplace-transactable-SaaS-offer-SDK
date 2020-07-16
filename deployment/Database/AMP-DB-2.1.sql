@@ -105,8 +105,8 @@ GO
 CREATE TABLE [dbo].[MeteredAuditLogs](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[SubscriptionId] [int] NULL,
-	[RequestJson] [varchar](500) NULL,
-	[ResponseJson] [varchar](500) NULL,
+	[RequestJson] [varchar](max) NULL,
+	[ResponseJson] [varchar](max) NULL,
 	[StatusCode] [varchar](100) NULL,
 	[CreatedDate] [datetime] NULL,
 	[CreatedBy] [int] NOT NULL,

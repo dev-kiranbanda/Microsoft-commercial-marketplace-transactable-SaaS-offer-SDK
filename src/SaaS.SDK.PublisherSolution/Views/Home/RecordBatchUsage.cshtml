@@ -67,21 +67,9 @@
                     <div class="form-group">
                         <div class="row">
                             @Html.HiddenFor(s => s.BatchLogId)
-                            @if (Model.BulkUploadUsageStagings.Any(s => s.ValidationStatus == null || s.ValidationStatus.Value == false))
-                            {
-                                <div class="col-lg-2 col-md-2">
-                                    <button type="button" class="btn btn-primary" disabled>Submit to Azure</button>
-                                </div>
-                                <div class="col-lg-10 col-md-10">
-                                    <span class="alert-danger font-weight-bold">There are some invalid entries in the file, please fix and upload again!</span>
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="col-lg-2 col-md-2">
-                                    <button type="submit" class="cm-button-default">Submit to Azure</button>
-                                </div>
-                            }
+                            <div class="col-lg-2 col-md-2">
+                                <button type="submit" class="cm-button-default">Submit to Azure</button>
+                            </div>
                         </div>
 
                     </div>
@@ -93,8 +81,6 @@
                                         <th>Subscription Id</th>
                                         <th>API Type</th>
                                         <th>Consumed Units</th>
-                                        <th>Validation Status</th>
-                                        <th>Validation Error Detail</th>
                                         <th>Staged On</th>
                                         <th>Processed On</th>
                                     </tr>
@@ -104,10 +90,8 @@
                                             <td class="text-left">@batchUploadStaging.SubscriptionId</td>
                                             <td class="text-left">@batchUploadStaging.Apitype</td>
                                             <td class="text-left">@batchUploadStaging.ConsumedUnits</td>
-                                            <td class="text-left">@batchUploadStaging.ValidationStatus</td>
-                                            <td class="text-left">@batchUploadStaging.ValidationErrorDetail</td>
-                                            <td class="text-left">@batchUploadStaging.StagedOn</td>
-                                            <td class="text-left">@batchUploadStaging.ProcessedOn</td>
+                                            <td class="text-left">@batchUploadStaging.StagedOn.Value.ToString("MM/dd/yyyy")</td>
+                                            <td class="text-left">@batchUploadStaging.ProcessedOn.Value.ToString("MM/dd/yyyy")</td>
                                         </tr>
                                     }
                             </table>
