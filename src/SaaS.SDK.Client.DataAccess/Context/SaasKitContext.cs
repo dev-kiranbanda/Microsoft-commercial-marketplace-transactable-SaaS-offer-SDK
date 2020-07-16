@@ -210,13 +210,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             {
                 entity.Property(e => e.CreatedDate).HasColumnType("datetime");
 
-                entity.Property(e => e.RequestJson)
-                    .HasMaxLength(500)
-                    .IsUnicode(false);
+                entity.Property(e => e.RequestJson).IsUnicode(false);
 
-                entity.Property(e => e.ResponseJson)
-                    .HasMaxLength(500)
-                    .IsUnicode(false);
+                entity.Property(e => e.ResponseJson).IsUnicode(false);
 
                 entity.Property(e => e.StatusCode)
                     .HasMaxLength(100)
@@ -247,7 +243,6 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
                     .HasForeignKey(d => d.PlanId)
                     .HasConstraintName("FK__MeteredDi__PlanI__6383C8BA");
             });
-
 
             modelBuilder.Entity<OfferAttributes>(entity =>
             {
@@ -292,7 +287,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeMapping>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A98139AFB6E");
+                    .HasName("PK__PlanAttr__8B476A9825774127");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -302,7 +297,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanAttr__AAAC09D859943AE1");
+                    .HasName("PK__PlanAttr__AAAC09D86AA2B5A4");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -332,7 +327,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanEventsOutPut>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanEven__AAAC09D8D2C28457");
+                    .HasName("PK__PlanEven__AAAC09D81F16A9AB");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -397,13 +392,9 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.NewValue)
-                    .HasMaxLength(8000)
-                    .IsUnicode(false);
+                entity.Property(e => e.NewValue).IsUnicode(false);
 
-                entity.Property(e => e.OldValue)
-                    .HasMaxLength(8000)
-                    .IsUnicode(false);
+                entity.Property(e => e.OldValue).IsUnicode(false);
 
                 entity.Property(e => e.SubscriptionId).HasColumnName("SubscriptionID");
 
@@ -429,7 +420,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__Subscrip__AAAC09D8621FA7F6");
+                    .HasName("PK__Subscrip__AAAC09D8CF9A960A");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -521,7 +512,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<ValueTypes>(entity =>
             {
                 entity.HasKey(e => e.ValueTypeId)
-                    .HasName("PK__ValueTyp__A51E9C5AF4A0A3CD");
+                    .HasName("PK__ValueTyp__A51E9C5A40C33F12");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 

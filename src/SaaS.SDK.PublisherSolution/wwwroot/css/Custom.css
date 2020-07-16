@@ -496,3 +496,7 @@ input:checked + .slider:before {
     left: 0;
     opacity: 0.5;
 }
+
+.word-wrap {
+    word-wrap: break-word;
+}
