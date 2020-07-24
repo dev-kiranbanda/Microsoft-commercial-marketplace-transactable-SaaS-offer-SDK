@@ -89,6 +89,8 @@
 
         private PlanService planService = null;
 
+        private IMeteredDimensionsRepository meteredDimensionRepository;
+
         /// <summary>
         /// The user service.
         /// </summary>
@@ -113,7 +115,7 @@
         /// <param name="cloudConfigs">The cloud configs.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="emailService">The email service.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService, IMeteredDimensionsRepository meteredDimensionRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -128,9 +130,10 @@
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
+            this.meteredDimensionRepository = meteredDimensionRepository;
             this.logger = logger;
             this.offersRepository = offersRepository;
-            this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository);
+            this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository,this.meteredDimensionRepository);
             this.eventsRepository = eventsRepository;
             this.emailService = emailService;
             this.loggerFactory = loggerFactory;

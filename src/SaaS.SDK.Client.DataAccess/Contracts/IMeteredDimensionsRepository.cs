@@ -17,5 +17,13 @@
         /// <param name="planId">The plan identifier.</param>
         /// <returns>List of metered dimensions for the plan.</returns>
         List<MeteredDimensions> GetDimensionsByPlanId(string planId);
+
+        /// <summary>
+        /// Gets the dimensions for the plan (by the identifier).
+        /// </summary>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns>List of metered dimensions for the plan.</returns>
+        List<MeteredDimensions> GetDimensionsByPlanId(int planId);
+
     }
 }

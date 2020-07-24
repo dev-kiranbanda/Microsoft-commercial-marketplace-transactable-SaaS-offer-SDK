@@ -10,6 +10,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Plans Controller.
@@ -40,6 +41,9 @@
 
         private PlanService plansService;
 
+        private IMeteredDimensionsRepository meteredDimensionRepository;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlansController" /> class.
         /// </summary>
@@ -50,7 +54,7 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger)
+        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger, IMeteredDimensionsRepository meteredDimensionRepository)
         {
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;
@@ -58,8 +62,9 @@
             this.plansRepository = plansRepository;
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
+            this.meteredDimensionRepository = meteredDimensionRepository;
             this.logger = logger;
-            this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
+            this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository,this.meteredDimensionRepository);
         }
 
         /// <summary>
@@ -143,6 +148,16 @@
                         {
                             events.UserId = currentUserDetail.UserId;
                             this.plansService.SavePlanEvents(events);
+                        }
+                    }
+
+                    if (plans.PlanDimensions != null)
+                    {
+                        foreach (var dimensions in plans.PlanDimensions)
+                        {
+                            Plans plandetails = this.plansRepository.GetByInternalReference(plans.PlanGUID);
+                            dimensions.PlanId = plandetails.Id;
+                            this.plansService.SavePlanDimensions(dimensions);
                         }
                     }
                 }

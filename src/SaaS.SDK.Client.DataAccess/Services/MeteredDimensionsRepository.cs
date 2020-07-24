@@ -66,6 +66,8 @@
                 var existingDimension = this.context.MeteredDimensions.Where(s => s.Dimension == dimensionDetails.Dimension).FirstOrDefault();
                 if (existingDimension != null)
                 {
+                    existingDimension.Dimension = dimensionDetails.Dimension;
+                    existingDimension.IsActive = dimensionDetails.IsActive;
                     existingDimension.Description = dimensionDetails.Description;
 
                     this.context.MeteredDimensions.Update(existingDimension);
@@ -74,6 +76,8 @@
                 }
                 else
                 {
+                    dimensionDetails.CreatedDate = DateTime.Now;
+                    dimensionDetails.IsActive = true;
                     this.context.MeteredDimensions.Add(dimensionDetails);
                     this.context.SaveChanges();
                     return dimensionDetails.Id;
@@ -102,7 +106,19 @@
         /// </returns>
         public List<MeteredDimensions> GetDimensionsByPlanId(string planId)
         {
-            return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.PlanId == planId).ToList();
+            return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.PlanId == planId && s.IsActive == true).ToList();
+        }
+
+        /// <summary>
+        /// Gets the dimensions from plan identifier.
+        /// </summary>
+        /// <param name="planId">The plan identifier.</param>
+        /// <returns>
+        /// List of MeteredDimensions.
+        /// </returns>
+        public List<MeteredDimensions> GetDimensionsByPlanId(int planId)
+        {
+            return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.Id == planId ).ToList();
         }
 
         /// <summary>

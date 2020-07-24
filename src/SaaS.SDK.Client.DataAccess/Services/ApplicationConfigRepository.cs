@@ -44,9 +44,8 @@
         /// <returns>List of all application configuration items.</returns>
         public IEnumerable<ApplicationConfiguration> GetAll()
         {
-            return this.context.ApplicationConfiguration;
+            return this.context.ApplicationConfiguration.Where(s => s.IsActive == true);
         }
-
 
         /// <summary>
         /// Saves Settings.
@@ -57,14 +56,15 @@
         {
             if (appConfigSetting != null)
             {
-                var existingSetting = this.context.ApplicationConfiguration.Where(s => s.Id ==
-                appConfigSetting.Id).FirstOrDefault();
+                var existingSetting = this.context.ApplicationConfiguration.Where(s => s.Name ==
+                appConfigSetting.Name).FirstOrDefault();
                 if (existingSetting != null)
                 {
                     existingSetting.Id = appConfigSetting.Id;
                     existingSetting.Name = appConfigSetting.Name;
                     existingSetting.Value = appConfigSetting.Value;
                     existingSetting.Description = appConfigSetting.Description;
+                    existingSetting.IsActive = appConfigSetting.IsActive;
 
                     this.context.ApplicationConfiguration.Update(existingSetting);
                     this.context.SaveChanges();
@@ -72,12 +72,13 @@
                 }
                 else
                 {
+                    appConfigSetting.IsActive = true;
+                    appConfigSetting.Description = appConfigSetting.Name;
                     this.context.ApplicationConfiguration.Add(appConfigSetting);
                     this.context.SaveChanges();
                     return appConfigSetting.Id;
                 }
             }
-
             return null;
         }
     }

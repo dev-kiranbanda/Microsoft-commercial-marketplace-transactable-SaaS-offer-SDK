@@ -40,5 +40,14 @@
         /// </value>
         public string Description { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the IsActive of Setting.
+        /// </summary>
+        /// <value>
+        /// Tells Setting is Active or not.
+        /// </value>
+        public bool IsActive { get; set; }
+
     }
 }

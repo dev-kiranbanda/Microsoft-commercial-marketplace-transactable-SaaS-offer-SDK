@@ -28,16 +28,22 @@
         private IOffersRepository offerRepository;
 
         /// <summary>
+        /// The offer repository.
+        /// </summary>
+        private IMeteredDimensionsRepository meteredDimensionRepository;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PlanService"/> class.
         /// </summary>
         /// <param name="plansRepository">The plans repository.</param>
         /// <param name="offerAttributesRepository">The offer attributes repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
-        public PlanService(IPlansRepository plansRepository, IOfferAttributesRepository offerAttributesRepository, IOffersRepository offerRepository)
+        public PlanService(IPlansRepository plansRepository, IOfferAttributesRepository offerAttributesRepository, IOffersRepository offerRepository, IMeteredDimensionsRepository meteredDimensionRepository)
         {
             this.plansRepository = plansRepository;
             this.offerAttributesRepository = offerAttributesRepository;
             this.offerRepository = offerRepository;
+            this.meteredDimensionRepository = meteredDimensionRepository;
         }
 
         /// <summary>
@@ -77,6 +83,8 @@
             var planAttributes = this.plansRepository.GetPlanAttributes(planGuId, existingPlan.OfferId);
             var planEvents = this.plansRepository.GetEventsByPlan(planGuId, existingPlan.OfferId);
             var offerDetails = this.offerRepository.GetOfferById(existingPlan.OfferId);
+            Plans plandetails = this.plansRepository.GetByInternalReference(planGuId);
+            var planDimensions = this.meteredDimensionRepository.GetDimensionsByPlanId(plandetails.Id);
 
             PlansModel plan = new PlansModel
             {
@@ -124,6 +132,20 @@
                 plan.PlanEvents.Add(planEventsModel);
             }
 
+            plan.PlanDimensions = new List<PlanDimensionsModel>();
+            foreach (var dimensions in planDimensions)
+            {
+                PlanDimensionsModel planDimensionsModel = new PlanDimensionsModel()
+                {
+                    Id = dimensions.Id,
+                    PlanId = dimensions.PlanId,
+                    CreatedDate = dimensions.CreatedDate,
+                    Description = dimensions.Description,
+                    Dimension = dimensions.Dimension,
+                    IsActive = dimensions.IsActive
+                };
+                plan.PlanDimensions.Add(planDimensionsModel);
+            }
             return plan;
         }
 
@@ -171,6 +193,29 @@
                 events.CreateDate = DateTime.Now;
                 events.CopyToCustomer = planEvents.CopyToCustomer;
                 var planEventsId = this.plansRepository.AddPlanEvents(events);
+                return planEventsId;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Saves the plan Dimensions.
+        /// </summary>
+        /// <param name="planDimensions">The plan Dimensions.</param>
+        /// <returns> plan Dimensions Id.</returns>
+        public int? SavePlanDimensions(PlanDimensionsModel planDimensions)
+        {
+            if (planDimensions != null)
+            {
+                MeteredDimensions dimensions = new MeteredDimensions();
+                dimensions.Id = planDimensions.Id;
+                dimensions.CreatedDate = planDimensions.CreatedDate;
+                dimensions.Dimension = planDimensions.Dimension;
+                dimensions.Description = planDimensions.Description;
+                dimensions.PlanId = planDimensions.PlanId;
+                dimensions.IsActive = planDimensions.IsActive; 
+                var planEventsId = this.meteredDimensionRepository.Save(dimensions);
                 return planEventsId;
             }
 

@@ -45,7 +45,8 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
-
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Server=localhost;Initial Catalog=settings/Meters;Persist Security Info=True;User ID=sa;Password=Sa1;");
             }
         }
 
@@ -228,7 +229,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeMapping>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A98C058FAF2");
+                    .HasName("PK__PlanAttr__8B476A98B7BBC719");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -238,7 +239,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanAttr__AAAC09D888FE3E40");
+                    .HasName("PK__PlanAttr__AAAC09D855125F86");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -268,7 +269,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanEventsOutPut>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanEven__AAAC09D8C9229532");
+                    .HasName("PK__PlanEven__AAAC09D824F9DFA9");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -363,7 +364,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__Subscrip__AAAC09D8BA727059");
+                    .HasName("PK__Subscrip__AAAC09D88FF1042B");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -455,7 +456,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<ValueTypes>(entity =>
             {
                 entity.HasKey(e => e.ValueTypeId)
-                    .HasName("PK__ValueTyp__A51E9C5AEA096123");
+                    .HasName("PK__ValueTyp__A51E9C5A49AE7D47");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 

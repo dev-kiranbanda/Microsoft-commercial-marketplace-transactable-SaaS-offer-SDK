@@ -10,6 +10,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities
         public int? PlanId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string Description { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual Plans Plan { get; set; }
     }

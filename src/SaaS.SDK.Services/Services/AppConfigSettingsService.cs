@@ -40,6 +40,7 @@
                 setting.Name = item.Name;
                 setting.Value = item.Value;
                 setting.Description = item.Description;
+                setting.IsActive = item.IsActive;
                 settingslist.Add(setting);
             }
             return settingslist;
@@ -59,6 +60,7 @@
                 setting.Name = appConfigSetting.Name;
                 setting.Value = appConfigSetting.Value;
                 setting.Description = appConfigSetting.Description;
+                setting.IsActive = appConfigSetting.IsActive;
 
                 var appConfigSettingId = this.applicationConfigRepository.SavePlanSetting(setting);
                 return appConfigSettingId;
