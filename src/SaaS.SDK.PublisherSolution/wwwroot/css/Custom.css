@@ -1,7 +1,7 @@
 ﻿body {
-    font-family: 'Segoe UI', 'sans-serif' !important;
+    font-family: 'RidleyGrotesk', 'sans-serif' !important;
     color: black !important;
-    font-size: 16px !important;
+    font-size: 18px !important;
     height: 100%;
     margin: 0;
 }
@@ -71,7 +71,7 @@
 }
 
 .cm-section-heading {
-    font-family: 'Segoe UI', 'sans-serif' !important;
+    font-family: 'RidleyGrotesk', 'sans-serif' !important;
     font-size: 25px;
     background-color: #fff;
     border-bottom: 4px solid #F37440;
@@ -307,15 +307,15 @@
 
 .cm-table {
     background: #ffffff !important;
-    font-size: 16px;
+    font-size: 18px;
 }
 
     .cm-table th {
-        padding: 10px !important;
+        padding: 12px !important;
     }
 
     .cm-table td {
-        padding: 10px !important;
+        padding: 12px !important;
     }
 
 .cm-table-head th {

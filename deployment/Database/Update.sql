@@ -126,7 +126,7 @@ GO
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'Footer')
 BEGIN
 	INSERT INTO ApplicationConfiguration (Name,Value,Description)
-	SELECT '<div > <div class = "center"> <a href="https://www.teradata.com/Privacy" target="_blank">Privacy Policy</a> | <a href="https://www.teradata.com/Legal/Terms-of-Use" target="_blank">Terms of use</a> ©2020 Teradata. All Rights Reserved </div> </div>  ','Footer'
+	SELECT 'Footer','<div > <div class = "center"> <a href="https://www.teradata.com/Privacy" target="_blank">Privacy Policy</a> | <a href="https://www.teradata.com/Legal/Terms-of-Use" target="_blank">Terms of use</a> ©2020 Teradata. All Rights Reserved </div> </div>  ','Footer'
 END
 GO
 
