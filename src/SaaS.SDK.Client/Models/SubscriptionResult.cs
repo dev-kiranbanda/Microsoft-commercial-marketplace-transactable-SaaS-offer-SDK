@@ -52,7 +52,7 @@ namespace Microsoft.Marketplace.SaasKit.Models
         /// The identifier.
         /// </value>
         [JsonPropertyName("id")]
-        [DisplayName("Subscription Id")]
+        [DisplayName("Resource Id")]
         public Guid Id { get; set; }
 
         /// <summary>
