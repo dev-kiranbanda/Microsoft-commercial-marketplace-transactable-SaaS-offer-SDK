@@ -52,8 +52,6 @@
                                 <tbody id="ReplacingTable">
                                     @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
                                     {
-
-
                                         <tr id="tr_PlanAttributes_@i" class="@Model.PlanAttributes[i].Type">
                                             <td>
                                                 <input id="PlanAttributes[@i].PlanAttributeId" type="hidden" value="@Model.PlanAttributes[i].PlanAttributeId" class="iHidden" name="PlanAttributes[@i].PlanAttributeId" />
@@ -67,8 +65,6 @@
                                                 @Html.CheckBoxFor(model => model.PlanAttributes[i].IsEnabled, new { name = "PlanAttributes[@i].IsEnabled", id = string.Format("PlanAttributes_IsEnabled_{0}", @i) })
                                             </td>
                                         </tr>
-
-
                                     }
                                 </tbody>
                             </table>
@@ -135,43 +131,40 @@
                 </div>
                 <div id="tabs-Dimensions">
                     <div id="PlanDimensions">
-                        <div calss="text-right maxwidth" style="width:1300px;">
-                            <input class="cm-button-default mt0" style="float:left;line-height:10px; background-color: #2E8B57;" type="button" id="btndimensionAdd" value="Add new dimension" />
+                        <div calss="text-right maxwidth" style="text-align:right;margin-left:-300px;width:1300px;">
+                            <input class="cm-button-default mt0" style="line-height:10px; background-color: #2E8B57;" type="button" id="btndimensionAdd1" value="Add new dimension" />
+                            <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="savePlanParameters()" value="Save Dimensions" />
                         </div>
-                        @if (Model.PlanDimensions != null && Model.PlanDimensions.Count() > 0)
-                        {
-                            <table class="table table-bordered dt-responsive cm-table" id="tbldimensioncontainer">
-                                <theader>
-                                    <tr>
-                                        <th>Dimension Name</th>
-                                        <th>Description</th>
-                                        <th>Remove</th>
-                                    </tr>
-                                </theader>
-                                <tbody id="dimensionReplacingTable">
-                                    @for (int i = 0; i < Model.PlanDimensions.Count(); i++)
-                                    {
-                                        if (Model.PlanDimensions[i].IsActive == true)
-                                        {
-                                            <tr id="tr_PlanDimensions_@i">
-                                                <td>
-                                                    <input id="PlanDimensions_Id_@i" type="hidden" value="@Model.PlanDimensions[i].Id" class="iHidden" name="PlanDimensions[@i].Id" />
-                                                    <input id="PlanDimensions_PlanId_@i" type="hidden" value="@Model.PlanDimensions[i].PlanId" class="iHidden" name="PlanDimensions[@i].PlanId" />
-                                                    <input id="PlanDimensions_CreatedDate_@i" type="hidden" value="@Model.PlanDimensions[i].CreatedDate" class="iHidden" name="PlanDimensions[@i].CreatedDate" />
-                                                    <input type="text" style="width:200px;" id="PlanDimensions_Dimension_@i" name="PlanDimensions[@i].Dimension" value="@Model.PlanDimensions[i].Dimension" />
 
-                                                </td>
-                                                <td><input type="text" style="width:200px;" id="PlanDimensions_Description_@i" name="PlanDimensions[@i].Description" value="@Model.PlanDimensions[i].Description" /></td>
-                                                <td>
-                                                    <input id="btnRemove" class="cm-button-default mt0" style="line-height:10px;background-color: #B22222; width:100px; text-align: left;" type="button" value="Remove" onclick="removeRow(@i);" />
-                                                    <input type="hidden" value="@Model.PlanDimensions[i].IsActive.ToString()" id="PlanDimensions_IsActive_@i" name="PlanDimensions[@i].IsActive" />
-                                                </td>
-                                            </tr>
-                                        }
-                                    }
-                                </tbody>
-                            </table>
-                        }
+                        <table class="table table-bordered dt-responsive cm-table" id="tbldimensioncontainer">
+                            <theader>
+                                <tr>
+                                    <th>Dimension Name</th>
+                                    <th>Description</th>
+                                    <th>Remove</th>
+                                </tr>
+                            </theader>
+                            <tbody id="dimensionReplacingTable">
+                                @for (int i = 0; i < Model.PlanDimensions.Count(); i++)
+                                {
+                                    <tr id="tr_PlanDimensions_@i">
+                                        <td>
+                                            <input id="PlanDimensions_Id_@i" type="hidden" value="@Model.PlanDimensions[i].Id" class="iHidden" name="PlanDimensions[@i].Id" />
+                                            <input id="PlanDimensions_PlanId_@i" type="hidden" value="@Model.PlanDimensions[i].PlanId" class="iHidden" name="PlanDimensions[@i].PlanId" />
+                                            <input id="PlanDimensions_CreatedDate_@i" type="hidden" value="@Model.PlanDimensions[i].CreatedDate" class="iHidden" name="PlanDimensions[@i].CreatedDate" />
+                                            <input type="text" style="width:200px;" id="PlanDimensions_Dimension_@i" name="PlanDimensions[@i].Dimension" value="@Model.PlanDimensions[i].Dimension" />
+
+                                        </td>
+                                        <td><input type="text" style="width:200px;" id="PlanDimensions_Description_@i" name="PlanDimensions[@i].Description" value="@Model.PlanDimensions[i].Description" /></td>
+                                        <td>
+                                            <input id="btnRemove" class="cm-button-default mt0" style="line-height:10px;background-color: #B22222; width:100px; text-align: left;" type="button" value="Remove" onclick="removeRow(@i);" />
+                                            <input type="hidden" value="@Model.PlanDimensions[i].IsActive.ToString()" id="PlanDimensions_IsActive_@i" name="PlanDimensions[@i].IsActive" />
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
                         <table class="table table-bordered dt-responsive cm-table" id="tbldynamicdimensioncontainer" style="display:none;">
                             <tbody id="DynamicReplacingTable">
                                 <tr id="tr_PlanDimensions_itemIndex">
@@ -184,17 +177,16 @@
                                     </td>
                                     <td><input type="text" style="width:200px;" id="PlanDimensions_Description_itemIndex" name="PlanDimensions[itemIndex].Description" /></td>
                                     <td>
-                                        <input id="btnRemove" class="cm-button-default mt0" style="line-height:10px;background-color: #B22222; width:90px; text-align: left;" type="button" value="Remove" onclick="removeRow(itemIndex);" />
-                                        <input type="hidden" id="PlanDimensions_IsActive_itemIndex" name="PlanDimensions[itemIndex].IsActive" />
+                                        <input id="btnRemove" class="cm-button-default mt0" style="line-height:10px;background-color: #B22222; width:100px; text-align: left;" type="button" value="Remove" onclick="removeRow(itemIndex);" />
+                                        <input type="hidden" id="PlanDimensions_IsActive_itemIndex" name="PlanDimensions[itemIndex].IsActive" value="true" />
                                     </td>
 
                                 </tr>
                             </tbody>
                         </table>
-                        <div style="text-align:right;">
-                            <p>
-                                <input class="cm-button-default mt0" type="button" onclick="savePlanParameters()" value="Save Dimensions" />
-                            </p>
+                        <div calss="text-right maxwidth" style="text-align:right;margin-left:-300px;width:1300px;">
+                            <input class="cm-button-default mt0" style="line-height:10px; background-color: #2E8B57;" type="button" id="btndimensionAdd2" value="Add new dimension" />
+                            <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="savePlanParameters()" value="Save Dimensions" />
                         </div>
                     </div>
                 </div>
@@ -206,7 +198,7 @@
 </body>
 <script>
     $(function () {
-        $("#btndimensionAdd").click(function (e) {
+        $("#btndimensionAdd1,#btndimensionAdd2").click(function (e) {
             //$('#tblcontainer').show();
             //var itemIndex = $("#tblcontainer input.iHidden").length;
             var itemIndex = $("#dimensionReplacingTable > tr").length;
@@ -224,8 +216,7 @@
         debugger;
         var controlToBeRemoved = "#tr_PlanDimensions_" + id;
         var Id = "#PlanDimensions_Id_" + id;
-        if ($(Id).val() > 0)
-            $("#PlanDimensions_IsActive_" + id).val(false);
+        $("#PlanDimensions_IsActive_" + id).val(false);
         $(controlToBeRemoved).hide();
     }
 

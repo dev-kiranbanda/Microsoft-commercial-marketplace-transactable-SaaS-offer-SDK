@@ -72,7 +72,6 @@
                 }
                 else
                 {
-                    appConfigSetting.IsActive = true;
                     appConfigSetting.Description = appConfigSetting.Name;
                     this.context.ApplicationConfiguration.Add(appConfigSetting);
                     this.context.SaveChanges();

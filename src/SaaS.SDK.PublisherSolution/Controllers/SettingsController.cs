@@ -104,15 +104,18 @@
                 {
                     foreach (var item in settings.appConfigSettings)
                     {
-                        if (item.Name.Contains("Password") && string.IsNullOrEmpty(item.Value))
+                        if (!string.IsNullOrEmpty(item.Name))
                         {
-                            item.Value = settings.tempsmtppassword;
+                            if (string.IsNullOrEmpty(item.Value) && item.Name.Contains("Password"))
+                            {
+                                item.Value = settings.tempsmtppassword;
+                            }
+                            else if (string.IsNullOrEmpty(item.Value))
+                            {
+                                item.Value = "";
+                            }
+                            this.appConfigSettingsService.SaveSettings(item);
                         }
-                        else if (string.IsNullOrEmpty(item.Value))
-                        {
-                            item.Value = "";
-                        }
-                        this.appConfigSettingsService.SaveSettings(item);
                     }
                 }
                 this.ModelState.Clear();

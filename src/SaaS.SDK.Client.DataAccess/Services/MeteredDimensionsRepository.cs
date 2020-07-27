@@ -63,7 +63,7 @@
         {
             if (dimensionDetails != null && !string.IsNullOrEmpty(dimensionDetails.Dimension))
             {
-                var existingDimension = this.context.MeteredDimensions.Where(s => s.Dimension == dimensionDetails.Dimension).FirstOrDefault();
+                var existingDimension = this.context.MeteredDimensions.Where(s => s.Dimension == dimensionDetails.Dimension && s.IsActive == true).FirstOrDefault();
                 if (existingDimension != null)
                 {
                     existingDimension.Dimension = dimensionDetails.Dimension;
@@ -77,7 +77,6 @@
                 else
                 {
                     dimensionDetails.CreatedDate = DateTime.Now;
-                    dimensionDetails.IsActive = true;
                     this.context.MeteredDimensions.Add(dimensionDetails);
                     this.context.SaveChanges();
                     return dimensionDetails.Id;
@@ -118,7 +117,7 @@
         /// </returns>
         public List<MeteredDimensions> GetDimensionsByPlanId(int planId)
         {
-            return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.Id == planId ).ToList();
+            return this.context.MeteredDimensions.Include(s => s.Plan).Where(s => s.Plan != null && s.Plan.Id == planId && s.IsActive == true).ToList();
         }
 
         /// <summary>
