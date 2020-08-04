@@ -4,7 +4,7 @@
 @model Microsoft.Marketplace.SaaS.SDK.Services.Models.SubscriptionResultExtension
 
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "SaaS Subscription Details";
 }
 @if (!Model.ShowWelcomeScreen)
 {
@@ -43,7 +43,7 @@
                     @Html.DisplayFor(model => model.Id)
                 </dd>
                 <dt class="col-sm-3 p-2 p10">
-                    @Html.DisplayName("Name ")
+                    @Html.DisplayName("Resource Name ")
                 </dt>
                 <dd class="col-sm-9 p-2">
                     @Html.DisplayFor(model => model.Name)
@@ -53,6 +53,12 @@
                 </dt>
                 <dd class="col-sm-9 p-2 p10">
                     @Html.DisplayFor(model => model.SubscriptionStatus)
+                </dd>
+                <dt class="col-sm-3 p-2 p10">
+                    @Html.DisplayName("Offer")
+                </dt>
+                <dd class="col-sm-9 p-2 p10">
+                    @Html.DisplayFor(model => model.OfferId)
                 </dd>
                 <dt class="col-sm-3 p-2 p10">
                     @Html.DisplayName("Plan ")
@@ -77,107 +83,107 @@
                 </dd>
 
                 @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
+                {
+
+                    for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
+                    {
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanId)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].OfferId)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].SubscriptionId)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].DisplayName)
+                        @Html.HiddenFor(model => model.SubscriptionParameters[i].Type)
+
+                        if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                         {
+                            <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
+                                @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
+                                @if (Model.SubscriptionParameters[i].IsRequired == true)
+                                {<span class="red-star @Model.SubscriptionParameters[i].Type">*</span>}
 
-                            for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
+
+                            </dt>
+                        }
+                        else
+                        {
+                            @if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
                             {
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].Id)
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanAttributeId)
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].ValueType)
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].PlanId)
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].OfferId)
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].SubscriptionId)
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].DisplayName)
-                @Html.HiddenFor(model => model.SubscriptionParameters[i].Type)
+                                <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
+                                    @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName)
+                                </dt>
+                            }
+                        }
 
-                                if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
-                                {
-                <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
-                    @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
-                    @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                        {<span class="red-star @Model.SubscriptionParameters[i].Type">*</span>}
+                        @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
+                        {
+                            @if (Model.SubscriptionParameters[i].FromList == true)
+                            {
+                                var data = Model.SubscriptionParameters[i].ValuesList;
+                                var selectList = new SelectList(data.Split(','));
 
 
-                </dt>
-                                }
-                                else
-                                {
-                @if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
+                                <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
+
+                                    @if (Model.SubscriptionParameters[i].IsRequired == true)
                                     {
-                <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
-                    @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName)
-                </dt>
-                                    }
-                                }
+                                        @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
 
-                @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
-                                {
-                @if (Model.SubscriptionParameters[i].FromList == true)
-                                    {
-                                        var data = Model.SubscriptionParameters[i].ValuesList;
-                                        var selectList = new SelectList(data.Split(','));
-
-
-                <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
-
-                    @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                            {
-                    @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
-
-                                            }
-                                            else
-                                            {
-                    @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
-
-                                            }
-
-                </dd>
-
-                                    }
-                                    else if (Model.SubscriptionParameters[i].Htmltype == "date")
-                                    {
-                <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
-
-                    @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                            {
-                    @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
-                                            }
-                                            else
-                                            {
-                    @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
-                                            }
-
-                </dd>
                                     }
                                     else
                                     {
-                <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
+                                        @Html.DropDownList(string.Format("SubscriptionParameters[{0}].Value", @i), selectList, new { @class = @Model.SubscriptionParameters[i].Type + " w200", name = string.Format("SubscriptionParameters[{0}].Value", @i), @id = string.Format("SubscriptionParameters_{0}__Value", @i) })
 
-                    @if (Model.SubscriptionParameters[i].IsRequired == true)
-                                            {
-                    @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
-                                            }
-                                            else
-                                            {
-                    @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
-                                            }
+                                    }
 
-                </dd>
-                                    }
-                                }
-                                else
-                                {
-                @if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
-                                    {
-                <dd class="col-sm-9 p-2 p10  @Model.SubscriptionParameters[i].Type">
-                    @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
-                    @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
-                </dd>
-                                    }
-                                }
+                                </dd>
+
                             }
+                            else if (Model.SubscriptionParameters[i].Htmltype == "date")
+                            {
+                                <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
 
+                                    @if (Model.SubscriptionParameters[i].IsRequired == true)
+                                    {
+                                        @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                    }
+
+                                </dd>
+                            }
+                            else
+                            {
+                                <dd class="col-sm-9 p-2 p10 @Model.SubscriptionParameters[i].Type">
+
+                                    @if (Model.SubscriptionParameters[i].IsRequired == true)
+                                    {
+                                        @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @required = "required", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                    }
+                                    else
+                                    {
+                                        @Html.TextBoxFor(model => model.SubscriptionParameters[i].Value, new { @class = @Model.SubscriptionParameters[i].Type + " w200", @type = @Model.SubscriptionParameters[i].Htmltype })
+                                    }
+
+                                </dd>
+                            }
                         }
+                        else
+                        {
+                            @if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
+                            {
+                                <dd class="col-sm-9 p-2 p10  @Model.SubscriptionParameters[i].Type">
+                                    @Html.DisplayFor(model => model.SubscriptionParameters[i].Value)
+                                    @Html.HiddenFor(model => model.SubscriptionParameters[i].Value)
+                                </dd>
+                            }
+                        }
+                    }
+
+                }
 
             </dl>
         </div>

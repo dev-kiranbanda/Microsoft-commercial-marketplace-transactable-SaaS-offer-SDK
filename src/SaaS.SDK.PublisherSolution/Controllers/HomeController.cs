@@ -342,6 +342,8 @@
                 subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
+                var offerDetails = this.offersRepository.GetOfferById(plandetails.OfferId);
+                subscriptionDetail.OfferId = offerDetails.OfferName;
             }
 
             return this.View(subscriptionDetail);
@@ -478,19 +480,19 @@
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns> The <see cref="IActionResult" />.</returns>
-        public IActionResult RecordUsage(int subscriptionId)
+        public IActionResult RecordUsage(Guid subscriptionId)
         {
             this.logger.LogInformation("Home Controller / RecordUsage ");
             try
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
-                    var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
+                    var subscriptionDetail = this.subscriptionRepo.GetById(subscriptionId);
                     var allDimensionsList = this.dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
                     SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
                     usageViewModel.SubscriptionDetail = subscriptionDetail;
                     usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
-                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionDetail.Id).OrderByDescending(s => s.CreatedDate).ToList();
                     usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
                     return this.View(usageViewModel);
                 }

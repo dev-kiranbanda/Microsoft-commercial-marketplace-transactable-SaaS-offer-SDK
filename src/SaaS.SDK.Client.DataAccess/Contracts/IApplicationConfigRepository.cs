@@ -20,5 +20,12 @@
         /// </summary>
         /// <returns>List of key value pairs stored in application configuration.</returns>
         IEnumerable<ApplicationConfiguration> GetAll();
+
+        /// <summary>
+        /// Saves Settings.
+        /// </summary>
+        /// <param name="appConfigSetting">The plan attributes.</param>
+        /// <returns> App Config Id.</returns>
+        int? SavePlanSetting(ApplicationConfiguration appConfigSetting);
     }
 }

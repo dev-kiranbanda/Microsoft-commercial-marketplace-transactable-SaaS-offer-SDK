@@ -96,5 +96,13 @@
         /// The plan events.
         /// </value>
         public List<PlanEventsModel> PlanEvents { get; set; }
+
+        /// <summary>
+        /// Gets or sets the plan events.
+        /// </summary>
+        /// <value>
+        /// The plan events.
+        /// </value>
+        public List<PlanDimensionsModel> PlanDimensions { get; set; }
     }
 }

@@ -391,3 +391,7 @@ a.cm-dropdown-option {
     left: 0;
     opacity: 0.5;
 }
+
+.swal-text{
+    font-size:20px;
+}

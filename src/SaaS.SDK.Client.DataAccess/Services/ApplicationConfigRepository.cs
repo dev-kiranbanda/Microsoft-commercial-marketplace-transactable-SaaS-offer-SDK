@@ -46,5 +46,38 @@
         {
             return this.context.ApplicationConfiguration;
         }
+
+        /// <summary>
+        /// Saves Settings.
+        /// </summary>
+        /// <param name="appConfigSetting">The plan attributes.</param>
+        /// <returns> App Config Id.</returns>
+        public int? SavePlanSetting(ApplicationConfiguration appConfigSetting)
+        {
+            if (appConfigSetting != null)
+            {
+                var existingSetting = this.context.ApplicationConfiguration.Where(s => s.Id ==
+                appConfigSetting.Id).FirstOrDefault();
+                if (existingSetting != null)
+                {
+                    existingSetting.Id = appConfigSetting.Id;
+                    existingSetting.Name = appConfigSetting.Name;
+                    existingSetting.Value = appConfigSetting.Value;
+                    existingSetting.Description = appConfigSetting.Description;
+
+                    this.context.ApplicationConfiguration.Update(existingSetting);
+                    this.context.SaveChanges();
+                    return existingSetting.Id;
+                }
+                else
+                {
+                    appConfigSetting.Description = appConfigSetting.Name;
+                    this.context.ApplicationConfiguration.Add(appConfigSetting);
+                    this.context.SaveChanges();
+                    return appConfigSetting.Id;
+                }
+            }
+            return null;
+        }
     }
 }

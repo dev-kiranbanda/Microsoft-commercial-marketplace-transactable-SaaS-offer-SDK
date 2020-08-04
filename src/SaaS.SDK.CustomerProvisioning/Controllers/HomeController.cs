@@ -89,6 +89,8 @@
 
         private PlanService planService = null;
 
+        private IMeteredDimensionsRepository meteredDimensionRepository;
+
         /// <summary>
         /// The user service.
         /// </summary>
@@ -113,7 +115,7 @@
         /// <param name="cloudConfigs">The cloud configs.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="emailService">The email service.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService, IMeteredDimensionsRepository meteredDimensionRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -129,8 +131,9 @@
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
             this.logger = logger;
+            this.meteredDimensionRepository = meteredDimensionRepository;
             this.offersRepository = offersRepository;
-            this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository);
+            this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository, this.meteredDimensionRepository);
             this.eventsRepository = eventsRepository;
             this.emailService = emailService;
             this.loggerFactory = loggerFactory;
@@ -244,6 +247,9 @@
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                            var planDetails = this.planRepository.GetById(subscriptionExtension.PlanId);
+                            var offerDetails = this.offersRepository.GetOfferById(planDetails.OfferId);
+                            subscriptionExtension.OfferId = offerDetails.OfferName;
                         }
                     }
                     else
@@ -793,6 +799,9 @@
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
                     subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                    var offerDetails = this.offersRepository.GetOfferById(planDetails.OfferId);
+                    subscriptionDetail.OfferId = offerDetails.OfferId;
+
                 }
 
                 return this.View("Index", subscriptionDetail);

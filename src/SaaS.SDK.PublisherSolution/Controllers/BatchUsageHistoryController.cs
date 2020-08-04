@@ -40,8 +40,6 @@
 
         private readonly ILogger<OffersController> logger;
 
-        private PlanService plansService;
-
         private readonly IBatchUsageUploadHistoryRepository batchUsageUploadHistoryRepository;
 
 
@@ -64,7 +62,6 @@
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
             this.logger = logger;
-            this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
             this.batchUsageUploadHistoryRepository = batchUsageUploadHistoryRepository;
         }
 
