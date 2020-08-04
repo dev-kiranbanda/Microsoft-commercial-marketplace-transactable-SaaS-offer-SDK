@@ -31,7 +31,7 @@
         /// <value>
         /// The ismetering supported.
         /// </value>
-        public bool? IsmeteringSupported { get; set; }
+        public bool IsmeteringSupported { get; set; }
 
         /// <summary>
         /// Gets or sets the offer identifier.
@@ -104,5 +104,6 @@
         /// The plan events.
         /// </value>
         public List<PlanDimensionsModel> PlanDimensions { get; set; }
+
     }
 }

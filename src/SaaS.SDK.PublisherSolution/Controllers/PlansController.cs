@@ -132,6 +132,7 @@
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
+                    this.plansService.UpdateIsMeteringSupportedFlag(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();

@@ -61,7 +61,7 @@
                 plans.PlanId = item.PlanId;
                 plans.DisplayName = item.DisplayName;
                 plans.Description = item.Description;
-                plans.IsmeteringSupported = item.IsmeteringSupported;
+                plans.IsmeteringSupported = item.IsmeteringSupported.HasValue?item.IsmeteringSupported.Value:false;
                 plans.OfferID = item.OfferId;
                 plans.PlanGUID = item.PlanGuid;
                 plansList.Add(plans);
@@ -91,7 +91,7 @@
             {
                 Id = existingPlan.Id,
                 PlanId = existingPlan.PlanId,
-                IsmeteringSupported = existingPlan.IsmeteringSupported,
+                IsmeteringSupported = existingPlan.IsmeteringSupported.HasValue ? existingPlan.IsmeteringSupported.Value : false,
                 OfferID = existingPlan.OfferId,
                 DisplayName = existingPlan.DisplayName,
                 Description = existingPlan.Description,
@@ -259,6 +259,17 @@
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Updates the deploy to customer subscription flag.
+        /// </summary>
+        /// <param name="plan">The plan.</param>
+        public void UpdateIsMeteringSupportedFlag(PlansModel plan)
+        {
+            var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
+            existingPlan.IsmeteringSupported = plan.IsmeteringSupported;
+            this.plansRepository.Save(existingPlan);
         }
     }
 }
