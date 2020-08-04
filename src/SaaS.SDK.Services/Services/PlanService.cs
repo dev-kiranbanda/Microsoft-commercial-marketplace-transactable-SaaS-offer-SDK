@@ -64,6 +64,7 @@
                 plans.IsmeteringSupported = item.IsmeteringSupported.HasValue?item.IsmeteringSupported.Value:false;
                 plans.OfferID = item.OfferId;
                 plans.PlanGUID = item.PlanGuid;
+                plans.IsPerUser = item.IsPerUser.HasValue?item.IsPerUser.Value:false;
                 plansList.Add(plans);
             }
 
@@ -97,6 +98,7 @@
                 Description = existingPlan.Description,
                 PlanGUID = existingPlan.PlanGuid,
                 OfferName = offerDetails.OfferName,
+                IsPerUser = existingPlan.IsPerUser.HasValue ? existingPlan.IsPerUser.Value : false
             };
 
             plan.PlanAttributes = new List<PlanAttributesModel>();
@@ -262,13 +264,24 @@
         }
 
         /// <summary>
-        /// Updates the deploy to customer subscription flag.
+        /// Updates theIs meter supported flag.
         /// </summary>
         /// <param name="plan">The plan.</param>
         public void UpdateIsMeteringSupportedFlag(PlansModel plan)
         {
             var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
             existingPlan.IsmeteringSupported = plan.IsmeteringSupported;
+            this.plansRepository.Save(existingPlan);
+        }
+
+        /// <summary>
+        /// Updates the is per user flag.
+        /// </summary>
+        /// <param name="plan">The plan.</param>
+        public void UpdateIsPerUserFlag(PlansModel plan)
+        {
+            var existingPlan = this.plansRepository.GetByInternalReference(plan.PlanGUID);
+            existingPlan.IsPerUser = plan.IsPerUser;
             this.plansRepository.Save(existingPlan);
         }
     }

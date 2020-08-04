@@ -594,7 +594,7 @@
                 this.logger.LogError(ex, ex.Message);
             }
 
-            return this.RedirectToAction(nameof(this.RecordUsage), new { subscriptionId = subscriptionData.SubscriptionDetail.Id });
+            return this.RedirectToAction(nameof(this.RecordUsage), new { subscriptionId = subscriptionData.SubscriptionDetail.AmpsubscriptionId });
         }
 
         /// <summary>
@@ -934,6 +934,7 @@
                             bulkUploadModel.BulkUploadUsageStagings = bulkUploadUsageStagingsList;
                             bulkUploadModel.BatchLogId = batchLogId;
                             bulkUploadModel.Response = response;
+                            bulkUploadModel.BatchReferenceId = referenceid;
                         }
                     }
                     else
@@ -1073,16 +1074,17 @@
         /// <param name="batchLogId">The batch log identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult BulkUploadUsageMeters(int batchLogId)
+        public IActionResult BulkUploadUsageMeters(Guid batchReferenceId)
         {
-            logger.LogInformation("Home Controller / BulkUploadUsageMeters:{0} ", JsonSerializer.Serialize(batchLogId));
+            logger.LogInformation("Home Controller / BulkUploadUsageMeters:{0} ", JsonSerializer.Serialize(batchReferenceId));
             try
             {
-                this.logger.LogInformation($"Bulk Upload Subscription Usage Meters for Batch-{batchLogId} Initiate.");
+                this.logger.LogInformation($"Bulk Upload Subscription Usage Meters for Batch-{batchReferenceId} Initiate.");
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
 
+                var batchLogDetails = this.batchLogRepository.GetByReferenceID(batchReferenceId);
                 //Get Bulk Upload Usage Meters from db for the Batch Log Id
-                var uploadUsageMeters = this.bulkUploadUsageStagingRepository.GetByBatchLogId(batchLogId);
+                var uploadUsageMeters = this.bulkUploadUsageStagingRepository.GetByBatchLogId(batchLogDetails.Id);
 
                 List<MeteringUsageRequest> subscriptionUsageRequestList = new List<MeteringUsageRequest>();
                 foreach (var request in uploadUsageMeters)
@@ -1116,7 +1118,7 @@
                     ResponseModel response = new ResponseModel();
                     response.Message = "There are some Exception occured, Please upload valid data!";
                     response.IsSuccess = false;
-                    this.logger.LogError($"Bulk Upload Subscription Usage Meters for Batch-{batchLogId} Error - {mex.Message} with StackTrace- {mex.StackTrace}.");
+                    this.logger.LogError($"Bulk Upload Subscription Usage Meters for Batch-{batchReferenceId} Error - {mex.Message} with StackTrace- {mex.StackTrace}.");
 
                     return RedirectToAction(nameof(RecordBatchUsage));
                 }
@@ -1144,16 +1146,15 @@
                             };
                             subscriptionUsageLogsRepository.Save(newMeteredAuditLog);
 
-                            var batchlogDetails = this.batchLogRepository.Get(batchLogId);
 
                             var newbatchUsageUploadHistory = new BatchUsageUploadHistory()
                             {
                                 Request = requestJson,
                                 Response = responseJson,
-                                BatchId = Convert.ToString(batchLogId),
-                                Filename = batchlogDetails.FileName,
-                                UploadBy = Convert.ToInt32(batchlogDetails.UploadedBy),
-                                UploadDate = batchlogDetails.UploadedOn
+                                BatchId = Convert.ToString(batchLogDetails.Id),
+                                Filename = batchLogDetails.FileName,
+                                UploadBy = Convert.ToInt32(batchLogDetails.UploadedBy),
+                                UploadDate = batchLogDetails.UploadedOn
                             };
                             batchUsageUploadHistoryRepository.Save(newbatchUsageUploadHistory);
 
@@ -1170,7 +1171,7 @@
                             };
                             this.subscriptionLogRepository.Save(auditLog);
                             BatchLog batchLog = new BatchLog();
-                            batchLog = batchLogRepository.Get(batchLogId);
+                            batchLog = batchLogRepository.Get(batchLogDetails.Id);
                             batchLog.BatchStatus = "Complete";
                             batchLogRepository.Save(batchLog);
                         }

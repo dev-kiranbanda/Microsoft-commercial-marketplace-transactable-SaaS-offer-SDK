@@ -133,6 +133,7 @@
                 if (plans != null)
                 {
                     this.plansService.UpdateIsMeteringSupportedFlag(plans);
+                    this.plansService.UpdateIsPerUserFlag(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();

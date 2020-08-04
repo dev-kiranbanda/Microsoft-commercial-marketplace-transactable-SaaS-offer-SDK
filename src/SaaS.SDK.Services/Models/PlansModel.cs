@@ -105,5 +105,13 @@
         /// </value>
         public List<PlanDimensionsModel> PlanDimensions { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Isperuser.
+        /// </summary>
+        /// <value>
+        /// The Isperuser.
+        /// </value>
+        public bool IsPerUser { get; set; }
+
     }
 }

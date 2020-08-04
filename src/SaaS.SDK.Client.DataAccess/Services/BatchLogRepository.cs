@@ -135,5 +135,15 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Services
                 return entity.Id;
             }
         }
+
+        /// <summary>
+        /// Gets the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns></returns>
+        public BatchLog GetByReferenceID(Guid id)
+        {
+            return Context.BatchLog.Where(s => s.ReferenceId == id).FirstOrDefault();
+        }
     }
 }

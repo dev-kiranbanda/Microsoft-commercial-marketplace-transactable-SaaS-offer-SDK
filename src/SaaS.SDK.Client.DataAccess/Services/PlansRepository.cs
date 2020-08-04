@@ -77,6 +77,7 @@
                     existingPlan.DisplayName = planDetails.DisplayName;
                     existingPlan.OfferId = planDetails.OfferId;
                     existingPlan.IsmeteringSupported = planDetails.IsmeteringSupported;
+                    existingPlan.IsPerUser = planDetails.IsPerUser;  
                     this.context.Plans.Update(existingPlan);
                     this.context.SaveChanges();
                     return existingPlan.Id;
