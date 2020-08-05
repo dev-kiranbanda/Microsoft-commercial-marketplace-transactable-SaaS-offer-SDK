@@ -88,9 +88,36 @@
     "ProvisioningServiceAppName": "[concat(parameters('webAppNamePrefix'),'-user')]",
     "PublisherServiceAppName": "[concat(parameters('webAppNamePrefix'),'-isv')]",
     "collation": "SQL_Latin1_General_CP1_CI_AS",
-    "sqlDBName": "AMPSaaSDB"
+    "sqlDBName": "AMPSaaSDB",
+    "storageAccountName": "[concat(parameters('webAppNamePrefix'),'stor')]",
+    "blobContainerName": "[concat(parameters('webAppNamePrefix'),'blob')]"
   },
   "resources": [
+    // Storage account and container
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2019-06-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[variables('location')]",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "accessTier": "Hot"
+      },
+      "resources": [
+        {
+          "type": "blobServices/containers",
+          "apiVersion": "2019-06-01",
+          "name": "[concat('default/', variables('blobContainerName'))]",
+          "dependsOn": [
+            "[variables('storageAccountName')]"
+          ]
+        }
+      ]
+    },
     {
       "type": "Microsoft.Sql/servers",
       "apiVersion": "2015-05-01-preview",
@@ -201,6 +228,16 @@
             {
               "name": "ASPNETCORE_ENVIRONMENT",
               "value": "Development",
+              "slotSetting": false
+            },
+            {
+              "name": "AzureBlobConfig__BlobConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+              "slotSetting": false
+            },
+            {
+              "name": "AzureBlobConfig__BlobContainer",
+              "value": "[variables('blobContainerName')]",
               "slotSetting": false
             },
             {
@@ -319,6 +356,16 @@
             {
               "name": "ASPNETCORE_ENVIRONMENT",
               "value": "Development",
+              "slotSetting": false
+            },
+            {
+              "name": "AzureBlobConfig__BlobConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value)]",
+              "slotSetting": false
+            },
+            {
+              "name": "AzureBlobConfig__BlobContainer",
+              "value": "[variables('blobContainerName')]",
               "slotSetting": false
             },
             {
