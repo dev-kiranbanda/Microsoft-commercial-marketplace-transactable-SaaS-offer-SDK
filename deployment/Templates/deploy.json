@@ -48,14 +48,15 @@
       "type": "string",
       "metadata": {
         "description": "The base URI where artifacts required by this template are located."
-      }
+      },
+      "defaultValue": "https://partnerpackagestor.blob.core.windows.net/teratestcontainer"
     },
     "bacpacUrl": {
       "type": "string",
       "metadata": {
         "description": "The url to the blob storage where the SaaS DB bacpac is stored"
       },
-      "defaultValue": ""
+      "defaultValue": "https://partnerpackagestor.blob.core.windows.net/teratestcontainer/AMPSaaSDB.bacpac"
     },
     "SAASKeyForBacpac": {
       "type": "securestring",
