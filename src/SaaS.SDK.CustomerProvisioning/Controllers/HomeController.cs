@@ -227,21 +227,24 @@
                             this.subscriptionService.AddPlanDetailsForSubscription(planList);
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                            var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
-                            if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                            var existingSubscribtion = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId, true);
+                            if (existingSubscribtion == null)
                             {
-                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
+                                if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
                                 {
-                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
-                                    SubscriptionId = subscribeId,
-                                    NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
-                                    OldValue = "None",
-                                    CreateBy = currentUserId,
-                                    CreateDate = DateTime.Now,
-                                };
-                                this.subscriptionLogRepository.Save(auditLog);
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                                        SubscriptionId = subscribeId,
+                                        NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
+                                        OldValue = "None",
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now,
+                                    };
+                                    this.subscriptionLogRepository.Save(auditLog);
+                                }
                             }
-
                             subscriptionExtension = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId, true);
                             subscriptionExtension.ShowWelcomeScreen = false;
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
