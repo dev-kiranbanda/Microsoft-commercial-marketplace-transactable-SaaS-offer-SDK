@@ -227,7 +227,7 @@
                             this.subscriptionService.AddPlanDetailsForSubscription(planList);
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                            var existingSubscribtion = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId, true);
+                            var existingSubscribtion = this.subscriptionRepository.GetById(newSubscription.SubscriptionId);
                             if (existingSubscribtion == null)
                             {
                                 var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
