@@ -21,7 +21,6 @@
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark cm-top-nav-bar">
         <a class="navbar-brand mr-auto mr-lg-0" href="@Url.Action("Index", "Home")">
             @await Component.InvokeAsync("Logo")
-
         </a>
 
         <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
@@ -42,8 +41,13 @@
             </div>
         </div>
     </nav>
-    <div class="nav-scroller bg-white shadow-sm cm-menu-bar">
+    <div>
+        <img src="~/banner.jpg" style="margin-top: -225px;height: 110px;width: 1800px;"/>
+    </div>
+
+    <div class="nav-scroller bg-white shadow-sm cm-menu-bar" style="margin-top:-70px">
         <nav class="container pb-3 nav nav-underline">
+
             <a class="nav-link active">
                 @if (this.User.Identity.IsAuthenticated)
                 {

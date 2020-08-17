@@ -57,5 +57,13 @@
         /// The subscription status.
         /// </value>
         public SubscriptionStatusEnumExtension SubscriptionStatus { get; set; }
+
+        /// <summary>
+        /// Gets or sets the IsAutomaticProvisioningSupported status.
+        /// </summary>
+        /// <value>
+        /// The subscription status.
+        /// </value>
+        public bool IsAutomaticProvisioningSupported { get; set; }
     }
 }

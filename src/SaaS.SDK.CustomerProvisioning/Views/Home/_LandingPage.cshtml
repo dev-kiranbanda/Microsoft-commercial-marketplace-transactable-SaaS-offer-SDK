@@ -10,11 +10,38 @@
 {
     <div class="container" id="divHome">
         <form method="post" id="frmIndex">
+            @if (Model.IsAutomaticProvisioningSupported == false)
+            {
+                <div class="">
+                    <div class="text-center" style="margin-top: 50px;">
+                        <span class="cm-section-heading">HOW IT WORKS</span>
+                    </div>
+                    <div class="row cm-panel-default" style="margin-top: 30px;">
+                        <div class="col-lg-4">
+                            <img style='margin-left:100px;' src="~/RequestAction.PNG"  />
+                            <span style='font-size:50px;float:right;'>&#62;</span>
+                            <h5 style='margin-top:40px;margin-right:40px;' class="text-center">Request Activation</h5>
+                            <p style='margin-top:20px;'>Validate information and request activation below</p>
+                        </div>
+                        <div class="col-lg-4">
+                            <img style='margin-left:120px;' src="~/WelcomeEmail.PNG" />
+                            <span style='font-size:50px;float:right;'>&#62;</span>
+                            <h5 style='margin-top:40px;margin-right:50px;' class="text-center">Welcome Email</h5>
+                            <p style='margin-top:20px;'>We'll provision your environment and send a Welcome email with information on how to connect to your Vantage system</p>
+                        </div>
+                        <div class="col-lg-4" style="margin-top:10px;">
+                            <img style='margin-left:120px;' src="~/GetStarted.PNG" />
+                            <h5 style='margin-top:40px;margin-right:50px;' class="text-center">Get Started</h5>
+                            <p style='margin-top:20px;'>Establish network connectivity,login and start using your Vantage system</p>
+                        </div>
+                    </div>
+                </div>
+            }
 
             <div class="text-white mt20">
                 <span class="cm-section-heading">SaaS Subscription Details</span>
             </div>
-            @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage) )
+            @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
             {
                 <div class="alert alert-danger">
                     <strong>Error!</strong> Some Error Occurred During Operation!
@@ -72,14 +99,6 @@
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Purchaser.EmailId)
                             @Html.HiddenFor(model => model.Purchaser.EmailId)
-                        </dd>
-
-                        <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Azure Tenant ID ")
-                        </dt>
-                        <dd class="col-sm-9 p-2 p10">
-                            @Html.DisplayFor(model => model.Purchaser.TenantId)
-                            @Html.HiddenFor(model => model.Purchaser.TenantId)
                         </dd>
 
                         @if (Model.SubscriptionParameters != null && Model.SubscriptionParameters.Count() > 0)
@@ -193,9 +212,13 @@
                         <button type="submit" asp-action="SubscriptionOperation" asp-route-subscriptionId="@Model.Id" asp-route-planId="@Model.PlanId" asp-route-operation="Deactivate" class="cm-button-danger text-right">Unsubscribe</button>
                         <button type="submit" asp-action="Subscriptions" class="cm-button-default text-right">Go to Subscription List</button>
                     }
-                    @if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
+                    else if (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart && Model.IsAutomaticProvisioningSupported)
                     {
-                        <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
+                    <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Activate</a>
+                    }
+                    else if  (Model.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
+                    {
+                    <a onclick="SubscriptionOperation('@Model.Id','@Model.PlanId','Activate')" id="btnActive" class="cm-button-default text-right">Request Activation</a>
                     }
                 </div>
             }

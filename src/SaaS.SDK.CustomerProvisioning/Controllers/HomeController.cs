@@ -253,6 +253,7 @@
                             var planDetails = this.planRepository.GetById(subscriptionExtension.PlanId);
                             var offerDetails = this.offersRepository.GetOfferById(planDetails.OfferId);
                             subscriptionExtension.OfferId = offerDetails.OfferName;
+                            subscriptionExtension.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         }
                     }
                     else
@@ -804,6 +805,7 @@
                     subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
                     var offerDetails = this.offersRepository.GetOfferById(planDetails.OfferId);
                     subscriptionDetail.OfferId = offerDetails.OfferId;
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
 
                 }
 
