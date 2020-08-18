@@ -504,3 +504,14 @@ input:checked + .slider:before {
 .swal-text {
     font-size: 20px ! important;
 }
+
+.cm-menu-link {
+    color: black;
+    font-weight: bold !important;
+    font-size: 16px !important;
+}
+
+.nav-underline .nav-link {
+    color: black;
+    text-transform: uppercase;
+}
