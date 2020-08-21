@@ -20,7 +20,6 @@
 
 .cm-menu-bar {
     background-color: #F9F9F9 !important;
-    margin-top: -142px;
 }
 
 .cm-menu-link {
@@ -405,4 +404,12 @@ a.cm-dropdown-option {
 
 .swal-text{
     font-size:20px;
+}
+
+.banner {
+    background-image: url('../banner.jpg');
+    text-align: center;
+    color: white;
+    height: 120px;
+    margin-top: -130px;
 }
