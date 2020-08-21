@@ -64,7 +64,7 @@
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
             this._logger = logger;
-            this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
+            //this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
             this.batchUsageUploadHistoryRepository = batchUsageUploadHistoryRepository;
         }
 

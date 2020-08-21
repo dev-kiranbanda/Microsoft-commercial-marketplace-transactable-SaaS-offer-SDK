@@ -1079,10 +1079,10 @@
         [HttpPost]
         public IActionResult BulkUploadUsageMeters(Guid batchReferenceId)
         {
-            logger.InfoFormat("Home Controller / BulkUploadUsageMeters:{0} ", JsonSerializer.Serialize(batchLogId));
+            logger.InfoFormat("Home Controller / BulkUploadUsageMeters:{0} ", JsonSerializer.Serialize(batchReferenceId));
             try
             {
-                logger.InfoFormat($"Bulk Upload Subscription Usage Meters for Batch-{batchLogId} Initiate.");
+                logger.InfoFormat($"Bulk Upload Subscription Usage Meters for Batch-{batchReferenceId} Initiate.");
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
 
                 var batchLogDetails = this.batchLogRepository.GetByReferenceID(batchReferenceId);
@@ -1121,7 +1121,7 @@
                     ResponseModel response = new ResponseModel();
                     response.Message = "There are some Exception occured, Please upload valid data!";
                     response.IsSuccess = false;
-                    logger.ErrorFormat($"Bulk Upload Subscription Usage Meters for Batch-{batchLogId} Error - {mex.Message} with StackTrace- {mex.StackTrace}.");
+                    logger.ErrorFormat($"Bulk Upload Subscription Usage Meters for Batch-{batchReferenceId} Error - {mex.Message} with StackTrace- {mex.StackTrace}.");
 
                     return RedirectToAction(nameof(RecordBatchUsage));
                 }
@@ -1183,7 +1183,7 @@
             }
             catch (Exception ex)
             {
-                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", new Exception("An error occured while processing the request."));
             }
             return View("BatchUploadSuccessMessage");
