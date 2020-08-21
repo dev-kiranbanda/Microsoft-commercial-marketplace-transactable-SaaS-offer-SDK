@@ -36,9 +36,30 @@
                 <ul>
                     <li><a href="#tabs-Parameters">Parameters</a></li>
                     <li><a href="#tabs-Events">Events</a></li>
+                    <li><a href="#tabs-Dimensions">Dimensions</a></li>
                 </ul>
                 <div id="tabs-Parameters">
                     <div id="PlanAttributes">
+                        <div calss="container">
+                            <dl class="row">
+                                <dt class="col-3 text-right">Metering supported</dt>
+                                <dd class="col-3 text-left">
+
+                                    <label class="switch">
+                                        @Html.CheckBoxFor(model => model.IsmeteringSupported)
+                                        <span class="slider round"></span>
+                                    </label>
+                                </dd>
+                                <dt class="col-3 text-right">Per User</dt>
+                                <dd class="col-3 text-left">
+
+                                    <label class="switch">
+                                        @Html.CheckBoxFor(model => model.IsPerUser)
+                                        <span class="slider round"></span>
+                                    </label>
+                                </dd>
+                            </dl>
+                        </div>
                         @if (Model.PlanAttributes != null && Model.PlanAttributes.Count() > 0)
                         {
                             <table class="table table-bordered dt-responsive cm-table" id="tblcontainer">
@@ -51,8 +72,6 @@
                                 <tbody id="ReplacingTable">
                                     @for (int i = 0; i < Model.PlanAttributes.Count(); i++)
                                     {
-
-
                                         <tr id="tr_PlanAttributes_@i" class="@Model.PlanAttributes[i].Type">
                                             <td>
                                                 <input id="PlanAttributes[@i].PlanAttributeId" type="hidden" value="@Model.PlanAttributes[i].PlanAttributeId" class="iHidden" name="PlanAttributes[@i].PlanAttributeId" />
@@ -66,11 +85,10 @@
                                                 @Html.CheckBoxFor(model => model.PlanAttributes[i].IsEnabled, new { name = "PlanAttributes[@i].IsEnabled", id = string.Format("PlanAttributes_IsEnabled_{0}", @i) })
                                             </td>
                                         </tr>
-
-
                                     }
                                 </tbody>
                             </table>
+
                         }
                         <div style="text-align:right;">
                             <p>
@@ -121,8 +139,6 @@
                                             <td><input type="text" style="width:200px;" id="PlanEvents_SuccessStateEmails_@i" name="PlanEvents[@i].SuccessStateEmails" value="@Model.PlanEvents[i].SuccessStateEmails" /></td>
                                             <td><input type="text" style="width:200px;" id="PlanEvents_FailureStateEmails_@i" name="PlanEvents[@i].FailureStateEmails" value="@Model.PlanEvents[i].FailureStateEmails" /></td>
                                         </tr>
-
-
                                     }
                                 </tbody>
                             </table>
@@ -134,6 +150,60 @@
                         </div>
                     </div>
                 </div>
+                <div id="tabs-Dimensions">
+                    <div id="PlanDimensions">
+                        <div calss="text-right maxwidth" style="text-align:right;margin-left:-320px;width:1300px;">
+                            <input class="cm-button-default mt0" style="line-height:10px; background-color: #00569B;" type="button" id="btndimensionAdd1" value="Add new dimension" />
+                            <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="savePlanParameters()" value="Save Dimensions" />
+                        </div>
+
+                        <table class="table table-bordered dt-responsive cm-table" id="tbldimensioncontainer">
+                            <theader>
+                                <tr>
+                                    <th>Dimension Name</th>
+                                    <th>Description</th>
+                                </tr>
+                            </theader>
+                            <tbody id="dimensionReplacingTable">
+                                @for (int i = 0; i < Model.PlanDimensions.Count(); i++)
+                                {
+                                    <tr id="tr_PlanDimensions_@i">
+                                        <td>
+                                            <input id="PlanDimensions_Id_@i" type="hidden" value="@Model.PlanDimensions[i].Id" class="iHidden" name="PlanDimensions[@i].Id" />
+                                            <input id="PlanDimensions_PlanId_@i" type="hidden" value="@Model.PlanDimensions[i].PlanId" class="iHidden" name="PlanDimensions[@i].PlanId" />
+                                            <input id="PlanDimensions_CreatedDate_@i" type="hidden" value="@Model.PlanDimensions[i].CreatedDate" class="iHidden" name="PlanDimensions[@i].CreatedDate" />
+                                            <input type="text" style="width:200px;" id="PlanDimensions_Dimension_@i" name="PlanDimensions[@i].Dimension" value="@Model.PlanDimensions[i].Dimension" />
+
+                                        </td>
+                                        <td><input type="text" style="width:200px;" id="PlanDimensions_Description_@i" name="PlanDimensions[@i].Description" value="@Model.PlanDimensions[i].Description" /></td>
+
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <table class="table table-bordered dt-responsive cm-table" id="tbldynamicdimensioncontainer" style="display:none;">
+                            <tbody id="DynamicReplacingTable">
+                                <tr id="tr_PlanDimensions_itemIndex">
+                                    <td>
+                                        <input id="PlanDimensions_Id_itemIndex" type="hidden" class="iHidden" name="PlanDimensions[itemIndex].Id" />
+                                        <input id="PlanDimensions_PlanId_itemIndex" type="hidden" class="iHidden" name="PlanDimensions[itemIndex].PlanId" />
+                                        <input id="PlanDimensions_CreatedDate_itemIndex" type="hidden" class="iHidden" name="PlanDimensions[itemIndex].CreatedDate" />
+                                        <input type="text" style="width:200px;" id="PlanDimensions_Dimension_itemIndex" name="PlanDimensions[itemIndex].Dimension" />
+
+                                    </td>
+                                    <td><input type="text" style="width:200px;" id="PlanDimensions_Description_itemIndex" name="PlanDimensions[itemIndex].Description" /></td>
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div calss="text-right maxwidth" style="text-align:right;margin-left:-320px;width:1300px;">
+                            <input class="cm-button-default mt0" style="line-height:10px; background-color: #00569B;" type="button" id="btndimensionAdd2" value="Add new dimension" />
+                            <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="savePlanParameters()" value="Save Dimensions" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -141,6 +211,29 @@
 
 </body>
 <script>
+    $(function () {
+        $("#btndimensionAdd1,#btndimensionAdd2").click(function (e) {
+            //$('#tblcontainer').show();
+            //var itemIndex = $("#tblcontainer input.iHidden").length;
+            var itemIndex = $("#dimensionReplacingTable > tr").length;
+            e.preventDefault();
+            var newItem = $("#DynamicReplacingTable").html();
+            var findstrinig = 'itemIndex';
+            var regx = new RegExp(findstrinig, 'g');
+            newItem = newItem.replace(regx, itemIndex);
+            //$("<tr id='tr_OfferAttributes_" + itemIndex + "__Id'><td><input id='OfferAttributes_" + itemIndex + "__Id' type='hidden' value='" + itemIndex + "' class='iHidden' name='OfferAttributes[" + itemIndex + "].Id' /><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ParameterId' name='OfferAttributes[" + itemIndex + "].ParameterId' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplayName' name='OfferAttributes[" + itemIndex + "].DisplayName' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Description' name='OfferAttributes[" + itemIndex + "].Description' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValueTypeId' name='OfferAttributes[" + itemIndex + "].ValueTypeId' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__FromList' name='OfferAttributes[" + itemIndex + "].FromList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__ValuesList' name='OfferAttributes[" + itemIndex + "].ValuesList' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Max' name='OfferAttributes[" + itemIndex + "].Max' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Min' name='OfferAttributes[" + itemIndex + "].Min' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__OfferID' name='OfferAttributes[" + itemIndex + "].OfferID' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__Type' name='OfferAttributes[" + itemIndex + "].Type' /></td><td><input type='text' style='width:70px;' id='OfferAttributes_" + itemIndex + "__DisplaySequence' name='OfferAttributes[" + itemIndex + "].DisplaySequence' /></td><td><input type='checkbox' value='true' id='OfferAttributes_" + itemIndex + "__Isactive' name='OfferAttributes[" + itemIndex + "].Isactive' /></td> <td><input id='btnRemoveBook' class='cm-button-default mt0' type='button' value='Remove' onclick='removeRow(" + itemIndex + ");' /></td><input type='hidden' value='' id='OfferAttributes_" + itemIndex + "__IsRemove' name='OfferAttributes[" + itemIndex + "].IsRemove' /></tr>");
+            $("#dimensionReplacingTable").append(newItem);
+        });
+    });
+
+    function removeRow(id) {
+        debugger;
+        var controlToBeRemoved = "#tr_PlanDimensions_" + id;
+        var Id = "#PlanDimensions_Id_" + id;
+        $("#PlanDimensions_IsActive_" + id).val(false);
+        $(controlToBeRemoved).hide();
+    }
+
 
     function successconfirmDialog() {
         swal({
@@ -159,6 +252,7 @@
         })
     }
     function savePlanParameters() {
+        debugger;
         var formobject = $('#frmPlanEvents').serialize();
         $.ajax({
             url: 'Plans/PlanDetails',

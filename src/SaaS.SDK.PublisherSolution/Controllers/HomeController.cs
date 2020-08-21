@@ -229,7 +229,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", "An error occured while processing the request.");
             }
         }
 
@@ -280,7 +280,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching subscriptions"));
             }
         }
 
@@ -310,7 +310,7 @@
             catch (Exception ex)
             {
                 logger.InfoFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching subscription logs"));
             }
         }
 
@@ -344,6 +344,8 @@
                 subscriptionDetail = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId);
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
                 subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, plandetails.PlanGuid);
+                var offerDetails = this.offersRepository.GetOfferById(plandetails.OfferId);
+                subscriptionDetail.OfferId = offerDetails.OfferName;
             }
 
             return this.View(subscriptionDetail);
@@ -385,7 +387,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Error while deactivating subscription, {0}", ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request"));
             }
         }
 
@@ -450,7 +452,7 @@
             catch (Exception ex)
             {
                 logger.InfoFormat("Message:{0} :: {1}", ex.Message, ex.InnerException);
-                return this.View("Error");
+                return this.View("Error", new Exception("An error occured while processing the request"));
             }
         }
 
@@ -471,7 +473,7 @@
             }
             catch (Exception ex)
             {
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request"));
             }
         }
 
@@ -480,19 +482,19 @@
         /// </summary>
         /// <param name="subscriptionId">The subscription identifier.</param>
         /// <returns> The <see cref="IActionResult" />.</returns>
-        public IActionResult RecordUsage(int subscriptionId)
+        public IActionResult RecordUsage(Guid subscriptionId)
         {
             logger.InfoFormat("Home Controller / RecordUsage ");
             try
             {
                 if (this.User.Identity.IsAuthenticated)
                 {
-                    var subscriptionDetail = this.subscriptionRepo.Get(subscriptionId);
+                    var subscriptionDetail = this.subscriptionRepo.GetById(subscriptionId);
                     var allDimensionsList = this.dimensionsRepository.GetDimensionsByPlanId(subscriptionDetail.AmpplanId);
                     SubscriptionUsageViewModel usageViewModel = new SubscriptionUsageViewModel();
                     usageViewModel.SubscriptionDetail = subscriptionDetail;
                     usageViewModel.MeteredAuditLogs = new List<MeteredAuditLogs>();
-                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionId).OrderByDescending(s => s.CreatedDate).ToList();
+                    usageViewModel.MeteredAuditLogs = this.subscriptionUsageLogsRepository.GetMeteredAuditLogsBySubscriptionId(subscriptionDetail.Id).OrderByDescending(s => s.CreatedDate).ToList();
                     usageViewModel.DimensionsList = new SelectList(allDimensionsList, "Dimension", "Description");
                     return this.View(usageViewModel);
                 }
@@ -504,7 +506,7 @@
             catch (Exception ex)
             {
                 logger.InfoFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while posting usage"));
             }
         }
 
@@ -533,7 +535,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching subscription details"));
             }
         }
 
@@ -592,9 +594,10 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Error: {0}", ex.Message);
+                return this.View("Error", new Exception("An error occured while processing the request"));
             }
 
-            return this.RedirectToAction(nameof(this.RecordUsage), new { subscriptionId = subscriptionData.SubscriptionDetail.Id });
+            return this.RedirectToAction(nameof(this.RecordUsage), new { subscriptionId = subscriptionData.SubscriptionDetail.AmpsubscriptionId });
         }
 
         /// <summary>
@@ -624,7 +627,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching subscription details"));
             }
         }
 
@@ -720,7 +723,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request."));
             }
         }
 
@@ -793,7 +796,7 @@
                 catch (Exception ex)
                 {
                     logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                    return this.View("Error", ex);
+                    return this.View("Error", new Exception("An error occured while processing the request."));
                 }
             }
             else
@@ -822,7 +825,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request."));
             }
         }
 
@@ -934,6 +937,7 @@
                             bulkUploadModel.BulkUploadUsageStagings = bulkUploadUsageStagingsList;
                             bulkUploadModel.BatchLogId = batchLogId;
                             bulkUploadModel.Response = response;
+                            bulkUploadModel.BatchReferenceId = referenceid;
                         }
                     }
                     else
@@ -961,7 +965,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request."));
             }
         }
 
@@ -1063,7 +1067,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while downloading the template."));
             }
         }
 
@@ -1073,7 +1077,7 @@
         /// <param name="batchLogId">The batch log identifier.</param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult BulkUploadUsageMeters(int batchLogId)
+        public IActionResult BulkUploadUsageMeters(Guid batchReferenceId)
         {
             logger.InfoFormat("Home Controller / BulkUploadUsageMeters:{0} ", JsonSerializer.Serialize(batchLogId));
             try
@@ -1081,8 +1085,9 @@
                 logger.InfoFormat($"Bulk Upload Subscription Usage Meters for Batch-{batchLogId} Initiate.");
                 var userId = this.userService.AddUser(this.GetCurrentUserDetail());
 
+                var batchLogDetails = this.batchLogRepository.GetByReferenceID(batchReferenceId);
                 //Get Bulk Upload Usage Meters from db for the Batch Log Id
-                var uploadUsageMeters = this.bulkUploadUsageStagingRepository.GetByBatchLogId(batchLogId);
+                var uploadUsageMeters = this.bulkUploadUsageStagingRepository.GetByBatchLogId(batchLogDetails.Id);
 
                 List<MeteringUsageRequest> subscriptionUsageRequestList = new List<MeteringUsageRequest>();
                 foreach (var request in uploadUsageMeters)
@@ -1144,16 +1149,15 @@
                             };
                             subscriptionUsageLogsRepository.Save(newMeteredAuditLog);
 
-                            var batchlogDetails = this.batchLogRepository.Get(batchLogId);
 
                             var newbatchUsageUploadHistory = new BatchUsageUploadHistory()
                             {
                                 Request = requestJson,
                                 Response = responseJson,
-                                BatchId = Convert.ToString(batchLogId),
-                                Filename = batchlogDetails.FileName,
-                                UploadBy = Convert.ToInt32(batchlogDetails.UploadedBy),
-                                UploadDate = batchlogDetails.UploadedOn
+                                BatchId = Convert.ToString(batchLogDetails.Id),
+                                Filename = batchLogDetails.FileName,
+                                UploadBy = Convert.ToInt32(batchLogDetails.UploadedBy),
+                                UploadDate = batchLogDetails.UploadedOn
                             };
                             batchUsageUploadHistoryRepository.Save(newbatchUsageUploadHistory);
 
@@ -1170,7 +1174,7 @@
                             };
                             this.subscriptionLogRepository.Save(auditLog);
                             BatchLog batchLog = new BatchLog();
-                            batchLog = batchLogRepository.Get(batchLogId);
+                            batchLog = batchLogRepository.Get(batchLogDetails.Id);
                             batchLog.BatchStatus = "Complete";
                             batchLogRepository.Save(batchLog);
                         }
@@ -1179,8 +1183,8 @@
             }
             catch (Exception ex)
             {
-                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                return this.View("Error", new Exception("An error occured while processing the request."));
             }
             return View("BatchUploadSuccessMessage");
             //RedirectToAction(nameof(RecordBatchUsage));

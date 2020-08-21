@@ -287,7 +287,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeMapping>(entity =>
             {
                 entity.HasKey(e => e.PlanAttributeId)
-                    .HasName("PK__PlanAttr__8B476A9825774127");
+                    .HasName("PK__PlanAttr__8B476A9864983A77");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
@@ -297,7 +297,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanAttributeOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanAttr__AAAC09D86AA2B5A4");
+                    .HasName("PK__PlanAttr__AAAC09D847191D1D");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -327,7 +327,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<PlanEventsOutPut>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__PlanEven__AAAC09D81F16A9AB");
+                    .HasName("PK__PlanEven__AAAC09D819162F28");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -420,7 +420,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<SubscriptionParametersOutput>(entity =>
             {
                 entity.HasKey(e => e.RowNumber)
-                    .HasName("PK__Subscrip__AAAC09D8CF9A960A");
+                    .HasName("PK__Subscrip__AAAC09D8F92525C8");
 
                 entity.Property(e => e.RowNumber).ValueGeneratedNever();
 
@@ -512,7 +512,7 @@ namespace Microsoft.Marketplace.SaasKit.Client.DataAccess.Context
             modelBuilder.Entity<ValueTypes>(entity =>
             {
                 entity.HasKey(e => e.ValueTypeId)
-                    .HasName("PK__ValueTyp__A51E9C5A40C33F12");
+                    .HasName("PK__ValueTyp__A51E9C5A7453DA07");
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 

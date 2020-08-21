@@ -69,7 +69,7 @@
                                                     <div class="dropdown-menu" aria-labelledby="dropdown01">
                                                         @if (subscription.IsMeteringSupported && subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.Subscribed)
                                                         {
-                                                            <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.SubscribeId">Manage Usage</a>
+                                                            <a class="dropdown-item cm-dropdown-option" asp-action="RecordUsage" asp-controller="Home" asp-route-subscriptionId="@subscription.Id">Manage Usage</a>
                                                         }
                                                         @if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingActivation || subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart)
                                                         {

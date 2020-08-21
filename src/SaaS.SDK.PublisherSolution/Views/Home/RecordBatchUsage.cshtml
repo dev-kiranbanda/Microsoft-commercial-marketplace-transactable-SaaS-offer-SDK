@@ -1,6 +1,6 @@
 ﻿@model BatchUsageUploadModel
 @{
-    ViewData["Title"] = "RecordBatchUsage";
+    ViewData["Title"] = "Batch Usage";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -58,7 +58,7 @@
 
     @if (Model.BulkUploadUsageStagings.Count > 0)
     {
-        <form method="post" asp-action="BulkUploadUsageMeters" asp-controller="Home" asp-route-batchLogId="@Model.BatchLogId">
+        <form method="post" asp-action="BulkUploadUsageMeters" asp-controller="Home" asp-route-batchLogId="@Model.BatchReferenceId">
             <div class="card-body ">
                 <div class="text-left ">
                     <span class="cm-section-heading"> Data Validation Result</span>
@@ -67,6 +67,7 @@
                     <div class="form-group">
                         <div class="row">
                             @Html.HiddenFor(s => s.BatchLogId)
+                            @Html.HiddenFor(s => s.BatchReferenceId)
                             <div class="col-lg-2 col-md-2">
                                 <button type="submit" class="cm-button-default">Submit to Azure</button>
                             </div>

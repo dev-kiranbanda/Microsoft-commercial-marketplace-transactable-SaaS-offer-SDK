@@ -2,7 +2,7 @@
 
 @model Microsoft.Marketplace.SaaS.SDK.Services.Models.SubscriptionResultExtension
 @{
-    //ViewData["Title"] = "Home";
+    ViewData["Title"] = "SaaS Subscription Details";
 }
 
 <div class="container">
@@ -10,7 +10,7 @@
 
         <div>
             <div class="text-left mt40">
-                <span class="cm-section-heading">Subscription Details</span>
+                <span class="cm-section-heading">SaaS Subscription Details</span>
             </div>
             @if (Model != null && !string.IsNullOrEmpty(Model.ErrorMessage))
             {
@@ -41,7 +41,7 @@
                             @Html.DisplayFor(model => model.Id)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
-                            @Html.DisplayName("Name ")
+                            @Html.DisplayName("Resource Name ")
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.Name)
@@ -51,6 +51,18 @@
                         </dt>
                         <dd class="col-sm-9 p-2 p10">
                             @Html.DisplayFor(model => model.SaasSubscriptionStatus)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Offer ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.OfferId)
+                        </dd>
+                        <dt class="col-sm-3 p-2 p10">
+                            @Html.DisplayName("Plan ")
+                        </dt>
+                        <dd class="col-sm-9 p-2 p10">
+                            @Html.DisplayFor(model => model.PlanId)
                         </dd>
                         <dt class="col-sm-3 p-2 p10">
                             @Html.DisplayName("Purchaser Email ")
@@ -76,8 +88,8 @@
                             for (int i = 0; i < Model.SubscriptionParameters.Count(); i++)
                             {
 
-                                    if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
-                                    {
+                                if (Model.SubscriptionParameters[i].Type.ToLower() == "input")
+                                {
                                     <dt class="col-sm-3 p-2 p10 @Model.SubscriptionParameters[i].Type">
                                         @Html.DisplayFor(model => model.SubscriptionParameters[i].DisplayName, new { required = "required", @class = @Model.SubscriptionParameters[i].Type })
 

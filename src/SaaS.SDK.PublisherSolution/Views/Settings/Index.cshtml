@@ -1,0 +1,150 @@
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
+@model SettingsModel
+@{
+    ViewData["Title"] = "Settings";
+}
+<body id="myModal">
+    <div class="container">
+        <div class="">
+            <div class="card-body">
+                <div class="text-left">
+                    <span class="cm-section-heading">Settings</span>
+                </div>
+                <form id="frmSettings">
+                    <div>
+                        @*<div calss="text-right maxwidth" style="width:1300px;">
+                                <input class="cm-button-default" style="float:right;line-height:10px; background-color: #2E8B57;" type="button" id="btnsettingAdd" value="Add" />
+                                <input class="cm-button-default" style="float:right;line-height:10px;background-color: #2E8B57;" type="button" onclick="saveSettings();" value="Save" />
+                            </div>*@
+                        <div calss="text-right maxwidth" style="text-align:right;width:1300px;margin-left:-260px;">
+                            <input class="cm-button-default" style="line-height:10px;  background-color: #00569B;" type="button" id="btnsettingAdd1" value="Add New Setting" />
+                            <input class="cm-button-default" style="line-height:10px;" type="button" onclick="saveSettings();" value="Save Settings" />
+                        </div>
+                        <input id="tempsmtppassword" type="hidden" value="@Model.tempsmtppassword" class="iHidden" name="tempsmtppassword" />
+                        <table class="table table-bordered cm-table" id="tbldynamicsettingcontainer" style="display:none;">
+                            <tbody id="DynamicsettingReplacingTable">
+                                <tr id="tr_appConfigSettings_itemIndex">
+                                    <td class="text-left">
+                                        <input type="text" id="appConfigSettings[itemIndex].Name" name="appConfigSettings[itemIndex].Name" />
+
+                                    </td>
+                                    <td class="text-left">
+                                        <input id="appConfigSettings_Id_itemIndex" type="hidden" class="iHidden" name="appConfigSettings[itemIndex].Id" />
+                                        <input id="appConfigSettings[itemIndex].Description" type="hidden" class="iHidden" name="appConfigSettings[itemIndex].Description" />
+                                        <input type="text" style="width:650px;" id="appConfigSettings[itemIndex].Value" name="appConfigSettings[itemIndex].Value" />
+                                    </td>
+                                    
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table class="table table-bordered dt-responsive cm-table" id="tblsettingcontainer" width="100%" cellspacing="0">
+                            <thead class="cm-table-head">
+                                <tr>
+                                    <th>Setting Name</th>
+                                    <th>Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="settingReplacingTable">
+                                @for (var i = 0; i < Model.appConfigSettings.Count; i++)
+                                {
+                                    <tr id="tr_appConfigSettings_@i">
+                                        <td class="text-left">
+                                            @Model.appConfigSettings[i].Name
+                                        </td>
+                                        <td class="text-left">
+                                            @if (@Model.appConfigSettings[i].Name.Contains("Password"))
+                                            {
+                                                <input type="password" style="width:650px;" id="appConfigSettings[@i].Value" name="appConfigSettings[@i].Value" value="" />
+                                            }
+                                            else
+                                            {
+                                                <input type="text" style="width:650px;" id="appConfigSettings[@i].Value" name="appConfigSettings[@i].Value" value="@Model.appConfigSettings[i].Value" />
+                                            }
+                                            <input id="appConfigSettings[@i].Name" type="hidden" value="@Model.appConfigSettings[i].Name" class="iHidden" name="appConfigSettings[@i].Name" />
+                                            <input id="appConfigSettings_Id_@i" type="hidden" value="@Model.appConfigSettings[i].Id" class="iHidden" name="appConfigSettings[@i].Id" />
+                                            <input id="appConfigSettings[@i].Description" type="hidden" value="@Model.appConfigSettings[i].Description" class="iHidden" name="appConfigSettings[@i].Description" />
+                                        </td>
+                                        
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+
+                        <div calss="text-right maxwidth" style="text-align:right;width:1300px;margin-left:-260px;">
+                            <input class="cm-button-default" style="line-height:10px;  background-color: #00569B;" type="button" id="btnsettingAdd2" value="Add New Setting" />
+                            <input class="cm-button-default" style="line-height:10px;" type="button" onclick="saveSettings();" value="Save Settings" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+
+    $(function () {
+        $("#btnsettingAdd1,#btnsettingAdd2").click(function (e) {
+            debugger;
+            var itemIndex = $("#settingReplacingTable > tr").length;
+            e.preventDefault();
+            var newItem = $("#DynamicsettingReplacingTable").html();
+            var findstrinig = 'itemIndex';
+            var regx = new RegExp(findstrinig, 'g');
+            newItem = newItem.replace(regx, itemIndex);
+            $("#settingReplacingTable").append(newItem);
+        });
+    });
+
+    function removeRow(id) {
+        debugger;
+        var controlToBeRemoved = "#tr_appConfigSettings_" + id;
+        var Id = "#appConfigSettings_Id_" + id;
+        $("#appConfigSettings_IsActive_" + id).val(false);
+        $(controlToBeRemoved).hide();
+    }
+
+    function successconfirmDialog() {
+        swal({
+            title: "Saved",
+            text: "Settings saved successfully.",
+            icon: "success"
+        })
+    }
+
+    function errorconfirmDialog() {
+        swal({
+            title: "Error",
+            text: "An error has occured, please check the log.",
+            icon: "error",
+            timer: 1000
+        })
+    }
+
+    function saveSettings() {
+        var formobject = $('#frmSettings').serialize();
+        $.ajax({
+            url: 'Settings/SaveSettings',
+            type: 'POST',
+            data: formobject,
+            cache: false,
+            success: function (result) {
+                $('#myModal').html(result);
+                swal({
+                    title: "Saved",
+                    text: "Settings saved successfully.",
+                    icon: "success"
+                })
+            },
+            Error:
+                function (result) {
+                    errorconfirmDialog();
+                    $('#myModal').html(result);
+                }
+        });
+    }
+
+</script>
+
+

@@ -5,9 +5,9 @@
 <div class="text-center maxwidth">
     <form method="post" id="frmOfferattributes" asp-action="OfferDetails" asp-controller="Offers">
         @*action="Offers/OfferDetails"*@
-        <div class="container mrtop maxwidth" style="float:left;">
+        <div class="container mrtop maxwidth" style="float:left; margin-left:-100px;">
             <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
-                <input class="cm-button-default mt0" style="line-height:10px; background-color: #2E8B57;" type="button" id="btnAdd" value="Add new row" />
+                <input class="cm-button-default mt0" style="line-height:10px; background-color: #00569B;" type="button" id="btnAdd" value="Add new row" />
                 <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
             @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">
@@ -64,7 +64,7 @@
                                         <input id="OfferAttributes_AttributeID_@i" type="hidden" class="iHidden" name="OfferAttributes[@i].AttributeID" value="@Model.OfferAttributes[i].AttributeID" />
                                         <input type="text" style="width:70px;" id="OfferAttributes_ParameterId_@i" name="OfferAttributes[@i].ParameterId" value="@Model.OfferAttributes[i].ParameterId" />
                                     </td>
-                                    <td><input type="text" style="width:70px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
+                                    <td><input type="text" style="width: 70px;" id="OfferAttributes_DisplayName_@i" name="OfferAttributes[@i].DisplayName" value="@Model.OfferAttributes[i].DisplayName" /></td>
                                     <td><input type="text" style="width:70px;" id="OfferAttributes_Description_@i" name="OfferAttributes[@i].Description" value="@Model.OfferAttributes[i].Description" /></td>
                                     <td>
                                         @*<input type="text" style="width:70px;" id="OfferAttributes_i__ValueTypeId" name="OfferAttributes[@i].ValueTypeId" />*@
@@ -145,7 +145,7 @@
                 </table>
             </div>
             <div calss="text-right maxwidth" style="text-align:right; width:1300px;">
-                <input class="cm-button-default mt0" style="line-height:10px;background-color: #2E8B57;" type="button" id="btnAdd2" value="Add new row" />
+                <input class="cm-button-default mt0" style="line-height:10px;background-color: #00569B;" type="button" id="btnAdd2" value="Add new row" />
                 <input class="cm-button-default mt0" style="line-height:10px;" type="button" onclick="saveOfferParameters()" value="Save changes" />
             </div>
             @*<div calss="text-right maxwidth" style="text-align:right; width:1300px;">

@@ -93,6 +93,8 @@
 
         private PlanService planService = null;
 
+        private IMeteredDimensionsRepository meteredDimensionRepository;
+
         /// <summary>
         /// The user service.
         /// </summary>
@@ -117,7 +119,7 @@
         /// <param name="cloudConfigs">The cloud configs.</param>
         /// <param name="loggerFactory">The logger factory.</param>
         /// <param name="emailService">The email service.</param>
-        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService)
+        public HomeController(ILogger<HomeController> logger, IFulfillmentApiClient apiClient, ISubscriptionsRepository subscriptionRepo, IPlansRepository planRepository, IUsersRepository userRepository, IApplicationLogRepository applicationLogRepository, ISubscriptionLogRepository subscriptionLogsRepo, IApplicationConfigRepository applicationConfigRepository, IEmailTemplateRepository emailTemplateRepository, IOffersRepository offersRepository, IPlanEventsMappingRepository planEventsMappingRepository, IOfferAttributesRepository offerAttributesRepository, IEventsRepository eventsRepository, ILoggerFactory loggerFactory, IEmailService emailService, IMeteredDimensionsRepository meteredDimensionRepository)
         {
             this.apiClient = apiClient;
             this.subscriptionRepository = subscriptionRepo;
@@ -132,9 +134,10 @@
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
+            this.meteredDimensionRepository = meteredDimensionRepository;
             this._logger = logger;
             this.offersRepository = offersRepository;
-            this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository);
+            this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository, this.meteredDimensionRepository);
             this.eventsRepository = eventsRepository;
             this.emailService = emailService;
             this.loggerFactory = loggerFactory;
@@ -207,7 +210,6 @@
                         var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
                         if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
-                            var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             Offers offers = new Offers()
                             {
                                 OfferId = newSubscription.OfferId,
@@ -217,37 +219,52 @@
                                 OfferGuid = Guid.NewGuid(),
                             };
                             Guid newOfferId = this.offersRepository.Add(offers);
-                            List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
-                            var serializedPlans = JsonSerializer.Serialize(subscriptionPlanDetail);
-                            planList = JsonSerializer.Deserialize<List<PlanDetailResultExtension>>(serializedPlans);
-                            planList.ForEach(x =>
+
+                            var isPlanExisted = this.planRepository.GetById(newSubscription.PlanId);
+                            if(isPlanExisted == null)
                             {
-                                x.OfferId = newOfferId;
-                                x.PlanGUID = Guid.NewGuid();
-                            });
-                            this.subscriptionService.AddPlanDetailsForSubscription(planList);
-                            var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
-                            var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
-                            var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
-                            if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
-                            {
-                                SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                                List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
+                                var serializedPlans = JsonSerializer.Serialize(subscriptionPlanDetail);
+                                planList = JsonSerializer.Deserialize<List<PlanDetailResultExtension>>(serializedPlans);
+                                planList.ForEach(x =>
                                 {
-                                    Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
-                                    SubscriptionId = subscribeId,
-                                    NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
-                                    OldValue = "None",
-                                    CreateBy = currentUserId,
-                                    CreateDate = DateTime.Now,
-                                };
-                                this.subscriptionLogRepository.Save(auditLog);
+                                    x.OfferId = newOfferId;
+                                    x.PlanGUID = Guid.NewGuid();
+                                });
+                                this.subscriptionService.AddPlanDetailsForSubscription(planList);
                             }
 
+                            var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
+
+                            var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                            var existingSubscribtion = this.subscriptionRepository.GetById(newSubscription.SubscriptionId);
+                            if (existingSubscribtion == null)
+                            {
+                                var subscribeId = this.subscriptionService.AddOrUpdatePartnerSubscriptions(subscriptionData);
+                                if (subscribeId > 0 && subscriptionData.SaasSubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
+                                {
+                                    SubscriptionAuditLogs auditLog = new SubscriptionAuditLogs()
+                                    {
+                                        Attribute = Convert.ToString(SubscriptionLogAttributes.Status),
+                                        SubscriptionId = subscribeId,
+                                        NewValue = SubscriptionStatusEnum.PendingFulfillmentStart.ToString(),
+                                        OldValue = "None",
+                                        CreateBy = currentUserId,
+                                        CreateDate = DateTime.Now,
+                                    };
+                                    this.subscriptionLogRepository.Save(auditLog);
+                                }
+                            }
                             subscriptionExtension = this.subscriptionService.GetSubscriptionsBySubscriptionId(newSubscription.SubscriptionId, true);
                             subscriptionExtension.ShowWelcomeScreen = false;
                             subscriptionExtension.CustomerEmailAddress = this.CurrentUserEmailAddress;
                             subscriptionExtension.CustomerName = this.CurrentUserName;
                             subscriptionExtension.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(newSubscription.SubscriptionId, currentPlan.PlanGuid);
+                            var planDetails = this.planRepository.GetById(subscriptionExtension.PlanId);
+                            var offerDetails = this.offersRepository.GetOfferById(planDetails.OfferId);
+                            subscriptionExtension.OfferId = offerDetails.OfferName;
+                            subscriptionExtension.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
                         }
                     }
                     else
@@ -280,7 +297,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occurred while processing your request."));
             }
         }
 
@@ -323,7 +340,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occurred while fetching subscriptions"));
             }
         }
 
@@ -354,7 +371,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occurred while fetching subscription change plan details"));
             }
         }
 
@@ -383,7 +400,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching subscription change quantity details "));
             }
         }
 
@@ -411,7 +428,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching the logs of the subscription"));
             }
         }
 
@@ -452,7 +469,7 @@
             catch (Exception ex)
             {
                 logger?.InfoFormat("Home Controller / ActivatedMessage Exception: {0}", ex);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request."));
             }
         }
 
@@ -494,7 +511,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured fetching subscription details"));
             }
         }
 
@@ -604,7 +621,7 @@
                 catch (Exception ex)
                 {
                     logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                    return this.View("Error", ex);
+                    return this.View("Error", "An error occured while processing the request.");
                 }
             }
             else
@@ -687,7 +704,7 @@
                 catch (Exception ex)
                 {
                     logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                    return this.View("Error", ex);
+                    return this.View("Error", new Exception("An error occured while processing change plan request"));
                 }
             }
 
@@ -763,7 +780,7 @@
                 catch (Exception ex)
                 {
                     logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                    return this.View("Error", ex);
+                    return this.View("Error", new Exception("An error occured while processing change quantity request"));
                 }
             }
             else
@@ -797,6 +814,10 @@
                     subscriptionDetail.CustomerEmailAddress = this.CurrentUserEmailAddress;
                     subscriptionDetail.CustomerName = this.CurrentUserName;
                     subscriptionDetail.SubscriptionParameters = this.subscriptionService.GetSubscriptionsParametersById(subscriptionId, planDetails.PlanGuid);
+                    var offerDetails = this.offersRepository.GetOfferById(planDetails.OfferId);
+                    subscriptionDetail.OfferId = offerDetails.OfferId;
+                    subscriptionDetail.IsAutomaticProvisioningSupported = Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported"));
+
                 }
 
                 return this.View("Index", subscriptionDetail);
@@ -804,7 +825,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occurred while fetching subscription dettails"));
             }
         }
     }

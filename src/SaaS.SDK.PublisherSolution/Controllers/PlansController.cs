@@ -11,6 +11,7 @@
     using Microsoft.Marketplace.SaaS.SDK.Services.Services;
     using Microsoft.Marketplace.SaaS.SDK.Services.Utilities;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
+    using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
 
     /// <summary>
     /// Plans Controller.
@@ -42,6 +43,9 @@
 
         private PlanService plansService;
 
+        private IMeteredDimensionsRepository meteredDimensionRepository;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlansController" /> class.
         /// </summary>
@@ -52,7 +56,7 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<PlansController> logger)
+        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<PlansController> logger, IMeteredDimensionsRepository meteredDimensionRepository)
         {
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;
@@ -60,8 +64,9 @@
             this.plansRepository = plansRepository;
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
+            this.meteredDimensionRepository = meteredDimensionRepository;
             this._logger = logger;
-            this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
+            this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository, this.meteredDimensionRepository);
         }
 
         /// <summary>
@@ -84,7 +89,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Error {0}", ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching plans."));
             }
         }
 
@@ -109,7 +114,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Error {0}", ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching plan details."));
             }
         }
 
@@ -129,6 +134,8 @@
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
                 if (plans != null)
                 {
+                    this.plansService.UpdateIsMeteringSupportedFlag(plans);
+                    this.plansService.UpdateIsPerUserFlag(plans);
                     if (plans.PlanAttributes != null)
                     {
                         var inputAtttributes = plans.PlanAttributes.Where(s => s.Type.ToLower() == "input").ToList();
@@ -147,6 +154,16 @@
                             this.plansService.SavePlanEvents(events);
                         }
                     }
+
+                    if (plans.PlanDimensions != null)
+                    {
+                        foreach (var dimensions in plans.PlanDimensions)
+                        {
+                            Plans plandetails = this.plansRepository.GetByInternalReference(plans.PlanGUID);
+                            dimensions.PlanId = plandetails.Id;
+                            this.plansService.SavePlanDimensions(dimensions);
+                        }
+                    }
                 }
 
                 this.ModelState.Clear();
@@ -155,7 +172,7 @@
             catch (Exception ex)
             {
                 logger.ErrorFormat("Error {0}", ex.Message);
-                return this.PartialView("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching plan details."));
             }
         }
     }

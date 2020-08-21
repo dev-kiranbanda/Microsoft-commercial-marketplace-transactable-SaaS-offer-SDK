@@ -2,6 +2,7 @@
 {
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.DataModel;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Entities;
+    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -57,6 +58,14 @@
         /// The batch log identifier.
         /// </value>
         public int BatchLogId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the batch log identifier.
+        /// </summary>
+        /// <value>
+        /// The batch log identifier.
+        /// </value>
+        public Guid BatchReferenceId { get; set; }
 
         /// <summary>
         /// Gets or sets the response.

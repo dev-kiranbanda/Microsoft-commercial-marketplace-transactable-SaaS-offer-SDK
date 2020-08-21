@@ -1,7 +1,7 @@
 ﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
 @model SubscriptionUsageViewModel
 @{
-    ViewData["Title"] = "RecordUsage";
+    ViewData["Title"] = "Subscription Usage";
 }
 
 @if (Model.SubscriptionDetail != null && Model.SubscriptionDetail.Id > 0)
@@ -43,6 +43,12 @@
                     </div>
                 </div>
                 <div class="form-group" style="overflow:auto" height="250px">
+                    <dl class="row">
+                        <dt class="col-2 text-right"><b>Resource Id</b></dt>
+                        <dd class="col-4 text-left">@Model.SubscriptionDetail.AmpsubscriptionId</dd>
+                        <dt class="col-3 text-right"><b>Resource Name</b></dt>
+                        <dd class="col-3 text-left">@Model.SubscriptionDetail.Name</dd>
+                    </dl>
                     @if (Model.MeteredAuditLogs.Count() > 0)
                     {
                         <table id="table" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">

@@ -234,14 +234,31 @@
         {
             foreach (var planDetail in allPlanDetail)
             {
-                this.planRepository.Save(new Plans
+                var existingPlanDetails = this.planRepository.GetById(planDetail.PlanId);
+                if (existingPlanDetails != null)
                 {
-                    PlanId = planDetail.PlanId,
-                    DisplayName = planDetail.PlanId,
-                    Description = planDetail.DisplayName,
-                    OfferId = planDetail.OfferId,
-                    PlanGuid = planDetail.PlanGUID,
-                });
+                    this.planRepository.Save(new Plans
+                    {
+                        PlanId = planDetail.PlanId,
+                        DisplayName = planDetail.PlanId,
+                        Description = planDetail.DisplayName,
+                        OfferId = planDetail.OfferId,
+                        PlanGuid = planDetail.PlanGUID,
+                        IsmeteringSupported = existingPlanDetails.IsmeteringSupported,
+                        IsPerUser=existingPlanDetails.IsPerUser
+                    });
+                }
+                else
+                {
+                    this.planRepository.Save(new Plans
+                    {
+                        PlanId = planDetail.PlanId,
+                        DisplayName = planDetail.PlanId,
+                        Description = planDetail.DisplayName,
+                        OfferId = planDetail.OfferId,
+                        PlanGuid = planDetail.PlanGUID,
+                    });
+                }
             }
         }
 
