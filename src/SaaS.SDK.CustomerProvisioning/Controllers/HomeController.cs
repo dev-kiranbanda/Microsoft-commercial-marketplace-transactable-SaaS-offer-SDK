@@ -206,7 +206,6 @@
                         var newSubscription = this.apiClient.ResolveAsync(token).ConfigureAwait(false).GetAwaiter().GetResult();
                         if (newSubscription != null && newSubscription.SubscriptionId != default)
                         {
-                            var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             Offers offers = new Offers()
                             {
                                 OfferId = newSubscription.OfferId,
@@ -216,16 +215,24 @@
                                 OfferGuid = Guid.NewGuid(),
                             };
                             Guid newOfferId = this.offersRepository.Add(offers);
-                            List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
-                            var serializedPlans = JsonSerializer.Serialize(subscriptionPlanDetail);
-                            planList = JsonSerializer.Deserialize<List<PlanDetailResultExtension>>(serializedPlans);
-                            planList.ForEach(x =>
+
+                            var isPlanExisted = this.planRepository.GetById(newSubscription.PlanId);
+                            if(isPlanExisted == null)
                             {
-                                x.OfferId = newOfferId;
-                                x.PlanGUID = Guid.NewGuid();
-                            });
-                            this.subscriptionService.AddPlanDetailsForSubscription(planList);
+                                var subscriptionPlanDetail = this.apiClient.GetAllPlansForSubscriptionAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
+                                List<PlanDetailResultExtension> planList = new List<PlanDetailResultExtension>();
+                                var serializedPlans = JsonSerializer.Serialize(subscriptionPlanDetail);
+                                planList = JsonSerializer.Deserialize<List<PlanDetailResultExtension>>(serializedPlans);
+                                planList.ForEach(x =>
+                                {
+                                    x.OfferId = newOfferId;
+                                    x.PlanGUID = Guid.NewGuid();
+                                });
+                                this.subscriptionService.AddPlanDetailsForSubscription(planList);
+                            }
+
                             var currentPlan = this.planRepository.GetById(newSubscription.PlanId);
+
                             var subscriptionData = this.apiClient.GetSubscriptionByIdAsync(newSubscription.SubscriptionId).ConfigureAwait(false).GetAwaiter().GetResult();
                             var existingSubscribtion = this.subscriptionRepository.GetById(newSubscription.SubscriptionId);
                             if (existingSubscribtion == null)
