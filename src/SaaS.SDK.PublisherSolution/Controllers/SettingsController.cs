@@ -82,7 +82,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching settings."));
             }
         }
 

@@ -74,7 +74,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching offers."));
             }
         }
 
@@ -132,7 +132,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching offer details."));
             }
         }
 
@@ -191,7 +191,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching offer details."));
             }
         }
     }

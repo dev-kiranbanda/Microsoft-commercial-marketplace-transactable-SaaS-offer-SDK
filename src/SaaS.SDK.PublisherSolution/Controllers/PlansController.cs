@@ -87,7 +87,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching plans."));
             }
         }
 
@@ -112,7 +112,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching plan details."));
             }
         }
 
@@ -170,7 +170,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.PartialView("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching plan details."));
             }
         }
     }

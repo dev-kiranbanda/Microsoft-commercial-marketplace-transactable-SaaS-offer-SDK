@@ -286,7 +286,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occurred while processing your request."));
             }
         }
 
@@ -329,7 +329,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occurred while fetching subscriptions"));
             }
         }
 
@@ -360,7 +360,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occurred while fetching subscription change plan details"));
             }
         }
 
@@ -389,7 +389,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching subscription change quantity details "));
             }
         }
 
@@ -417,7 +417,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while fetching the logs of the subscription"));
             }
         }
 
@@ -458,7 +458,7 @@
             catch (Exception ex)
             {
                 this.logger.LogInformation("Home Controller / ActivatedMessage Exception: {0}", ex);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception ("An error occured while processing the request."));
             }
         }
 
@@ -500,7 +500,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured fetching subscription details"));
             }
         }
 
@@ -610,7 +610,7 @@
                 catch (Exception ex)
                 {
                     this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                    return this.View("Error", ex);
+                    return this.View("Error", "An error occured while processing the request.");
                 }
             }
             else
@@ -693,7 +693,7 @@
                 catch (Exception ex)
                 {
                     this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                    return this.View("Error", ex);
+                    return this.View("Error", new Exception ("An error occured while processing change plan request"));
                 }
             }
 
@@ -769,7 +769,7 @@
                 catch (Exception ex)
                 {
                     this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                    return this.View("Error", ex);
+                    return this.View("Error", new Exception("An error occured while processing change quantity request"));
                 }
             }
             else
@@ -814,7 +814,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception ("An error occurred while fetching subscription dettails"));
             }
         }
     }

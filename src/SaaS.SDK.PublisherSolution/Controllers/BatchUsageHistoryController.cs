@@ -83,7 +83,7 @@
             catch (Exception ex)
             {
                 this.logger.LogError(ex, ex.Message);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request"));
             }
         }
 
@@ -109,7 +109,7 @@
             catch (Exception ex)
             {
                 logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
-                return this.View("Error", ex);
+                return this.View("Error", new Exception("An error occured while processing the request"));
             }
         }
     }
