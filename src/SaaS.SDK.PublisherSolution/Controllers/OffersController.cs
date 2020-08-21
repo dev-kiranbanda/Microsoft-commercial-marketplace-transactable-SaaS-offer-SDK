@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
+    using log4net;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.AspNetCore.Mvc.Rendering;
     using Microsoft.Extensions.Logging;
@@ -20,6 +21,12 @@
     [ServiceFilter(typeof(KnownUserAttribute))]
     public class OffersController : BaseController
     {
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger<OffersController> _logger;
+        protected readonly ILog logger = LogManager.GetLogger(typeof(OffersController));
+
         private readonly IUsersRepository usersRepository;
 
         private readonly IValueTypesRepository valueTypesRepository;
@@ -30,8 +37,7 @@
 
         private readonly IOfferAttributesRepository offersAttributeRepository;
 
-        private readonly ILogger<OffersController> logger;
-
+        
         private OfferServices offersService;
 
         /// <summary>
@@ -51,7 +57,7 @@
             this.valueTypesRepository = valueTypesRepository;
             this.offersService = new OfferServices(this.offersRepository);
             this.offersAttributeRepository = offersAttributeRepository;
-            this.logger = logger;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -60,7 +66,7 @@
         /// <returns>return All subscription.</returns>
         public IActionResult Index()
         {
-            this.logger.LogInformation("Offers Controller / Index");
+            logger.InfoFormat("Offers Controller / Index");
             try
             {
                 List<OffersModel> getAllOffersData = new List<OffersModel>();
@@ -73,7 +79,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -87,7 +93,7 @@
         /// </returns>
         public IActionResult OfferDetails(Guid offerGuId)
         {
-            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", offerGuId);
+            logger.InfoFormat("Offers Controller / OfferDetails:  offerGuId {0}", offerGuId);
             try
             {
                 OffersViewModel offersData = new OffersViewModel();
@@ -131,7 +137,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.InfoFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -146,7 +152,7 @@
         [HttpPost]
         public IActionResult OfferDetails(OffersViewModel offersData)
         {
-            this.logger.LogInformation("Offers Controller / OfferDetails:  offerGuId {0}", JsonSerializer.Serialize(offersData));
+            logger.InfoFormat("Offers Controller / OfferDetails:  offerGuId {0}", JsonSerializer.Serialize(offersData));
             try
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -190,7 +196,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }

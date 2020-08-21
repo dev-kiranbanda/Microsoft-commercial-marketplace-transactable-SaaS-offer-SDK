@@ -2,6 +2,7 @@
 {
     using System;
     using System.Text.Json;
+    using log4net;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -32,7 +33,8 @@
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<PendingFulfillmentStatusHandler> logger;
+        private readonly ILogger<PendingFulfillmentStatusHandler> _logger;
+        protected readonly ILog logger = LogManager.GetLogger(typeof(PendingFulfillmentStatusHandler));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PendingFulfillmentStatusHandler" /> class.
@@ -57,7 +59,7 @@
             this.fulfillmentApiClient = fulfillApiClient;
             this.applicationConfigRepository = applicationConfigRepository;
             this.subscriptionLogRepository = subscriptionLogRepository;
-            this.logger = logger;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -66,10 +68,10 @@
         /// <param name="subscriptionID">The subscription identifier.</param>
         public override void Process(Guid subscriptionID)
         {
-            this.logger?.LogInformation("PendingActivationStatusHandler {0}", subscriptionID);
+            logger?.InfoFormat("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            this.logger?.LogInformation("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
-            this.logger?.LogInformation("Get User");
+            logger?.InfoFormat("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
+            logger?.InfoFormat("Get User");
             var userdetails = this.GetUserById(subscription.UserId);
 
             if (subscription.SubscriptionStatus == SubscriptionStatusEnumExtension.PendingFulfillmentStart.ToString())
@@ -93,7 +95,7 @@
                 {
                     string errorDescription = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
 
-                    this.logger?.LogInformation(errorDescription);
+                    logger?.InfoFormat(errorDescription);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
 

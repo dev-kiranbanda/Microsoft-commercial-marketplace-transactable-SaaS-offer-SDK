@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text.Json;
     using System.Threading;
+    using log4net;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
@@ -38,7 +39,8 @@
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
 
-        private readonly ILogger<OffersController> logger;
+        private readonly ILogger<BatchUsageHistoryController> _logger;
+        protected readonly ILog logger = LogManager.GetLogger(typeof(PlansController));
 
         private PlanService plansService;
 
@@ -55,7 +57,7 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        public BatchUsageHistoryController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger, IBatchUsageUploadHistoryRepository batchUsageUploadHistoryRepository)
+        public BatchUsageHistoryController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<BatchUsageHistoryController> logger, IBatchUsageUploadHistoryRepository batchUsageUploadHistoryRepository)
         {
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;
@@ -63,7 +65,7 @@
             this.plansRepository = plansRepository;
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
-            this.logger = logger;
+            this._logger = logger;
             this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
             this.batchUsageUploadHistoryRepository = batchUsageUploadHistoryRepository;
         }
@@ -74,7 +76,7 @@
         /// <returns>return All subscription.</returns>
         public IActionResult BatchUsageHistory()
         {
-            this.logger.LogInformation("BatchUsageHistoryController / OfferDetails:  offerGuId");
+            logger.InfoFormat("BatchUsageHistoryController / OfferDetails:  offerGuId");
             try
             {
                 BatchUsageHistorySearchModel batchUsageHistorySearch = new BatchUsageHistorySearchModel();
@@ -85,7 +87,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
+                logger.Error(ex.Message);
                 return this.View("Error", ex);
             }
         }
@@ -97,7 +99,7 @@
         [HttpGet]
         public IActionResult Search(DateTime? uploadDate, string fileName)
         {
-            logger.LogInformation("Home Controller / BatchUsageHistory ");
+            logger.InfoFormat("Home Controller / BatchUsageHistory ");
             try
             {
                 BatchUsageHistorySearchModel searchCriteria = new BatchUsageHistorySearchModel();
@@ -111,7 +113,7 @@
             }
             catch (Exception ex)
             {
-                logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }

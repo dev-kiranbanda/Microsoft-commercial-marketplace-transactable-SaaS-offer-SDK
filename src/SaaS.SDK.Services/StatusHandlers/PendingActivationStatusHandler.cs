@@ -2,6 +2,7 @@
 {
     using System;
     using System.Text.Json;
+    using log4net;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
     using Microsoft.Marketplace.SaasKit.Client.DataAccess.Contracts;
@@ -27,7 +28,8 @@
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<PendingActivationStatusHandler> logger;
+        private readonly ILogger<PendingActivationStatusHandler> _logger;
+        protected readonly ILog logger = LogManager.GetLogger(typeof(PendingActivationStatusHandler));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PendingActivationStatusHandler"/> class.
@@ -50,7 +52,7 @@
         {
             this.fulfillmentApiClient = fulfillApiClient;
             this.subscriptionLogRepository = subscriptionLogRepository;
-            this.logger = logger;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -59,10 +61,10 @@
         /// <param name="subscriptionID">The subscription identifier.</param>
         public override void Process(Guid subscriptionID)
         {
-            this.logger?.LogInformation("PendingActivationStatusHandler {0}", subscriptionID);
+            logger?.InfoFormat("PendingActivationStatusHandler {0}", subscriptionID);
             var subscription = this.GetSubscriptionById(subscriptionID);
-            this.logger?.LogInformation("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
-            this.logger?.LogInformation("Get User");
+            logger?.InfoFormat("Result subscription : {0}", JsonSerializer.Serialize(subscription.AmpplanId));
+            logger?.InfoFormat("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
             string oldstatus = subscription.SubscriptionStatus;
 
@@ -70,11 +72,11 @@
             {
                 try
                 {
-                    this.logger?.LogInformation("Get attributelsit");
+                    logger?.InfoFormat("Get attributelsit");
 
                     var subscriptionData = this.fulfillmentApiClient.ActivateSubscriptionAsync(subscriptionID, subscription.AmpplanId).ConfigureAwait(false).GetAwaiter().GetResult();
 
-                    this.logger?.LogInformation("UpdateWebJobSubscriptionStatus");
+                    logger?.InfoFormat("UpdateWebJobSubscriptionStatus");
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.Subscribed.ToString(), true);
 
@@ -95,7 +97,7 @@
                 {
                     string errorDescriptin = string.Format("Exception: {0} :: Innser Exception:{1}", ex.Message, ex.InnerException);
                     this.subscriptionLogRepository.LogStatusDuringProvisioning(subscriptionID, errorDescriptin, SubscriptionStatusEnumExtension.ActivationFailed.ToString());
-                    this.logger?.LogInformation(errorDescriptin);
+                    logger?.InfoFormat(errorDescriptin);
 
                     this.subscriptionsRepository.UpdateStatusForSubscription(subscriptionID, SubscriptionStatusEnumExtension.ActivationFailed.ToString(), false);
 

@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Text.Json;
+    using log4net;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Contracts;
     using Microsoft.Marketplace.SaaS.SDK.Services.Helpers;
@@ -75,7 +76,8 @@
         /// <summary>
         /// The logger.
         /// </summary>
-        private readonly ILogger<NotificationStatusHandler> logger;
+        private readonly ILogger<NotificationStatusHandler> _logger;
+        protected readonly ILog logger = LogManager.GetLogger(typeof(NotificationStatusHandler));
 
         /// <summary>
         /// The subscription service.
@@ -126,7 +128,7 @@
             this.offersRepository = offersRepository;
             this.emailService = emailService;
             this.emailHelper = new EmailHelper(applicationConfigRepository, subscriptionRepository, emailTemplateRepository, planEventsMappingRepository, eventsRepository);
-            this.logger = logger;
+            this._logger = logger;
         }
 
         /// <summary>
@@ -135,12 +137,12 @@
         /// <param name="subscriptionID">The subscription identifier.</param>
         public override void Process(Guid subscriptionID)
         {
-            this.logger?.LogInformation("ResourceDeploymentStatusHandler Process...");
-            this.logger?.LogInformation("Get SubscriptionById");
+            logger?.InfoFormat("ResourceDeploymentStatusHandler Process...");
+            logger?.InfoFormat("Get SubscriptionById");
             var subscription = this.GetSubscriptionById(subscriptionID);
-            this.logger?.LogInformation("Get PlanById");
+            logger?.InfoFormat("Get PlanById");
             var planDetails = this.GetPlanById(subscription.AmpplanId);
-            this.logger?.LogInformation("Get User");
+            logger?.InfoFormat("Get User");
             var userdeatils = this.GetUserById(subscription.UserId);
 
             string planEventName = "Activate";

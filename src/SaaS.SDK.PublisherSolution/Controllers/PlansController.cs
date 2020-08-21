@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Text.Json;
+    using log4net;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Marketplace.SaaS.SDK.Services.Models;
@@ -36,7 +37,8 @@
 
         private readonly IOfferAttributesRepository offerAttributeRepository;
 
-        private readonly ILogger<OffersController> logger;
+        private readonly ILogger<PlansController> _logger;
+        protected readonly ILog logger = LogManager.GetLogger(typeof(PlansController));
 
         private PlanService plansService;
 
@@ -50,7 +52,7 @@
         /// <param name="offerAttributeRepository">The offer attribute repository.</param>
         /// <param name="offerRepository">The offer repository.</param>
         /// <param name="logger">The logger.</param>
-        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<OffersController> logger)
+        public PlansController(ISubscriptionsRepository subscriptionRepository, IUsersRepository usersRepository, IApplicationConfigRepository applicationConfigRepository, IPlansRepository plansRepository, IOfferAttributesRepository offerAttributeRepository, IOffersRepository offerRepository, ILogger<PlansController> logger)
         {
             this.subscriptionRepository = subscriptionRepository;
             this.usersRepository = usersRepository;
@@ -58,7 +60,7 @@
             this.plansRepository = plansRepository;
             this.offerAttributeRepository = offerAttributeRepository;
             this.offerRepository = offerRepository;
-            this.logger = logger;
+            this._logger = logger;
             this.plansService = new PlanService(this.plansRepository, this.offerAttributeRepository, this.offerRepository);
         }
 
@@ -68,7 +70,7 @@
         /// <returns>return All subscription.</returns>
         public IActionResult Index()
         {
-            this.logger.LogInformation("Plans Controller / OfferDetails:  offerGuId");
+            logger.InfoFormat("Plans Controller / OfferDetails:  offerGuId");
             try
             {
                 List<PlansModel> getAllPlansData = new List<PlansModel>();
@@ -81,7 +83,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
+                logger.ErrorFormat("Error {0}", ex.Message);
                 return this.View("Error", ex);
             }
         }
@@ -95,7 +97,7 @@
         /// </returns>
         public IActionResult PlanDetails(Guid planGuId)
         {
-            this.logger.LogInformation("Plans Controller / PlanDetails:  planGuId {0}", planGuId);
+            logger.InfoFormat("Plans Controller / PlanDetails:  planGuId {0}", planGuId);
             try
             {
                 PlansModel plans = new PlansModel();
@@ -106,7 +108,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
+                logger.ErrorFormat("Error {0}", ex.Message);
                 return this.View("Error", ex);
             }
         }
@@ -121,7 +123,7 @@
         [HttpPost]
         public IActionResult PlanDetails(PlansModel plans)
         {
-            this.logger.LogInformation("Plans Controller / PlanDetails:  plans {0}", JsonSerializer.Serialize(plans));
+            logger.InfoFormat("Plans Controller / PlanDetails:  plans {0}", JsonSerializer.Serialize(plans));
             try
             {
                 var currentUserDetail = this.usersRepository.GetPartnerDetailFromEmail(this.CurrentUserEmailAddress);
@@ -152,7 +154,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError(ex, ex.Message);
+                logger.ErrorFormat("Error {0}", ex.Message);
                 return this.PartialView("Error", ex);
             }
         }

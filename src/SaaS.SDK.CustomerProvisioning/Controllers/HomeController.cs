@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Text.Json;
     using System.Threading.Tasks;
+    using log4net;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Diagnostics;
@@ -58,8 +59,11 @@
         /// The user repository.
         /// </summary>
         private readonly IUsersRepository userRepository;
-
-        private readonly ILogger<HomeController> logger;
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger<HomeController> _logger;
+        protected readonly ILog logger = LogManager.GetLogger(typeof(HomeController));
 
         private readonly IApplicationConfigRepository applicationConfigRepository;
 
@@ -128,7 +132,7 @@
             this.emailTemplateRepository = emailTemplateRepository;
             this.planEventsMappingRepository = planEventsMappingRepository;
             this.offerAttributesRepository = offerAttributesRepository;
-            this.logger = logger;
+            this._logger = logger;
             this.offersRepository = offersRepository;
             this.planService = new PlanService(this.planRepository, this.offerAttributesRepository, this.offersRepository);
             this.eventsRepository = eventsRepository;
@@ -186,7 +190,7 @@
         {
             try
             {
-                this.logger.LogInformation($"Landing page with token {token}");
+                logger?.InfoFormat($"Landing page with token {token}");
                 SubscriptionResult subscriptionDetail = new SaasKitModels.SubscriptionResult();
                 SubscriptionResultExtension subscriptionExtension = new SubscriptionResultExtension();
 
@@ -195,7 +199,7 @@
                     var userId = this.userService.AddUser(this.GetCurrentUserDetail());
                     var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                     this.subscriptionService = new SubscriptionService(this.subscriptionRepository, this.planRepository, userId);
-                    this.logger.LogInformation("User authenticated successfully");
+                    logger?.InfoFormat("User authenticated successfully");
                     if (!string.IsNullOrEmpty(token))
                     {
                         this.TempData["ShowWelcomeScreen"] = null;
@@ -275,7 +279,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -286,7 +290,7 @@
         /// <returns> Subscription instance.</returns>
         public IActionResult Subscriptions()
         {
-            this.logger.LogInformation("Home Controller / Subscriptions ");
+            logger?.InfoFormat("Home Controller / Subscriptions ");
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -318,7 +322,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -332,7 +336,7 @@
         /// </returns>
         public IActionResult SubscriptionDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
+            logger?.InfoFormat("Home Controller / SubscriptionDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -349,7 +353,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -363,7 +367,7 @@
         /// </returns>
         public IActionResult SubscriptionQuantityDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
+            logger?.InfoFormat("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -378,7 +382,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -390,7 +394,7 @@
         /// <returns> Subscription log detail.</returns>
         public IActionResult SubscriptionLogDetail(Guid subscriptionId)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
+            logger?.InfoFormat("Home Controller / SubscriptionQuantityDetail subscriptionId:{0}", JsonSerializer.Serialize(subscriptionId));
             try
             {
                 if (this.User.Identity.IsAuthenticated)
@@ -406,7 +410,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -447,7 +451,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogInformation("Home Controller / ActivatedMessage Exception: {0}", ex);
+                logger?.InfoFormat("Home Controller / ActivatedMessage Exception: {0}", ex);
                 return this.View("Error", ex);
             }
         }
@@ -461,7 +465,7 @@
         /// <returns> Subscription Detials.</returns>
         public IActionResult SubscriptionDetails(Guid subscriptionId, string planId, string operation)
         {
-            this.logger.LogInformation("Home Controller / ActivateSubscription subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
+            logger?.InfoFormat("Home Controller / ActivateSubscription subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
             try
             {
                 SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
@@ -489,7 +493,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
@@ -507,7 +511,7 @@
         [HttpPost]
         public IActionResult SubscriptionOperation(SubscriptionResultExtension subscriptionResultExtension, Guid subscriptionId, string planId, string operation)
         {
-            this.logger.LogInformation("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
+            logger?.InfoFormat("Home Controller / SubscriptionOperation subscriptionId:{0} :: planId : {1} :: operation:{2}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId), JsonSerializer.Serialize(operation));
             if (this.User.Identity.IsAuthenticated)
             {
                 try
@@ -518,16 +522,16 @@
                     if (subscriptionId != default)
                     {
                         SubscriptionResultExtension subscriptionDetail = new SubscriptionResultExtension();
-                        this.logger.LogInformation("GetPartnerSubscription");
+                        logger?.InfoFormat("GetPartnerSubscription");
                         var oldValue = this.subscriptionService.GetPartnerSubscription(this.CurrentUserEmailAddress, subscriptionId, true).FirstOrDefault();
                         Plans planDetail = this.planRepository.GetById(oldValue.PlanId);
-                        this.logger.LogInformation("GetUserIdFromEmailAddress");
+                        logger?.InfoFormat("GetUserIdFromEmailAddress");
                         var currentUserId = this.userService.GetUserIdFromEmailAddress(this.CurrentUserEmailAddress);
                         if (operation == "Activate")
                         {
                             try
                             {
-                                this.logger.LogInformation("Save Subscription Parameters:  {0}", JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters));
+                                logger?.InfoFormat("Save Subscription Parameters:  {0}", JsonSerializer.Serialize(subscriptionResultExtension.SubscriptionParameters));
                                 if (subscriptionResultExtension.SubscriptionParameters != null && subscriptionResultExtension.SubscriptionParameters.Count() > 0)
                                 {
                                     var inputParms = subscriptionResultExtension.SubscriptionParameters.ToList().Where(s => s.Type.ToLower() == "input");
@@ -540,7 +544,7 @@
 
                                 if (Convert.ToBoolean(this.applicationConfigRepository.GetValueByName("IsAutomaticProvisioningSupported")))
                                 {
-                                    this.logger.LogInformation("UpdateStateOfSubscription PendingActivation: SubscriptionId: {0} ", subscriptionId);
+                                    logger?.InfoFormat("UpdateStateOfSubscription PendingActivation: SubscriptionId: {0} ", subscriptionId);
                                     if (oldValue.SubscriptionStatus.ToString() != SubscriptionStatusEnumExtension.PendingActivation.ToString())
                                     {
                                         this.subscriptionService.UpdateStateOfSubscription(subscriptionId, SubscriptionStatusEnumExtension.PendingActivation.ToString(), true);
@@ -568,7 +572,7 @@
                             }
                             catch (FulfillmentException fex)
                             {
-                                this.logger.LogInformation(fex.Message);
+                                logger?.InfoFormat(fex.Message);
                             }
                         }
 
@@ -599,7 +603,7 @@
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                     return this.View("Error", ex);
                 }
             }
@@ -617,7 +621,7 @@
         [HttpPost]
         public async Task<IActionResult> ChangeSubscriptionPlan(SubscriptionResult subscriptionDetail)
         {
-            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
+            logger?.InfoFormat("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             if (this.User.Identity.IsAuthenticated)
             {
                 try
@@ -647,14 +651,14 @@
                                     var changePlanOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                     changePlanOperationStatus = changePlanOperationResult.Status;
 
-                                    this.logger.LogInformation("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
+                                    logger?.InfoFormat("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: planID:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(planId));
                                     this.applicationLogService.AddApplicationLog("Operation Status :  " + changePlanOperationStatus + " For SubscriptionId " + subscriptionId);
                                 }
 
                                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
 
                                 this.subscriptionService.UpdateSubscriptionPlan(subscriptionId, planId);
-                                this.logger.LogInformation("Plan Successfully Changed.");
+                                logger?.InfoFormat("Plan Successfully Changed.");
                                 this.applicationLogService.AddApplicationLog("Plan Successfully Changed.");
 
                                 if (oldValue != null)
@@ -682,7 +686,7 @@
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                     return this.View("Error", ex);
                 }
             }
@@ -698,7 +702,7 @@
         [HttpPost]
         public async Task<IActionResult> ChangeSubscriptionQuantity(SubscriptionResult subscriptionDetail)
         {
-            this.logger.LogInformation("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
+            logger?.InfoFormat("Home Controller / ChangeSubscriptionPlan  subscriptionDetail:{0}", JsonSerializer.Serialize(subscriptionDetail));
             if (this.User.Identity.IsAuthenticated)
             {
                 try
@@ -722,14 +726,14 @@
                                     var changeQuantityOperationResult = await this.apiClient.GetOperationStatusResultAsync(subscriptionId, jsonResult.OperationId).ConfigureAwait(false);
                                     changeQuantityOperationStatus = changeQuantityOperationResult.Status;
 
-                                    this.logger.LogInformation("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
+                                    logger?.InfoFormat("changeQuantity Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId + "Model SubscriptionID): {0} :: quantity:{1}", JsonSerializer.Serialize(subscriptionId), JsonSerializer.Serialize(quantity));
                                     this.applicationLogService.AddApplicationLog("Operation Status :  " + changeQuantityOperationStatus + " For SubscriptionId " + subscriptionId);
                                 }
 
                                 var oldValue = this.subscriptionService.GetSubscriptionsBySubscriptionId(subscriptionId, true);
 
                                 this.subscriptionService.UpdateSubscriptionQuantity(subscriptionId, quantity);
-                                this.logger.LogInformation("Quantity Successfully Changed.");
+                                logger?.InfoFormat("Quantity Successfully Changed.");
                                 this.applicationLogService.AddApplicationLog("Quantity Successfully Changed.");
 
                                 if (oldValue != null)
@@ -750,7 +754,7 @@
                         catch (FulfillmentException fex)
                         {
                             this.TempData["ErrorMsg"] = fex.Message;
-                            this.logger.LogError("Message:{0} :: {1}   ", fex.Message, fex.InnerException);
+                            logger.ErrorFormat("Message:{0} :: {1}   ", fex.Message, fex.InnerException);
                         }
                     }
 
@@ -758,7 +762,7 @@
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                    logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                     return this.View("Error", ex);
                 }
             }
@@ -799,7 +803,7 @@
             }
             catch (Exception ex)
             {
-                this.logger.LogError("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
+                logger.ErrorFormat("Message:{0} :: {1}   ", ex.Message, ex.InnerException);
                 return this.View("Error", ex);
             }
         }
