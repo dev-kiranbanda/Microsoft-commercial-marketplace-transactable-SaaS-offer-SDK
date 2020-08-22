@@ -9,6 +9,6 @@ WHERE name ='Footer'
 IF NOT EXISTS (SELECT * FROM DatabaseVersionHistory WHERE VersionNumber = 3)
 BEGIN
 	INSERT INTO DatabaseVersionHistory (VersionNumber,ChangeLog,CreateDate,CreateBy)
-	SELECT 3,'User Home Page Content and Footer script update',GETDATE,''
+	SELECT 3,'User Home Page Content and Footer script update',GETDATE(),''
 END
 GO
