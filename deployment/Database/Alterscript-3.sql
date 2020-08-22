@@ -6,16 +6,17 @@ UPDATE ApplicationConfiguration
 SET value = '<div > <div class = "center"> <a href="https://www.teradata.com/Privacy" target="_blank">Privacy Policy</a> ©2020 Teradata. All Rights Reserved </div> </div>  '
 WHERE name ='Footer'
 
+
 IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='log')
 BEGIN
 CREATE TABLE [dbo].[log](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[Date] [datetime] NULL,
-	[Thread] [nvarchar](255) NULL,
-	[Level] [nvarchar](255) NULL,
-	[Logger] [nvarchar](255) NULL,
-	[Message] [nvarchar](255) NULL,
-	[Exception] [nvarchar](255) NULL
+	[Thread] [nvarchar](max) NULL,
+	[Level] [nvarchar](max) NULL,
+	[Logger] [nvarchar](max) NULL,
+	[Message] [nvarchar](max) NULL,
+	[Exception] [nvarchar](max) NULL
 ) ON [PRIMARY]
 End
 GO
