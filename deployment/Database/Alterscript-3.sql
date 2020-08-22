@@ -6,6 +6,17 @@ UPDATE ApplicationConfiguration
 SET value = '<div > <div class = "center"> <a href="https://www.teradata.com/Privacy" target="_blank">Privacy Policy</a> ©2020 Teradata. All Rights Reserved </div> </div>  '
 WHERE name ='Footer'
 
+CREATE TABLE [dbo].[log](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Date] [datetime] NULL,
+	[Thread] [nvarchar](255) NULL,
+	[Level] [nvarchar](255) NULL,
+	[Logger] [nvarchar](255) NULL,
+	[Message] [nvarchar](255) NULL,
+	[Exception] [nvarchar](255) NULL
+) ON [PRIMARY]
+GO
+
 IF NOT EXISTS (SELECT * FROM DatabaseVersionHistory WHERE VersionNumber = 3)
 BEGIN
 	INSERT INTO DatabaseVersionHistory (VersionNumber,ChangeLog,CreateDate,CreateBy)
