@@ -6,6 +6,8 @@ UPDATE ApplicationConfiguration
 SET value = '<div > <div class = "center"> <a href="https://www.teradata.com/Privacy" target="_blank">Privacy Policy</a> ©2020 Teradata. All Rights Reserved </div> </div>  '
 WHERE name ='Footer'
 
+IF NOT EXISTS (SELECT 1 FROM sys.tables WHERE name='log')
+BEGIN
 CREATE TABLE [dbo].[log](
 	[ID] [int] IDENTITY(1,1) NOT NULL,
 	[Date] [datetime] NULL,
@@ -15,6 +17,7 @@ CREATE TABLE [dbo].[log](
 	[Message] [nvarchar](255) NULL,
 	[Exception] [nvarchar](255) NULL
 ) ON [PRIMARY]
+End
 GO
 
 IF NOT EXISTS (SELECT * FROM DatabaseVersionHistory WHERE VersionNumber = 3)
