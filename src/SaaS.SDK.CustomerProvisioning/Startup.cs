@@ -1,5 +1,11 @@
 namespace Microsoft.Marketplace.SaasKit.Client
 {
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using System.Xml;
+    using log4net;
+    using MicroKnights.Logging;
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Builder;
@@ -107,10 +113,35 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
+            configureLogService();
             InitializeRepositoryServices(services);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMvc(option => option.EnableEndpointRouting = false);
+        }
+
+        /// <summary>
+        /// Configures the specified application.
+        /// </summary>
+        public void configureLogService()
+        {
+            //log4net configuration
+            XmlDocument log4netConfig = new XmlDocument();
+            log4netConfig.Load(File.OpenRead("log4net.config"));
+            log4net.Config.XmlConfigurator.Configure(log4net.LogManager.GetRepository(Assembly.GetEntryAssembly()), log4netConfig["log4net"]);
+            var repository = LogManager.CreateRepository(Assembly.GetEntryAssembly(), typeof(log4net.Repository.Hierarchy.Hierarchy));
+
+            if (repository != null)
+            {
+                var _adoAppender = repository.GetAppenders()
+                     .FirstOrDefault(a => a is AdoNetAppender) as AdoNetAppender;
+
+                if (_adoAppender != null && string.IsNullOrEmpty(_adoAppender.ConnectionStringName))
+                {
+                    _adoAppender.ConnectionString = this.Configuration.GetConnectionString("LogConnection");
+                    _adoAppender.ActivateOptions();
+                }
+            }
         }
 
         /// <summary>
