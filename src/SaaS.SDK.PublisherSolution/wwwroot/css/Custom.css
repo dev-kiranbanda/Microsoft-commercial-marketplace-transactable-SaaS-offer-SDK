@@ -12,14 +12,13 @@
 }
 
 .cm-top-nav-bar {
-    background-color: #FFFFFF !important;
+    background-color: #436EB2 !important;
     margin-bottom: 0px;
     border-radius: 0;
 }
 
 .cm-menu-bar {
     background-color: #F9F9F9 !important;
-    margin-top: -142px;
 }
 
 .cm-signin {
@@ -61,7 +60,7 @@
     width: auto;
     padding: 8px;
     max-width: 100%;
-    width: 40%;
+    width: 200px;
 }
 
 .cm-panel-default {
@@ -74,7 +73,7 @@
     font-family: 'Montserrat', 'sans-serif' !important;
     font-size: 25px;
     background-color: #fff;
-    border-bottom: 4px solid #F37440;
+    border-bottom: 4px solid #436EB2;
     text-transform: uppercase;
     margin-bottom: 20px;
     line-height: 40px;
@@ -127,7 +126,7 @@
 
 .cm-button-default {
     color: #fff !important;
-    background-color: #F37440;
+    background-color: #436EB2;
     border-color: #2e6da4;
     display: inline-block;
     font-weight: 400;
@@ -153,17 +152,17 @@
 }
 
     .cm-button-default:hover {
-        background-color: #000000 !important;
+        background-color: #FAFAFA !important;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #F37440;
+        color: #436EB2 !important;
     }
 
 .cm-button-bulkUploadSearch {
     color: #fff !important;
-    background-color: #F37440;
+    background-color: #436EB2;
     border-color: #2e6da4;
     display: inline-block;
     font-weight: 400;
@@ -189,17 +188,17 @@
 }
 
     .cm-button-bulkUploadSearch:hover {
-        background-color: #000000 !important;
+        background-color: #FAFAFA !important;
         border-radius: 5px;
         padding: 8px 30px;
         font-size: 18px;
         font-weight: bold;
-        color: #F37440;
+        color: #436EB2 !important;
     }
 
 .cm-button-error {
     color: #fff;
-    background-color: #F37440 !important;
+    background-color: #436EB2 !important;
     border-color: #2e6da4;
     display: inline-block;
     font-weight: 400;
@@ -225,12 +224,12 @@
 }
 
     .cm-button-error:hover {
-        background-color: #000000 !important;
+        background-color: #FAFAFA !important;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #F37440;
+        color: #436EB2 !important;
     }
 
 .cm-button-success {
@@ -261,12 +260,12 @@
 }
 
     .cm-button-success:hover {
-        background-color: #000000;
+        background-color: #FAFAFA !important;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #F37440;
+        color: #436EB2 !important;
     }
 
 .cm-button-danger {
@@ -297,12 +296,12 @@
 }
 
     .cm-button-danger:hover {
-        background-color: #000000;
+        background-color: #FAFAFA !important;
         border-radius: 5px;
         padding: 12px 20px;
         font-size: 18px;
         font-weight: bold;
-        color: #F37440;
+        color: #436EB2 !important;
     }
 
 .cm-table {
@@ -346,7 +345,7 @@
 
     .cm-link-button:hover {
         cursor: pointer;
-        color: #F37440 !important;
+        color: #436EB2 !important;
     }
 
 /*.cm-footer {
@@ -379,7 +378,7 @@ a.cm-dropdown-option {
 
     a.cm-dropdown-option:hover {
         background: transparent !important;
-        color: #F37440 !important;
+        color: #436EB2 !important;
         cursor: pointer;
     }
 
@@ -388,7 +387,7 @@ a.cm-dropdown-option {
 }
 
 .maxwidth {
-    width: 1300px !important;
+    width: 1350px !important;
 }
 
 
@@ -435,11 +434,11 @@ a.cm-dropdown-option {
     }
 
 input:checked + .slider {
-    background-color: #F37440;
+    background-color: #436EB2;
 }
 
 input:focus + .slider {
-    box-shadow: 0 0 1px #F37440;
+    box-shadow: 0 0 1px #436EB2;
 }
 
 input:checked + .slider:before {
@@ -469,7 +468,7 @@ input:checked + .slider:before {
     margin: -50px 0 0 -100px;
     border: 8px solid #000000;
     border-radius: 50%;
-    border-top: 8px solid #F37440;
+    border-top: 8px solid #436EB2;
     width: 40px;
     height: 40px;
     -webkit-animation: spin 2s linear infinite;

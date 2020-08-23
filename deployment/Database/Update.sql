@@ -91,7 +91,7 @@ GO
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'ApplicationLogo')
 BEGIN
 	INSERT INTO ApplicationConfiguration (Name,Value,Description)
-	SELECT 'ApplicationLogo','~/teradata.png','Application Logo'
+	SELECT 'ApplicationLogo','~/logo.jpg','Application Logo'
 END
 GO
 
@@ -126,7 +126,9 @@ GO
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'Footer')
 BEGIN
 	INSERT INTO ApplicationConfiguration (Name,Value,Description)
-	SELECT 'Footer','<div > <div class = "center"> <a href="https://www.teradata.com/Privacy" target="_blank">Privacy Policy</a> | <a href="https://www.teradata.com/Legal/Terms-of-Use" target="_blank">Terms of use</a> ©2020 Teradata. All Rights Reserved </div> </div>  ','Footer'
+	SELECT 'Footer','<div >
+   <div class = "center">  Handcrafted in Sunny California. © Nutanix 2020. <a href="https://www.nutanix.com/legal/privacy-statement" target="_blank">Privacy Statement</a> </div>
+</div>','Footer'
 END
 GO
 
