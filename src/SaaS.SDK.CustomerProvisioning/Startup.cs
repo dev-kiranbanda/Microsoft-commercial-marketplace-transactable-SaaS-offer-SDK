@@ -113,6 +113,19 @@ namespace Microsoft.Marketplace.SaasKit.Client
             services.AddDbContext<SaasKitContext>(options =>
                options.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection")));
 
+            configureLogService();
+            InitializeRepositoryServices(services);
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc(option => option.EnableEndpointRouting = false);
+        }
+
+
+        /// <summary>
+        /// Configures the specified application.
+        /// </summary>
+        public void configureLogService()
+        {
             //log4net configuration
             XmlDocument log4netConfig = new XmlDocument();
             log4netConfig.Load(File.OpenRead("log4net.config"));
@@ -130,12 +143,6 @@ namespace Microsoft.Marketplace.SaasKit.Client
                     _adoAppender.ActivateOptions();
                 }
             }
-
-
-            InitializeRepositoryServices(services);
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-            services.AddMvc(option => option.EnableEndpointRouting = false);
         }
 
         /// <summary>
