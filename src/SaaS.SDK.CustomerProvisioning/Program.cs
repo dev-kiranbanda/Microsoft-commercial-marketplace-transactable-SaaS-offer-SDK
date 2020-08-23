@@ -33,7 +33,7 @@ namespace Microsoft.Marketplace.SaasKit.Client
             var config = new ConfigurationBuilder()
                         .AddJsonFile("appsettings.json", optional: false)
                         .Build();
-            var logConnectionString = config.GetSection("SaasApiConfiguration:ApplicationLogConnection")?.Value;
+            var logConnectionString = config.GetSection("connectionstrings:ApplicationLogConnection")?.Value;
 
             if (repository != null)
             {
