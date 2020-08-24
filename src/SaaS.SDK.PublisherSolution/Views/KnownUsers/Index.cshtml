@@ -1,0 +1,30 @@
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
+@model KnownUsersModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+@if (TempData["msg"] != null)
+{
+    @Html.Raw(TempData["msg"])
+}
+
+<div class="text-center">
+    <div class="container">
+        <div class="">
+            <div class="card-body ">
+                <div class="text-left">
+                    <span class="cm-section-heading">Users</span>
+                </div>
+                @* <button type="button" class="cm-button-default" onclick="fnAddSubscriptionLicense()" data-toggle="modal" data-target="#AddLicense">Add License</button>*@
+                <div class="text-left mt20">
+                    @{await Html.RenderPartialAsync("AddKnownUser", Model); }
+                </div>
+                <div class="text-left ">
+                    @{await Html.RenderPartialAsync("KnownUsersList", Model.KnownUsersList);}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
