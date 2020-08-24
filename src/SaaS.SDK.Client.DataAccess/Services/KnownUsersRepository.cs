@@ -74,7 +74,7 @@
         /// <returns> Exception.</returns>
         public IEnumerable<KnownUsers> Get()
         {
-            throw new NotImplementedException();
+            return this.context.KnownUsers;
         }
 
         /// <summary>
@@ -90,24 +90,37 @@
         }
 
         /// <summary>
-        /// Adds the specified entities.
+        /// Gets the specified identifier.
         /// </summary>
-        /// <param name="entities">The entities.</param>
+        /// <param name="id">The identifier.</param>
         /// <returns>
-        /// Internal identifier after saving the entity.
+        /// Entity for the given identifier.
         /// </returns>
-        public int Save(KnownUsers entities)
+        public int Save(KnownUsers knownUsers)
         {
-            throw new NotImplementedException();
+            var users = new KnownUsers()
+            {
+                UserEmail = knownUsers.UserEmail.Trim(),
+                RoleId = 1, // Publisher Admin
+            };
+            this.context.KnownUsers.Add(users);
+            this.context.SaveChanges();
+            return knownUsers.Id;
         }
+
 
         /// <summary>
         /// Removes the specified entity.
         /// </summary>
         /// <param name="entity">The entity.</param>
-        public void Remove(KnownUsers entity)
+        public void Remove(KnownUsers KnownUser)
         {
-            throw new NotImplementedException();
+            var knownUser = this.context.KnownUsers.Where(s => s.Id == KnownUser.Id).FirstOrDefault();
+            if (knownUser != null)
+            {
+                this.context.KnownUsers.Remove(knownUser);
+                this.context.SaveChanges();
+            }
         }
 
         /// <summary>

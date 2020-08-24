@@ -1,0 +1,14 @@
+﻿@using Microsoft.Marketplace.SaaS.SDK.Services.Models
+@model KnownUsersModel
+
+<form asp-action="AddKnownUser" method="post">
+    <div class="row" style="text-align:center">
+        <div class="col-4">
+            @Html.TextBoxFor(s => s.KnownUsers, null, new { @class = "form-control cm-margin", @placeholder = "User Email Id", required = "required", maxlength = "255" })
+        </div>
+        <div class="col-4">
+            <button type="submit" class="cm-button-bulkUploadSearch mt0">Add Known User</button>
+        </div>
+
+    </div>
+</form>
