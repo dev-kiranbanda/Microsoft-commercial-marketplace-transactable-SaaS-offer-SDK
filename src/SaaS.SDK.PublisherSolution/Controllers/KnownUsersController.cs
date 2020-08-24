@@ -44,7 +44,7 @@
 
         public IActionResult Index()
         {
-            logger.InfoFormat("Offers Controller / Index");
+            logger.InfoFormat("KnownUsers Controller / Index");
             try
             {
                 KnownUsersModel knownUsers = new KnownUsersModel();
@@ -65,6 +65,7 @@
         [HttpPost]
         public IActionResult AddKnownUser(KnownUsersModel knownuser)
         {
+            logger.InfoFormat("Adding Known User");
             try
             {
                 this.knownUserService.AddKnownUser(knownuser);
@@ -80,6 +81,7 @@
 
         public IActionResult RemoveKnownUser(int knownUsersId, string knownUserEmail)
         {
+            logger.InfoFormat("Removing Known User");
             try
             {
                 KnownUsersModel knownusers = new KnownUsersModel()

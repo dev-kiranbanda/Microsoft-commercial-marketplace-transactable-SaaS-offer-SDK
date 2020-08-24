@@ -96,16 +96,20 @@
         /// <returns>
         /// Entity for the given identifier.
         /// </returns>
-        public int Save(KnownUsers knownUsers)
+        public int Save(KnownUsers knownUser)
         {
-            var users = new KnownUsers()
+            var existingKnownUser = this.context.KnownUsers.Where(s => s.UserEmail == knownUser.UserEmail).FirstOrDefault();
+            if(existingKnownUser==null)
             {
-                UserEmail = knownUsers.UserEmail.Trim(),
-                RoleId = 1, // Publisher Admin
-            };
-            this.context.KnownUsers.Add(users);
-            this.context.SaveChanges();
-            return knownUsers.Id;
+                var users = new KnownUsers()
+                {
+                    UserEmail = knownUser.UserEmail.Trim(),
+                    RoleId = 1, // Publisher Admin
+                };
+                this.context.KnownUsers.Add(users);
+                this.context.SaveChanges();
+            }
+            return knownUser.Id;
         }
 
 
