@@ -98,27 +98,32 @@ GO
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'ClientHomePageContent')
 BEGIN
 	INSERT INTO ApplicationConfiguration (Name,Value,Description)
-	SELECT 'ClientHomePageContent','<div class="pt-5">
-    <div class="card p-3 ">
-        <div class="text-center">
-            <h1 class="display-4">Welcome</h1>
-        </div>
-        <div class="text-left">
-            <p>
-                Get started with integrating your <b> Software as a Service (SaaS) </b> solution with the <b> SaaS fulfillment APIs version 2 in Microsoft commercial marketplace. </b>
-            </p>
-            <p><a href="https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2" target="_blank">Click here </a><span>for the API documentation.</span> </p>
-        </div>
-        <div>
-            <b>To purchase this SaaS offer:</b>
-            <ul>
-                <li>Search for resources of type <b> Software as a Service (SaaS) </b></li>
-                <li>Search for your offer</li>
-                <li>Click <b> Create</b> to subscribe to the offer</li>
-                <li>Click <b>Configure Account </b> after the subscription created</li>
-            </ul>
-        </div>
-    </div>
+	SELECT 'ClientHomePageContent','<div class="row" style="margin-top:60px;">
+   <div class="col col-md-12 text-center">
+      <h2 >Fastest Path to Hybrid & Multicloud
+      </h2>
+   </div>
+</div>
+<div class="row mt20">
+   <div class="col col-md-3 col-12 text-center ">
+      <img src="https://www.nutanix.com/content/dam/nutanix/global/icons/secondary-icons/120/SI_deploy.png" />
+      <h4>Seamless Application Mobility</h4>
+      <p>A true hybrid architecture between Nutanix private cloud and multiple public clouds enables seamless application mobility across clouds with absolutely no code changes needed.</p>
+   </div>
+   <div class="col col-md-1 d-none d-md-block">
+   </div>
+   <div class="col col-md-3 col-12 text-center">
+      <img src="https://www.nutanix.com/content/dam/nutanix/global/icons/v2/png/120/icn-businesscontinuity.png" />
+      <h4 class="text-center">Unified Infrastructure Management</h4>
+      <p>Centralized management of all your computing infrastructure - on-prem or in public clouds - with a single console.</p>
+   </div>
+   <div class="col col-md-1 d-none d-md-block">
+   </div>
+   <div class="col col-md-3 col-12 text-center">
+      <img  src="https://www.nutanix.com/content/dam/nutanix/it/global/icons/secondary-icons/120/SI_lower_costs.png" />
+      <h4  class="text-center">Cost Intelligent Operations</h4>
+      <p>Take control of your hybrid cloud spend with automated cost governance policies. Run the same Nutanix software, same licenses across all supported clouds to fully utilize your IT investment.</p>
+   </div>
 </div>','Client HomePage Content'
 END
 GO
@@ -135,15 +140,32 @@ GO
 IF NOT EXISTS (SELECT * FROM ApplicationConfiguration WHERE Name = 'PublisherHomePageContent')
 BEGIN
 	INSERT INTO ApplicationConfiguration (Name,Value,Description)
-	SELECT 'PublisherHomePageContent','<div class="pt-5">
-    <div class="card p-3 ">
-        <div class="text-center">
-            <h1 class="display-4">Welcome</h1>
-        </div>
-        <div class="text-left">
-            <p>This is the publisher solution.</p>
-        </div>
-    </div>
+	SELECT 'PublisherHomePageContent','<div class="row" style="margin-top:60px;">
+   <div class="col col-md-12 text-center">
+      <h2 >Fastest Path to Hybrid & Multicloud
+      </h2>
+   </div>
+</div>
+<div class="row mt20">
+   <div class="col col-md-3 col-12 text-center ">
+      <img src="https://www.nutanix.com/content/dam/nutanix/global/icons/secondary-icons/120/SI_deploy.png" />
+      <h4>Seamless Application Mobility</h4>
+      <p>A true hybrid architecture between Nutanix private cloud and multiple public clouds enables seamless application mobility across clouds with absolutely no code changes needed.</p>
+   </div>
+   <div class="col col-md-1 d-none d-md-block">
+   </div>
+   <div class="col col-md-3 col-12 text-center">
+      <img src="https://www.nutanix.com/content/dam/nutanix/global/icons/v2/png/120/icn-businesscontinuity.png" />
+      <h4 class="text-center">Unified Infrastructure Management</h4>
+      <p>Centralized management of all your computing infrastructure - on-prem or in public clouds - with a single console.</p>
+   </div>
+   <div class="col col-md-1 d-none d-md-block">
+   </div>
+   <div class="col col-md-3 col-12 text-center">
+      <img  src="https://www.nutanix.com/content/dam/nutanix/it/global/icons/secondary-icons/120/SI_lower_costs.png" />
+      <h4  class="text-center">Cost Intelligent Operations</h4>
+      <p>Take control of your hybrid cloud spend with automated cost governance policies. Run the same Nutanix software, same licenses across all supported clouds to fully utilize your IT investment.</p>
+   </div>
 </div>','Publisher HomePage Content'
 END
 GO
